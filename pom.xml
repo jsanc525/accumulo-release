@@ -103,6 +103,11 @@
       <!-- this is not likely to be what we really want, but it's good enough for a test -->
       <url>scm:svn:https://svn.apache.org/repos/asf/accumulo/site/trunk/maven-site</url>
     </site>
+    <repository>
+      <id>${repoid}</id>
+      <name>${reponame}</name>
+      <url>${repourl}</url>
+    </repository>
   </distributionManagement>
   <properties>
     <!-- used for filtering the java source with the current version -->
