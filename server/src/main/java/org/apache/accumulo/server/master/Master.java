@@ -116,6 +116,7 @@ import org.apache.accumulo.server.master.state.TServerInstance;
 import org.apache.accumulo.server.master.state.TableCounts;
 import org.apache.accumulo.server.master.state.TableStats;
 import org.apache.accumulo.server.master.state.TabletLocationState;
+import org.apache.accumulo.server.master.state.TabletLocationState.BadLocationStateException;
 import org.apache.accumulo.server.master.state.TabletMigration;
 import org.apache.accumulo.server.master.state.TabletServerState;
 import org.apache.accumulo.server.master.state.TabletState;
@@ -285,7 +286,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
         
         for (String id : Tables.getIdToNameMap(instance).keySet()) {
           
-          zoo.putPersistentData(ZooUtil.getRoot(instance) + Constants.ZTABLES + "/" + id + Constants.ZTABLE_COMPACT_CANCEL_ID, "0".getBytes(),
+          zoo.putPersistentData(ZooUtil.getRoot(instance) + Constants.ZTABLES + "/" + id + Constants.ZTABLE_COMPACT_CANCEL_ID, "0".getBytes(Constants.UTF8),
               NodeExistsPolicy.SKIP);
         }
       } catch (Exception ex) {
@@ -498,9 +499,9 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
         fid = zoo.mutate(zTablePath, null, null, new Mutator() {
           @Override
           public byte[] mutate(byte[] currentValue) throws Exception {
-            long flushID = Long.parseLong(new String(currentValue));
+            long flushID = Long.parseLong(new String(currentValue, Constants.UTF8));
             flushID++;
-            return ("" + flushID).getBytes();
+            return Long.toString(flushID).getBytes(Constants.UTF8);
           }
         });
       } catch (NoNodeException nne) {
@@ -509,7 +510,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
         log.warn(e.getMessage(), e);
         throw new ThriftTableOperationException(tableId, null, TableOperation.FLUSH, TableOperationExceptionType.OTHER, null);
       }
-      return Long.parseLong(new String(fid));
+      return Long.parseLong(new String(fid, Constants.UTF8));
     }
     
     @Override
@@ -1109,7 +1110,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
   
   private void setMasterGoalState(MasterGoalState state) {
     try {
-      ZooReaderWriter.getInstance().putPersistentData(ZooUtil.getRoot(instance) + Constants.ZMASTER_GOAL_STATE, state.name().getBytes(),
+      ZooReaderWriter.getInstance().putPersistentData(ZooUtil.getRoot(instance) + Constants.ZMASTER_GOAL_STATE, state.name().getBytes(Constants.UTF8),
           NodeExistsPolicy.OVERWRITE);
     } catch (Exception ex) {
       log.error("Unable to set master goal state in zookeeper");
@@ -1120,7 +1121,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
     while (true)
       try {
         byte[] data = ZooReaderWriter.getInstance().getData(ZooUtil.getRoot(instance) + Constants.ZMASTER_GOAL_STATE, null);
-        return MasterGoalState.valueOf(new String(data));
+        return MasterGoalState.valueOf(new String(data, Constants.UTF8));
       } catch (Exception e) {
         log.error("Problem getting real goal state: " + e);
         UtilWaitThread.sleep(1000);
@@ -1438,11 +1439,64 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
           eventListener.waitForEvents(TIME_TO_WAIT_BETWEEN_SCANS);
         } catch (Exception ex) {
           log.error("Error processing table state for store " + store.name(), ex);
-          UtilWaitThread.sleep(WAIT_BETWEEN_ERRORS);
+          if (ex.getCause() != null && ex.getCause() instanceof BadLocationStateException) { 
+            repairMetadata(((BadLocationStateException) ex.getCause()).getEncodedEndRow());
+          } else {
+            UtilWaitThread.sleep(WAIT_BETWEEN_ERRORS);
+          }
         }
       }
     }
     
+  private void repairMetadata(Text row) {
+    Master.log.debug("Attempting repair on " + row);
+    // ACCUMULO-2261 if a dying tserver writes a location before its lock information propagates, it may cause duplicate assignment.
+    // Attempt to find the dead server entry and remove it.
+    try {
+      Map<Key, Value> future = new HashMap<Key, Value>();
+      Map<Key, Value> assigned = new HashMap<Key, Value>();
+      Scanner scanner = getConnector().createScanner(Constants.METADATA_TABLE_NAME, Constants.NO_AUTHS);
+      scanner.fetchColumnFamily(Constants.METADATA_CURRENT_LOCATION_COLUMN_FAMILY);
+      scanner.fetchColumnFamily(Constants.METADATA_FUTURE_LOCATION_COLUMN_FAMILY);
+      scanner.setRange(new Range(row));
+      for (Entry<Key,Value> entry : scanner) {
+        if (entry.getKey().getColumnFamily().equals(Constants.METADATA_CURRENT_LOCATION_COLUMN_FAMILY)) {
+          assigned.put(entry.getKey(), entry.getValue());
+        } else if (entry.getKey().getColumnFamily().equals(Constants.METADATA_FUTURE_LOCATION_COLUMN_FAMILY)) {
+          future.put(entry.getKey(), entry.getValue());
+        }
+      }
+      if (future.size() > 0 && assigned.size() > 0) {
+        Master.log.warn("Found a tablet assigned and hosted, attempting to repair");
+      } else if (future.size() > 1 && assigned.size() == 0) {
+        Master.log.warn("Found a tablet assigned to multiple servers, attempting to repair");
+      } else if (future.size() == 0 && assigned.size() > 1) {
+        Master.log.warn("Found a tablet hosted on multiple servers, attempting to repair");
+      } else {
+        Master.log.info("Attempted a repair, but nothing seems to be obviously wrong. " + assigned + " " + future);
+        return;
+      }
+      Map<Key, Value> all = new HashMap<Key, Value>();
+      all.putAll(future);
+      all.putAll(assigned);
+      for (Entry<Key, Value> entry : all.entrySet()) {
+        TServerInstance alive = tserverSet.find(entry.getValue().toString());
+        if (alive == null) {
+          Master.log.info("Removing entry " + entry);
+          BatchWriter bw = getConnector().createBatchWriter(Constants.METADATA_TABLE_NAME, new BatchWriterConfig());
+          Mutation m = new Mutation(entry.getKey().getRow());
+          m.putDelete(entry.getKey().getColumnFamily(), entry.getKey().getColumnQualifier());
+          bw.addMutation(m);
+          bw.close();
+          return;
+        }
+      }
+      Master.log.error("Metadata table is inconsistent at " + row + " and all assigned/future tservers are still online.");
+    } catch (Throwable e) {
+      Master.log.error("Error attempting repair of metadata " + row + ": " + e, e);
+    }
+  }
+
     private int assignedOrHosted() {
       int result = 0;
       for (TableCounts counts : stats.getLast().values()) {
@@ -1688,7 +1742,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
         }
         
         if (maxLogicalTime != null)
-          Constants.METADATA_TIME_COLUMN.put(m, new Value(maxLogicalTime.getBytes()));
+          Constants.METADATA_TIME_COLUMN.put(m, new Value(maxLogicalTime.getBytes(Constants.UTF8)));
         
         if (!m.getUpdates().isEmpty()) {
           bw.addMutation(m);
@@ -2122,7 +2176,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
     InetSocketAddress sock = org.apache.accumulo.core.util.AddressUtil.parseAddress(hostname, serverPort.port);
     String address = org.apache.accumulo.core.util.AddressUtil.toString(sock);
     log.info("Setting master lock data to " + address);
-    masterLock.replaceLockData(address.getBytes());
+    masterLock.replaceLockData(address.getBytes(Constants.UTF8));
     
     while (!clientService.isServing()) {
       UtilWaitThread.sleep(100);
@@ -2213,7 +2267,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
       
       MasterLockWatcher masterLockWatcher = new MasterLockWatcher();
       masterLock = new ZooLock(zMasterLoc);
-      masterLock.lockAsync(masterLockWatcher, masterClientAddress.getBytes());
+      masterLock.lockAsync(masterLockWatcher, masterClientAddress.getBytes(Constants.UTF8));
 
       masterLockWatcher.waitForChange();
       

@@ -499,7 +499,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         
         ScanRunState srs = nbt.getScanRunState();
         
-        if (nbt == null || srs == ScanRunState.FINISHED)
+        if (srs == ScanRunState.FINISHED)
           continue;
         
         MapCounter<ScanRunState> stateCounts = counts.get(tableID);
@@ -1104,7 +1104,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         throws NotServingTabletException, ThriftSecurityException, org.apache.accumulo.core.tabletserver.thrift.TooManyFilesException {
       
       Authorizations userauths = null;
-      if (!security.canScan(credentials, new String(textent.getTable())))
+      if (!security.canScan(credentials, new String(textent.getTable(), Constants.UTF8)))
         throw new ThriftSecurityException(credentials.getPrincipal(), SecurityErrorCode.PERMISSION_DENIED);
       
       userauths = security.getUserAuthorizations(credentials);
@@ -1255,7 +1255,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
       // find all of the tables that need to be scanned
       HashSet<String> tables = new HashSet<String>();
       for (TKeyExtent keyExtent : tbatch.keySet()) {
-        tables.add(new String(keyExtent.getTable()));
+        tables.add(new String(keyExtent.getTable(), Constants.UTF8));
       }
       
       // check if user has permission to the tables
@@ -1650,7 +1650,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     public void update(TInfo tinfo, TCredentials credentials, TKeyExtent tkeyExtent, TMutation tmutation) throws NotServingTabletException,
         ConstraintViolationException, ThriftSecurityException {
 
-      if (!security.canWrite(credentials, new String(tkeyExtent.getTable())))
+      if (!security.canWrite(credentials, new String(tkeyExtent.getTable(), Constants.UTF8)))
         throw new ThriftSecurityException(credentials.getPrincipal(), SecurityErrorCode.PERMISSION_DENIED);
       KeyExtent keyExtent = new KeyExtent(tkeyExtent);
       Tablet tablet = onlineTablets.get(new KeyExtent(keyExtent));
@@ -1699,7 +1699,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     public void splitTablet(TInfo tinfo, TCredentials credentials, TKeyExtent tkeyExtent, ByteBuffer splitPoint)
         throws NotServingTabletException, ThriftSecurityException {
       
-      String tableId = new String(ByteBufferUtil.toBytes(tkeyExtent.table));
+      String tableId = new String(ByteBufferUtil.toBytes(tkeyExtent.table), Constants.UTF8);
       if (!security.canSplitTablet(credentials, tableId))
         throw new ThriftSecurityException(credentials.getPrincipal(), SecurityErrorCode.PERMISSION_DENIED);
       
@@ -1995,7 +1995,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         checkPermission(credentials, null, true, "getScans");
       } catch (ThriftSecurityException e) {
         log.error(e, e);
-        throw new RuntimeException(e);
+        throw e;
       }
       
       return sessionManager.getActiveScans();
@@ -2120,7 +2120,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         checkPermission(credentials, null, true, "getActiveCompactions");
       } catch (ThriftSecurityException e) {
         log.error(e, e);
-        throw new RuntimeException(e);
+        throw e;
       } 
       
       List<CompactionInfo> compactions = Compactor.getRunningCompactions();
@@ -2717,7 +2717,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         }
       };
       
-      byte[] lockContent = new ServerServices(getClientAddressString(), Service.TSERV_CLIENT).toString().getBytes();
+      byte[] lockContent = new ServerServices(getClientAddressString(), Service.TSERV_CLIENT).toString().getBytes(Constants.UTF8);
       for (int i = 0; i < 120 / 5; i++) {
         zoo.putPersistentData(zPath, new byte[0], NodeExistsPolicy.SKIP);
         
@@ -3042,8 +3042,13 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     log.info("Tablet server starting on " + hostname);
     security = AuditedSecurityOperation.getInstance();
     clientAddress = new InetSocketAddress(hostname, 0);
-    logger = new TabletServerLogger(this, getSystemConfiguration().getMemoryInBytes(Property.TSERV_WALOG_MAX_SIZE));
-    
+    long walogMaxSize = getSystemConfiguration().getMemoryInBytes(Property.TSERV_WALOG_MAX_SIZE);
+    long minBlockSize = CachedConfiguration.getInstance().getLong("dfs.namenode.fs-limits.min-block-size", 0);
+    if (minBlockSize != 0 && minBlockSize > walogMaxSize)
+      throw new RuntimeException("Unable to start TabletServer. Logger is set to use blocksize " + walogMaxSize + " but hdfs minimum block size is "
+          + minBlockSize + ". Either increase the " + Property.TSERV_WALOG_MAX_SIZE + " or decrease dfs.namenode.fs-limits.min-block-size in hdfs-site.xml.");
+    logger = new TabletServerLogger(this, walogMaxSize);
+
     if (getSystemConfiguration().getBoolean(Property.TSERV_LOCK_MEMORY)) {
       String path = "lib/native/mlock/" + System.mapLibraryName("MLock-" + Platform.getPlatform());
       path = new File(path).getAbsolutePath();

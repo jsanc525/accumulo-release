@@ -19,6 +19,7 @@
 INCLUDED_MODULES=(-)
 BASE_OUTPUT_PACKAGE='org.apache.accumulo'
 PACKAGES_TO_GENERATE=(proxy)
+LANGUAGES_TO_GENERATE=(cpp java rb py)
 
 . ../core/src/main/scripts/generate-thrift.sh
 
