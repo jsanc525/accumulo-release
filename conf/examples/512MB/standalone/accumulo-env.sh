@@ -29,17 +29,16 @@
 ###
 if [ -z "$HADOOP_HOME" ]
 then
-   test -z "$HADOOP_PREFIX"      && export HADOOP_PREFIX=/path/to/hadoop
+   test -z "$HADOOP_PREFIX"      && export HADOOP_PREFIX=/usr/lib/hadoop
 else
    HADOOP_PREFIX="$HADOOP_HOME"
    unset HADOOP_HOME
 fi
-test -z "$HADOOP_CONF_DIR"       && export HADOOP_CONF_DIR="$HADOOP_PREFIX/conf"
-# hadoop-2.0:
-# test -z "$HADOOP_CONF_DIR"     && export HADOOP_CONF_DIR="$HADOOP_PREFIX/etc/hadoop"
+
+test -z "$HADOOP_CONF_DIR"     && export HADOOP_CONF_DIR="$HADOOP_PREFIX/etc/hadoop"
 
 test -z "$JAVA_HOME"             && export JAVA_HOME=/path/to/java
-test -z "$ZOOKEEPER_HOME"        && export ZOOKEEPER_HOME=/path/to/zookeeper
+test -z "$ZOOKEEPER_HOME"        && export ZOOKEEPER_HOME=/usr/lib/zookeeper
 test -z "$ACCUMULO_LOG_DIR"      && export ACCUMULO_LOG_DIR=$ACCUMULO_HOME/logs
 if [ -f ${ACCUMULO_CONF_DIR}/accumulo.policy ]
 then
@@ -56,4 +55,4 @@ export ACCUMULO_LOG_HOST=`(grep -v '^#' $ACCUMULO_HOME/conf/monitor | egrep -v '
 export ACCUMULO_KILL_CMD='kill -9 %p'
 
 # Should the monitor bind to all network interfaces -- default: false
-# export ACCUMULO_MONITOR_BIND_ALL="true"
+export ACCUMULO_MONITOR_BIND_ALL="true"
