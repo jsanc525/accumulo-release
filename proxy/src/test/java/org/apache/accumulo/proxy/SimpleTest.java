@@ -169,7 +169,7 @@ public class SimpleTest {
     creds = client.login(principal, properties);
   }
   
-  @Test(timeout = 10000)
+  @Test(timeout = 60 * 1000)
   public void security() throws Exception {
     client.createLocalUser(creds, "user", s2bb(secret));
     ByteBuffer badLogin = client.login("user", properties);
@@ -589,7 +589,7 @@ public class SimpleTest {
     } catch (TableNotFoundException ex) {}
   }
   
-  @Test(timeout = 10000)
+  @Test(timeout = 60000)
   public void testExists() throws Exception {
     client.createTable(creds, "ett1", false, TimeType.MILLIS);
     client.createTable(creds, "ett2", false, TimeType.MILLIS);
@@ -681,7 +681,7 @@ public class SimpleTest {
     } catch (UnknownWriter uw) {}
   }
   
-  @Test(timeout = 10000)
+  @Test(timeout = 60000)
   public void testDelete() throws Exception {
     if (client.tableExists(creds, TABLE_TEST))
       client.deleteTable(creds, TABLE_TEST);
@@ -997,7 +997,7 @@ public class SimpleTest {
     client.deleteTable(creds, TABLE_TEST);
   }
   
-  @Test
+  @Test(timeout = 2 * 60 * 1000)
   public void testTableOperations() throws Exception {
     if (client.tableExists(creds, TABLE_TEST))
       client.deleteTable(creds, TABLE_TEST);
@@ -1197,7 +1197,7 @@ public class SimpleTest {
     return ByteBuffer.wrap(t.getBytes());
   }
   
-  @Test
+  @Test(timeout = 60 * 1000)
   public void testGetRowRange() throws Exception {
     Range range = client.getRowRange(s2bb("xyzzy"));
     org.apache.accumulo.core.data.Range range2 = new org.apache.accumulo.core.data.Range(new Text("xyzzy")); 
