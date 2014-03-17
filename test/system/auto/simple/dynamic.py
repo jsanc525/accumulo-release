@@ -21,7 +21,7 @@ import time
 import glob
 
 from aggregation import AggregationTest
-from TestUtils import ACCUMULO_HOME
+from TestUtils import ACCUMULO_HOME, AUTO_TESTS_DIR
 
 log = logging.getLogger('test.auto')
 
@@ -39,9 +39,9 @@ class DynamicClassloader(AggregationTest):
         random.shuffle(rand)
         rand = ''.join(rand[0:4])
         #Make sure paths exists for test
-        if not os.path.exists(os.path.join(ACCUMULO_HOME, 'target','dynamictest%s' % rand, 'accumulo','test')):
-          os.makedirs(os.path.join(ACCUMULO_HOME, 'target', 'dynamictest%s' % rand, 'accumulo', 'test'))
-        fp = open(os.path.join(ACCUMULO_HOME, 'target', 'dynamictest%s' % rand, 'accumulo', 'test', 'SummingCombiner%s.java' % rand), 'wb')
+        if not os.path.exists(os.path.join(AUTO_TESTS_DIR, 'dynamictest%s' % rand, 'accumulo','test')):
+          os.makedirs(os.path.join(AUTO_TESTS_DIR, 'dynamictest%s' % rand, 'accumulo', 'test'))
+        fp = open(os.path.join(AUTO_TESTS_DIR, 'dynamictest%s' % rand, 'accumulo', 'test', 'SummingCombiner%s.java' % rand), 'wb')
         fp.write('''
 package accumulo.test;
 
@@ -79,14 +79,13 @@ public class SummingCombiner%s extends LongCombiner {
               parts.append(line[5:])
         path = ':'.join(parts)
 
-        self.runWait("javac -cp %s:%s %s" % (
+        self.runWait("javac -cp %s %s" % (
             path,
-            os.path.join(ACCUMULO_HOME,'src','core','target','classes'),
-            os.path.join(ACCUMULO_HOME,'target','dynamictest%s' % rand,'accumulo','test','SummingCombiner%s.java' % rand)
+            os.path.join(AUTO_TESTS_DIR,'dynamictest%s' % rand,'accumulo','test','SummingCombiner%s.java' % rand)
             ))
         self.runWait("jar -cf %s -C %s accumulo/" % (
             os.path.join(ACCUMULO_HOME,'lib','ext','Aggregator%s.jar' % rand),
-            os.path.join(ACCUMULO_HOME,'target','dynamictest%s' % rand)
+            os.path.join(AUTO_TESTS_DIR,'dynamictest%s' % rand)
             ))
 
         self.sleep(1)
