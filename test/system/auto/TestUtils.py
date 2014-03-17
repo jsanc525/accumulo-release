@@ -40,8 +40,8 @@ ID=socket.getfqdn().split('.')[0] + '-' + str(os.getpid())
 FUZZ=os.getpid() % 997
 
 # figure out where we are
-ACCUMULO_HOME = os.path.dirname(__file__)
-ACCUMULO_HOME = os.path.join(ACCUMULO_HOME, *(os.path.pardir,)*3)
+AUTO_TESTS_DIR = os.path.dirname(__file__)
+ACCUMULO_HOME = os.path.join(AUTO_TESTS_DIR, *(os.path.pardir,)*3)
 ACCUMULO_HOME = os.path.realpath(ACCUMULO_HOME)
 ACCUMULO_DIR = "/user/" + getpass.getuser() + "/accumulo-" + ID
 if os.getenv('ACCUMULO_CONF_DIR'):
@@ -86,6 +86,11 @@ $ACCUMULO_HOME/server/target/classes/,
       $HADOOP_PREFIX/share/hadoop/hdfs/.*.jar,
       $HADOOP_PREFIX/share/hadoop/mapreduce/.*.jar,
       $HADOOP_PREFIX/share/hadoop/yarn/.*.jar,
+      /usr/lib/hadoop/.*.jar,
+      /usr/lib/hadoop/lib/.*.jar,
+      /usr/lib/hadoop-hdfs/.*.jar,
+      /usr/lib/hadoop-mapreduce/.*.jar,
+      /usr/lib/hadoop-yarn/.*.jar,
 """
 
 
@@ -305,7 +310,7 @@ class TestUtilsMixin:
                              ['hadoop', 'fs', '-rmr', ACCUMULO_DIR]))
         handle = self.runOn(host, [self.accumulo_sh(), 'init','--clear-instance-name'], stdin=PIPE)
         out, err = handle.communicate(INSTANCE_NAME+"\n"+ROOT_PASSWORD + "\n" + ROOT_PASSWORD+"\n")
-        self.processResult(out, err, handle.returncode)
+        return self.processResult(out, err, handle.returncode)
 
     def setup_logging(self):
       if os.path.exists(LOG_PROPERTIES):
@@ -315,9 +320,9 @@ class TestUtilsMixin:
       if os.path.exists(LOG_MONITOR):
          os.rename(LOG_MONITOR, '%s.bkp' % LOG_MONITOR)
       
-      shutil.copyfile('%s/conf/examples/512MB/standalone/log4j.properties' % ACCUMULO_HOME, LOG_PROPERTIES)
-      shutil.copyfile('%s/conf/examples/512MB/standalone/generic_logger.xml' % ACCUMULO_HOME, LOG_GENERIC)
-      shutil.copyfile('%s/conf/examples/512MB/standalone/monitor_logger.xml' % ACCUMULO_HOME, LOG_MONITOR)
+      shutil.copyfile('%s/examples/512MB/standalone/log4j.properties' % ACCUMULO_CONF_DIR, LOG_PROPERTIES)
+      shutil.copyfile('%s/examples/512MB/standalone/generic_logger.xml' % ACCUMULO_CONF_DIR, LOG_GENERIC)
+      shutil.copyfile('%s/examples/512MB/standalone/monitor_logger.xml' % ACCUMULO_CONF_DIR, LOG_MONITOR)
       
 
     def start_accumulo_procs(self, safeMode=None):
@@ -454,7 +459,7 @@ class TestUtilsMixin:
     def setUp(self):
         self.hosts = self.options.hosts
         self.timeout_factor = self.options.timeout_factor
-        self.clean_accumulo(self.masterHost())
+        assert self.clean_accumulo(self.masterHost())
         self.setup_logging()
         self.start_accumulo()
 

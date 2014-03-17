@@ -290,10 +290,6 @@ def main():
 
     assignOptions(filtered, options)
 
-    if not os.environ.get('ZOOKEEPER_HOME', None):
-       print "ZOOKEEPER_HOME needs to be set"
-       sys.exit(1)
-
     if options.xmlreport:
         import xmlrunner
         runner = xmlrunner.XMLTestRunner(output='test-reports')
