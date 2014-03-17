@@ -125,20 +125,21 @@ class Examples(TestUtilsMixin, unittest.TestCase):
         diff2 = time.time() - now
         self.assert_(diff2 < diff)
 
-        self.comment("Creating a sharded index of the accumulo java files")
-        self.ashell('createtable shard\ncreatetable doc2term\nquit\n')
-        self.execute('/bin/sh', '-c',
-                     'find %s/examples -name "*.java" | xargs %s/bin/accumulo org.apache.accumulo.examples.simple.shard.Index -i %s -z %s -t shard -u %s -p %s --partitions 30' %
-                     (ACCUMULO_HOME, ACCUMULO_HOME, INSTANCE_NAME, ZOOKEEPERS, ROOT, ROOT_PASSWORD))
-        self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.Query',
-                     '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '-t', 'shard', '-u', ROOT, '-p', ROOT_PASSWORD,
-                     'foo', 'bar')
-        self.comment("Creating a word index of the sharded files")
-        self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.Reverse',
-                     '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '--shardTable', 'shard', '--doc2Term', 'doc2term', '-u', ROOT, '-p', ROOT_PASSWORD)
-        self.comment("Making 1000 conjunctive queries of 5 random words")
-        self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.ContinuousQuery',
-                     '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '--shardTable', 'shard', '--doc2Term', 'doc2term', '-u', ROOT, '-p', ROOT_PASSWORD, '--terms', 5, '--count', 1000)
+        # TODO Enable test when all source is properly bundled
+        #self.comment("Creating a sharded index of the accumulo java files")
+        #self.ashell('createtable shard\ncreatetable doc2term\nquit\n')
+        #self.execute('/bin/sh', '-c',
+        #             'find %s/examples -name "*.java" | xargs %s/bin/accumulo org.apache.accumulo.examples.simple.shard.Index -i %s -z %s -t shard -u %s -p %s --partitions 30' %
+        #             (ACCUMULO_HOME, ACCUMULO_HOME, INSTANCE_NAME, ZOOKEEPERS, ROOT, ROOT_PASSWORD))
+        #self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.Query',
+        #             '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '-t', 'shard', '-u', ROOT, '-p', ROOT_PASSWORD,
+        #             'foo', 'bar')
+        #self.comment("Creating a word index of the sharded files")
+        #self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.Reverse',
+        #             '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '--shardTable', 'shard', '--doc2Term', 'doc2term', '-u', ROOT, '-p', ROOT_PASSWORD)
+        #self.comment("Making 1000 conjunctive queries of 5 random words")
+        #self.execute(self.accumulo_sh(), 'org.apache.accumulo.examples.simple.shard.ContinuousQuery',
+        #             '-i', INSTANCE_NAME, '-z', ZOOKEEPERS, '--shardTable', 'shard', '--doc2Term', 'doc2term', '-u', ROOT, '-p', ROOT_PASSWORD, '--terms', 5, '--count', 1000)
         self.executeIgnoreFail('hadoop', 'fs', '-rmr', "tmp/input", "tmp/files", "tmp/splits.txt", "tmp/failures")
         self.execute('hadoop', 'fs', '-mkdir', "tmp/input")
         self.comment("Starting bulk ingest example")
