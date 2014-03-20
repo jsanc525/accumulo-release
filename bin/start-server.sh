@@ -68,6 +68,7 @@ if [ -z $PID ]; then
    echo "Starting $LONGNAME on $HOST"
    if [ "$HOST" = "localhost" -o "$HOST" = "`hostname`" -o "$HOST" = "$ip" ]; then
       ${bin}/accumulo ${SERVICE} --address ${ADDRESS} >${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.out 2>${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.err & 
+      PID=$!
       MAX_FILES_OPEN=$(ulimit -n)
    else
       $SSH $HOST "bash -c 'exec nohup ${bin}/accumulo ${SERVICE} --address ${ADDRESS} >${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.out 2>${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.err' &"
@@ -78,6 +79,9 @@ if [ -z $PID ]; then
       if [ "$SLAVES" -gt 10 ] && [ "$MAX_FILES_OPEN" -lt 65536 ]; then
          echo "WARN : Max files open on $HOST is $MAX_FILES_OPEN, recommend 65536"
       fi
+   fi
+   if [ ! -z $PID -a ! -z "$PIDFILE" ]; then
+      echo $PID > $PIDFILE
    fi
 else
    echo "$HOST : $LONGNAME already running (${PID})"
