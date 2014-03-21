@@ -114,16 +114,20 @@ do_stop()
     # If we got non-zero result, it's already dead
     if [ $RETVAL -ne '0' ] ; then return 1; fi
 
-    # stop the process
-	su -s /bin/sh $TARGET_USER -c "/usr/lib/accumulo/bin/accumulo admin stop $IP" > /dev/null
+    log_daemon_msg "Contacting master to issue orderly shutdown of TServer on $IP"
 
-    # make sure the process died but don't just blindly sleep
-    for i in `seq 1 5`; do
-        ps $PID > /dev/null
-        RETVAL=$?
-        if [ $RETVAL -ne "0" ] ; then rm $PIDFILE; return 0; fi
-        sleep 1
-    done
+    # stop the process
+    su -s /bin/sh $TARGET_USER -c "timeout 10 /usr/lib/accumulo/bin/accumulo admin stop $IP" > /dev/null
+
+    if [ $? -eq 0 ]; then
+        # make sure the process died but don't just blindly sleep
+        for i in `seq 1 5`; do
+            ps $PID > /dev/null
+            RETVAL=$?
+            if [ $RETVAL -ne "0" ] ; then rm $PIDFILE; return 0; fi
+            sleep 1
+        done
+    fi
 
     log_warning_msg "${DESC} did not cleanly stop. Killing..."
 
