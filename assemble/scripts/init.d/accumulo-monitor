@@ -1,5 +1,5 @@
 #! /bin/sh
-# chkconfig: 2345 21 20
+# chkconfig: 2345 95 10
 ### BEGIN INIT INFO
 # Provides:         accumulo-monitor
 # Required-Start:   $network $local_fs 

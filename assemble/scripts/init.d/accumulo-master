@@ -1,5 +1,5 @@
 #! /bin/sh
-# chkconfig: 2345 21 19
+# chkconfig: 2345 95 9
 ### BEGIN INIT INFO
 # Provides:         accumulo-master
 # Required-Start:   $network $local_fs hadoop-namenode zookeeper-server
