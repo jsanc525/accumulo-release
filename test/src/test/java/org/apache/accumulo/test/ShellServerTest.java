@@ -853,9 +853,6 @@ public class ShellServerTest {
     Thread thread = new Thread() {
       public void run() {
         try {
-          ZooKeeperInstance instance = new ZooKeeperInstance(cluster.getInstanceName(), cluster.getZooKeepers());
-          Connector connector = instance.getConnector("root", new PasswordToken(secret));
-          Scanner s = connector.createScanner(table, Constants.NO_AUTHS);
           for (@SuppressWarnings("unused")
           Entry<Key,Value> kv : s)
             ;
@@ -877,7 +874,7 @@ public class ShellServerTest {
           scans.add(currentScan);
         }
       }
-      UtilWaitThread.sleep(100);
+      UtilWaitThread.sleep(300);
     }
     thread.join();
 
