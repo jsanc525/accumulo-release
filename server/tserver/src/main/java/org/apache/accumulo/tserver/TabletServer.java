@@ -257,13 +257,17 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
   private ServerConfiguration serverConfig;
   private LogSorter logSorter = null;
 
+  private boolean globalReplicationEnabled = false;
+
   public TabletServer(ServerConfiguration conf, VolumeManager fs) {
     super();
     this.serverConfig = conf;
     this.instance = conf.getInstance();
     this.fs = fs;
-    this.logSorter = new LogSorter(instance, fs, getSystemConfiguration());
-    SimpleTimer.getInstance().schedule(new Runnable() {
+    AccumuloConfiguration aconf = getSystemConfiguration();
+    this.globalReplicationEnabled = aconf.getBoolean(Property.REPLICATION_ENABLED);
+    this.logSorter = new LogSorter(instance, fs, aconf);
+    SimpleTimer.getInstance(aconf).schedule(new Runnable() {
       @Override
       public void run() {
         synchronized (onlineTablets) {
@@ -3039,7 +3043,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     entry.server = logs.get(0).getLogger();
     entry.filename = logs.get(0).getFileName();
     entry.logSet = logSet;
-    MetadataTableUtil.addLogEntry(SystemCredentials.get(), entry, getLock());
+    MetadataTableUtil.addLogEntry(SystemCredentials.get(), entry, getLock(), isReplicationEnabled());
   }
 
   private HostAndPort startServer(AccumuloConfiguration conf, String address, Property portHint, TProcessor processor, String threadName)
@@ -3909,6 +3913,10 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
 
   public VolumeManager getFileSystem() {
     return fs;
+  }
+
+  public boolean isReplicationEnabled() {
+    return globalReplicationEnabled;
   }
 
 }
