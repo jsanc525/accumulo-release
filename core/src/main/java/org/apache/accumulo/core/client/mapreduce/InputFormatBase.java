@@ -328,7 +328,7 @@ public abstract class InputFormatBase<K,V> extends AbstractInputFormat<K,V> {
     }
 
     /**
-     * Apply the configured iterators from the configuration to the scanner.
+     * Apply the configured iterators to the scanner.
      * 
      * @param context
      *          the Hadoop context for the configured job
