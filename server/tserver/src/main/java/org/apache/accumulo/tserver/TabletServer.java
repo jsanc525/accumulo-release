@@ -267,7 +267,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     AccumuloConfiguration aconf = getSystemConfiguration();
     this.globalReplicationEnabled = aconf.getBoolean(Property.REPLICATION_ENABLED);
     this.logSorter = new LogSorter(instance, fs, aconf);
-    SimpleTimer.getInstance(aconf).schedule(new Runnable() {
+    SimpleTimer.getInstance().schedule(new Runnable() {
       @Override
       public void run() {
         synchronized (onlineTablets) {
