@@ -86,6 +86,7 @@ import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection.DataFileColumnFamily;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection.LogColumnFamily;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection.ScanFileColumnFamily;
+import org.apache.accumulo.core.replication.StatusUtil;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.accumulo.core.security.Credentials;
@@ -867,6 +868,10 @@ public class Tablet {
           String time = tabletTime.getMetadataValue(persistedTime);
           MasterMetadataUtil.updateTabletDataFile(extent, newDatafile, absMergeFile, dfv, time, SystemCredentials.get(), filesInUseByScans,
               tabletServer.getClientAddressString(), tabletServer.getLock(), unusedWalLogs, lastLocation, flushId, tabletServer.isReplicationEnabled());
+
+          if (tabletServer.isReplicationEnabled()) {
+            MetadataTableUtil.updateReplication(SystemCredentials.get(), extent, unusedWalLogs, StatusUtil.fileClosed());
+          }
         }
 
       } finally {
@@ -1350,6 +1355,13 @@ public class Tablet {
         Set<String> absPaths = new HashSet<String>();
         for (FileRef ref : datafiles.keySet())
           absPaths.add(ref.path().toString());
+
+        // Ensure that we write a record marking each WAL as requiring replication to make sure we don't abandon the data
+        if (tabletServer.isReplicationEnabled()) {
+          for (LogEntry logEntry : logEntries) {
+            MetadataTableUtil.updateReplication(SystemCredentials.get(), extent, logEntry.logSet, StatusUtil.fileClosed());
+          }
+        }
 
         tabletServer.recover(this.tabletServer.getFileSystem(), this, logEntries, absPaths, new MutationReceiver() {
           @Override
