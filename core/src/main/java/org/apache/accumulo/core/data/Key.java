@@ -677,16 +677,20 @@ public class Key implements WritableComparable<Key>, Cloneable {
     
     return sb;
   }
-  
+
   private StringBuilder rowColumnStringBuilder() {
+    return rowColumnStringBuilder(Constants.MAX_DATA_TO_PRINT);
+  }
+  
+  private StringBuilder rowColumnStringBuilder(int maxComponentLength) {
     StringBuilder sb = new StringBuilder();
-    appendPrintableString(row, 0, row.length, Constants.MAX_DATA_TO_PRINT, sb);
+    appendPrintableString(row, 0, row.length, maxComponentLength, sb);
     sb.append(" ");
-    appendPrintableString(colFamily, 0, colFamily.length, Constants.MAX_DATA_TO_PRINT, sb);
+    appendPrintableString(colFamily, 0, colFamily.length, maxComponentLength, sb);
     sb.append(":");
-    appendPrintableString(colQualifier, 0, colQualifier.length, Constants.MAX_DATA_TO_PRINT, sb);
+    appendPrintableString(colQualifier, 0, colQualifier.length, maxComponentLength, sb);
     sb.append(" [");
-    appendPrintableString(colVisibility, 0, colVisibility.length, Constants.MAX_DATA_TO_PRINT, sb);
+    appendPrintableString(colVisibility, 0, colVisibility.length, maxComponentLength, sb);
     sb.append("]");
     return sb;
   }
@@ -700,7 +704,25 @@ public class Key implements WritableComparable<Key>, Cloneable {
     sb.append(deleted);
     return sb.toString();
   }
-  
+
+  /**
+   * Stringify this {@link Key}, avoiding truncation of each component, only limiting
+   * each component to a length of {@link Integer#MAX_VALUE}
+   */
+  public String toStringNoTruncate() {
+    StringBuilder sb = rowColumnStringBuilder(Integer.MAX_VALUE);
+    sb.append(" ");
+    sb.append(Long.toString(timestamp));
+    sb.append(" ");
+    sb.append(deleted);
+    return sb.toString();
+  }
+
+  /**
+   * Converts this key to a string, not including timestamp or delete marker.
+   *
+   * @return string form of key
+   */
   public String toStringNoTime() {
     return rowColumnStringBuilder().toString();
   }
