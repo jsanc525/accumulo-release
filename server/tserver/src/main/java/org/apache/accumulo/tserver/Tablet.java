@@ -869,7 +869,7 @@ public class Tablet {
           MasterMetadataUtil.updateTabletDataFile(extent, newDatafile, absMergeFile, dfv, time, SystemCredentials.get(), filesInUseByScans,
               tabletServer.getClientAddressString(), tabletServer.getLock(), unusedWalLogs, lastLocation, flushId, tabletServer.isReplicationEnabled());
 
-          if (tabletServer.isReplicationEnabled()) {
+          if (!(extent.isMeta() || extent.isRootTablet()) && tabletServer.isReplicationEnabled()) {
             MetadataTableUtil.updateReplication(SystemCredentials.get(), extent, unusedWalLogs, StatusUtil.fileClosed());
           }
         }
@@ -1359,7 +1359,9 @@ public class Tablet {
         // Ensure that we write a record marking each WAL as requiring replication to make sure we don't abandon the data
         if (tabletServer.isReplicationEnabled()) {
           for (LogEntry logEntry : logEntries) {
-            MetadataTableUtil.updateReplication(SystemCredentials.get(), extent, logEntry.logSet, StatusUtil.fileClosed());
+            if (!extent.isMeta() && !extent.isRootTablet()) {
+              MetadataTableUtil.updateReplication(SystemCredentials.get(), extent, logEntry.logSet, StatusUtil.fileClosed());
+            }
           }
         }
 
