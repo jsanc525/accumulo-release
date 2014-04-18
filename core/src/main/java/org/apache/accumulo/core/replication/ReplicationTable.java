@@ -16,18 +16,13 @@
  */
 package org.apache.accumulo.core.replication;
 
-import org.apache.accumulo.core.client.AccumuloException;
-import org.apache.accumulo.core.client.AccumuloSecurityException;
-import org.apache.accumulo.core.client.TableExistsException;
-import org.apache.accumulo.core.client.admin.TableOperations;
 import org.apache.accumulo.core.client.impl.Namespaces;
-import org.apache.accumulo.fate.util.UtilWaitThread;
 import org.apache.log4j.Logger;
 
 public class ReplicationTable {
   private static final Logger log = Logger.getLogger(ReplicationTable.class);
 
-  public static final String ID = "_repl";
+  public static final String ID = "+repl";
   public static final String NAME = Namespaces.ACCUMULO_NAMESPACE + ".replication";
 
   /**

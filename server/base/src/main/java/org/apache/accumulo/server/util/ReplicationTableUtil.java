@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
-import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Instance;
 import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.client.impl.Writer;
@@ -103,11 +102,12 @@ public class ReplicationTableUtil {
   public static void updateReplication(Credentials creds, KeyExtent extent, Collection<String> files, Status stat) {
     // TODO could use batch writer, would need to handle failure and retry like update does - ACCUMULO-1294
     for (String file : files) {
-      update(creds, createUpdateMutation(file, stat), extent);
+      // TODO Can preclude this addition if the extent is for a table we don't need to replicate
+      update(creds, createUpdateMutation(file, stat, extent), extent);
     }
   }
 
-  protected static Mutation createUpdateMutation(String file, Status stat) {
+  protected static Mutation createUpdateMutation(String file, Status stat, KeyExtent extent) {
     Value v = ProtobufUtil.toValue(stat);
     int offset = file.indexOf('/');
     String fileOnly;
@@ -118,7 +118,7 @@ public class ReplicationTableUtil {
       fileOnly = file;
     }
     Mutation m = new Mutation(new Text(ReplicationSection.getRowPrefix() + fileOnly));
-    m.put(EMPTY_TEXT, EMPTY_TEXT, v);
+    m.put(extent.getTableId(), EMPTY_TEXT, v);
     return m;
   }
 }
