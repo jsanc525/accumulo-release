@@ -19,7 +19,6 @@ package org.apache.accumulo.test.replication;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map.Entry;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.apache.accumulo.core.client.BatchWriter;
@@ -37,13 +36,12 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 
 /**
@@ -59,33 +57,43 @@ public class ReplicationTest extends ConfigurableMacIT {
 
   @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
+    hadoopCoreSite.set("fs.file.impl", RawLocalFileSystem.class.getName());
     cfg.setProperty(Property.REPLICATION_ENABLED, "true");
     cfg.setNumTservers(1);
   }
 
   @Test
-  public void replicationTableCreated() throws Exception {
+  public void noReplicationTableCreatedImmediately() throws Exception {
     Connector conn = getConnector();
     Set<String> tables = conn.tableOperations().list();
 
-    Assert.assertEquals(Sets.newHashSet(RootTable.NAME, MetadataTable.NAME, ReplicationTable.NAME), tables);
+    Assert.assertEquals(Sets.newHashSet(RootTable.NAME, MetadataTable.NAME), tables);
   }
 
   @Test
-  public void readSystemTables() throws Exception {
+  public void readRootTable() throws Exception {
     Connector conn = getConnector();
-    Scanner s;
-    for (String table : Arrays.asList(RootTable.NAME, MetadataTable.NAME, ReplicationTable.NAME)) {
-      System.out.println("Table: " + table);
-      s = conn.createScanner(table, new Authorizations());
-      for (Entry<Key,Value> entry : s) {
-        System.out.println(entry.getKey().toStringNoTruncate() + " " + entry.getValue());
-      }
-//      Assert.assertNotEquals("Expected to find entries in " + table, 0, Iterables.size(s));
+    Scanner s = conn.createScanner(RootTable.NAME, new Authorizations());
+    int numRecords = 0;
+    for (Entry<Key,Value> entry : s) {
+      numRecords++;
+      System.out.println(entry.getKey().toStringNoTruncate() + " " + entry.getValue());
     }
-
+    Assert.assertNotEquals(0, numRecords);
   }
-  
+
+  @Test
+  public void readMetadataTable() throws Exception {
+    Connector conn = getConnector();
+    Scanner s = conn.createScanner(MetadataTable.NAME, new Authorizations());
+    int numRecords = 0;
+    for (Entry<Key,Value> entry : s) {
+      numRecords++;
+      System.out.println(entry.getKey().toStringNoTruncate() + " " + entry.getValue());
+    }
+    Assert.assertEquals(0, numRecords);
+  }
+
   @Test
   public void correctRecordsCompleteFile() throws Exception {
     Connector conn = getConnector();
@@ -103,16 +111,14 @@ public class ReplicationTest extends ConfigurableMacIT {
 
     conn.tableOperations().flush(table, null, null, true);
 
-    int replColumnCount = 0, replRowCount = 0;
-    Set<String> replRows = Sets.newHashSet(), replColumns = Sets.newHashSet();
-    final String replRowPrefix = ReplicationSchema.ReplicationSection.getRowPrefix(); 
-    for (Entry<Key,Value> entry : conn.createScanner(MetadataTable.NAME, new Authorizations())) {
+    Set<String> replRows = Sets.newHashSet();
+    final String replRowPrefix = ReplicationSchema.ReplicationSection.getRowPrefix();
+    for (Entry<Key,Value> entry : conn.createScanner(ReplicationTable.NAME, new Authorizations())) {
       Key k = entry.getKey();
       String row = k.getRow().toString();
       Text cf = k.getColumnFamily();
 
       if (row.startsWith(replRowPrefix)) {
-        replRowCount++;
         int offset = row.indexOf(replRowPrefix.charAt(replRowPrefix.length() - 1));
 
         String fileUri = row.substring(offset + 1);
@@ -121,11 +127,9 @@ public class ReplicationTest extends ConfigurableMacIT {
         } catch (URISyntaxException e) {
           Assert.fail("Expected a valid URI: " + fileUri);
         }
-        
+
         replRows.add(fileUri);
       } else if (cf.equals(MetadataSchema.TabletsSection.ReplicationColumnFamily.NAME)) {
-        replColumnCount++;
-
         String fileUri = k.getColumnQualifier().toString();
         try {
           new URI(fileUri);
@@ -139,8 +143,7 @@ public class ReplicationTest extends ConfigurableMacIT {
 
     // We only have one file that should need replication (no trace table)
     // We should find an entry in tablet and in the repl row
-    Assert.assertEquals("Columns found: " + replColumns, 1, replColumnCount);
-    Assert.assertEquals("Rows foudn: "+ replRows, 1, replRowCount);
+    Assert.assertEquals("Rows found: " + replRows, 1, replRows.size());
 
     // As such, we should have one element in each set, and they should be the same value
     Assert.assertEquals(replRows, replColumns);

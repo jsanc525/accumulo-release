@@ -871,7 +871,18 @@ public class Tablet {
               tabletServer.getClientAddressString(), tabletServer.getLock(), unusedWalLogs, lastLocation, flushId, tabletServer.isReplicationEnabled());
 
           if (!(extent.isMeta() || extent.isRootTablet()) && tabletServer.isReplicationEnabled()) {
-            ReplicationTableUtil.updateReplication(SystemCredentials.get(), extent, unusedWalLogs, StatusUtil.fileClosed());
+            // unusedWalLogs is of the form host/fileURI, need to strip off the host portion
+            Set<String> logFileOnly = new HashSet<String>();
+            for (String unusedWalLog : unusedWalLogs) {
+              int index = unusedWalLog.indexOf('/');
+              if (-1 == index) {
+                log.warn("Could not find host component to strip from WAL");
+              } else {
+                unusedWalLog = unusedWalLog.substring(index + 1);
+              }
+              logFileOnly.add(unusedWalLog);
+            }
+            ReplicationTableUtil.updateFiles(SystemCredentials.get(), extent, logFileOnly, StatusUtil.fileClosed());
           }
         }
 
@@ -1236,7 +1247,7 @@ public class Tablet {
       final TServerInstance lastLocation, Set<FileRef> scanFiles, long initFlushID, long initCompactID) throws IOException {
 
     TabletFiles tabletPaths = VolumeUtil.updateTabletVolumes(tabletServer.getLock(), fs, extent, new TabletFiles(location.toString(), rawLogEntries,
-        rawDatafiles), tabletServer.isReplicationEnabled());
+        rawDatafiles));
 
     Path locationPath;
 

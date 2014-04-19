@@ -22,20 +22,25 @@ import java.util.Map;
 
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
+import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Instance;
 import org.apache.accumulo.core.client.TableNotFoundException;
+import org.apache.accumulo.core.client.admin.TableOperations;
 import org.apache.accumulo.core.client.impl.Writer;
+import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.data.KeyExtent;
 import org.apache.accumulo.core.data.Mutation;
 import org.apache.accumulo.core.data.Value;
+import org.apache.accumulo.core.metadata.schema.MetadataSchema.ReplicationSection;
 import org.apache.accumulo.core.protobuf.ProtobufUtil;
-import org.apache.accumulo.core.replication.ReplicationSchema.ReplicationSection;
 import org.apache.accumulo.core.replication.ReplicationTable;
 import org.apache.accumulo.core.replication.proto.Replication.Status;
 import org.apache.accumulo.core.security.Credentials;
+import org.apache.accumulo.core.tabletserver.log.LogEntry;
 import org.apache.accumulo.core.tabletserver.thrift.ConstraintViolationException;
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.server.client.HdfsZooInstance;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
 
@@ -56,19 +61,25 @@ public class ReplicationTableUtil {
       Instance inst = HdfsZooInstance.getInstance();
       Connector conn;
       try {
-        conn = inst.getConnector(credentials.getPrincipal(), credentials.getToken());
+        // TODO This is totally bogus. Need to wire up something in the configuration
+        conn = inst.getConnector("root", new PasswordToken("testRootPassword1"));
       } catch (AccumuloException e) {
-        log.error(e);
+        log.error("Cannot get connector", e);
         throw new RuntimeException(e);
       } catch (AccumuloSecurityException e) {
-        log.error(e);
+        log.error("Cannot get connector", e);
         throw new RuntimeException(e);
       }
 
-      // Create the table if it doesn't already exist
-      ReplicationTable.create(conn.tableOperations());
+      TableOperations tops = conn.tableOperations();
+      ReplicationTable.create(tops);
+      String id = tops.tableIdMap().get(ReplicationTable.NAME);
 
-      replicationTable = new Writer(inst, credentials, ReplicationTable.ID);
+      if (null == id) {
+        throw new RuntimeException("Could not get replication table ID");
+      }
+
+      replicationTable = new Writer(inst, credentials, id);
       replicationTables.put(credentials, replicationTable);
     }
     return replicationTable;
@@ -94,31 +105,42 @@ public class ReplicationTableUtil {
       }
       UtilWaitThread.sleep(1000);
     }
+
+  }
+
+  public static void updateLogs(Credentials creds, KeyExtent extent, Collection<LogEntry> logs, Status stat) {
+    for (LogEntry entry : logs) {
+      updateFiles(creds, extent, entry.logSet, stat);
+    }
   }
 
   /**
-   * Write {@link ReplicationSection#getRowPrefix} entries for each provided file with the given {@link Status}.
+   * Write replication ingest entries for each provided file with the given {@link Status}.
    */
-  public static void updateReplication(Credentials creds, KeyExtent extent, Collection<String> files, Status stat) {
+  public static void updateFiles(Credentials creds, KeyExtent extent, Collection<String> files, Status stat) {
+    if (log.isDebugEnabled()) {
+      log.debug("Updating replication for " + extent + " with " + files + " using " + ProtobufUtil.toString(stat));
+    }
     // TODO could use batch writer, would need to handle failure and retry like update does - ACCUMULO-1294
+    if (files.isEmpty()) {
+      return;
+    }
+
+    Value v = ProtobufUtil.toValue(stat);
     for (String file : files) {
       // TODO Can preclude this addition if the extent is for a table we don't need to replicate
-      update(creds, createUpdateMutation(file, stat, extent), extent);
+      update(creds, createUpdateMutation(new Path(file), v, extent), extent);
     }
   }
 
-  protected static Mutation createUpdateMutation(String file, Status stat, KeyExtent extent) {
-    Value v = ProtobufUtil.toValue(stat);
-    int offset = file.indexOf('/');
-    String fileOnly;
-    if (-1 != offset) {
-      fileOnly = file.substring(offset + 1);
-    } else {
-      log.warn("Expected forward-slash-delimited host/file: '" + file + "'");
-      fileOnly = file;
-    }
-    Mutation m = new Mutation(new Text(ReplicationSection.getRowPrefix() + fileOnly));
-    m.put(extent.getTableId(), EMPTY_TEXT, v);
+  public static Mutation createUpdateMutation(Path file, Value v, KeyExtent extent) {
+    // Need to normalize the file path so we can assuredly find it again later
+    return createUpdateMutation(new Text(ReplicationSection.getRowPrefix() + file.toString()), v, extent);
+  }
+
+  private static Mutation createUpdateMutation(Text row, Value v, KeyExtent extent) {
+    Mutation m = new Mutation(row);
+    m.put(MetadataSchema.ReplicationSection.COLF, extent.getTableId(), v);
     return m;
   }
 }

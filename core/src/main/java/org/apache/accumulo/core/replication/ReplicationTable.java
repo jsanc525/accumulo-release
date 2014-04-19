@@ -16,37 +16,36 @@
  */
 package org.apache.accumulo.core.replication;
 
-import org.apache.accumulo.core.client.impl.Namespaces;
+import org.apache.accumulo.core.client.AccumuloException;
+import org.apache.accumulo.core.client.AccumuloSecurityException;
+import org.apache.accumulo.core.client.TableExistsException;
+import org.apache.accumulo.core.client.admin.TableOperations;
+import org.apache.accumulo.fate.util.UtilWaitThread;
 import org.apache.log4j.Logger;
 
 public class ReplicationTable {
   private static final Logger log = Logger.getLogger(ReplicationTable.class);
 
-  public static final String ID = "+repl";
-  public static final String NAME = Namespaces.ACCUMULO_NAMESPACE + ".replication";
+  public static final String NAME = "replication";
 
-  /**
-   * Attempt to create the replication table, retrying a limited number of times before failing
-   */
   public static synchronized void create(TableOperations tops) {
-    int attempts = 5;
-    while (attempts > 0 && !tops.exists(NAME)) {
+    if (tops.exists(NAME)) {
+      return;
+    }
+
+    for (int i = 0; i < 5; i++) {
       try {
         tops.create(NAME);
         return;
       } catch (AccumuloException e) {
-        log.warn("Failed to create " + NAME + ", will retry", e);
-        UtilWaitThread.sleep(1000);
+        log.error("Failed to create replication table", e);
       } catch (AccumuloSecurityException e) {
-        log.warn("Failed to create " + NAME + ", will retry", e);
-        UtilWaitThread.sleep(1000);
+        log.error("Failed to create replication table", e);
       } catch (TableExistsException e) {
-        // Already exists, return
         return;
       }
-      attempts--;
+      log.error("Retrying table creation in 1 second...");
+      UtilWaitThread.sleep(1000);
     }
-
-    throw new RuntimeException("Failed to create replication table after multiple attempts");
   }
 }
