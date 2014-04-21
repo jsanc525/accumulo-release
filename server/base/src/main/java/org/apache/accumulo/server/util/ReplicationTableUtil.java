@@ -41,6 +41,7 @@ import org.apache.accumulo.core.tabletserver.thrift.ConstraintViolationException
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.server.client.HdfsZooInstance;
 import org.apache.hadoop.fs.Path;
+import org.apache.accumulo.server.security.SystemCredentials;
 import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
 
@@ -59,10 +60,10 @@ public class ReplicationTableUtil {
     Writer replicationTable = replicationTables.get(credentials);
     if (replicationTable == null) {
       Instance inst = HdfsZooInstance.getInstance();
+      Credentials creds = SystemCredentials.get();
       Connector conn;
       try {
-        // TODO This is totally bogus. Need to wire up something in the configuration
-        conn = inst.getConnector("root", new PasswordToken("testRootPassword1"));
+        conn = inst.getConnector(creds.getPrincipal(), creds.getToken());
       } catch (AccumuloException e) {
         log.error("Cannot get connector", e);
         throw new RuntimeException(e);
