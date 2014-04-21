@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.data.KeyExtent;
 import org.apache.accumulo.core.data.Mutation;
+import org.apache.accumulo.core.replication.ReplicationConfigurationUtil;
 import org.apache.accumulo.core.replication.StatusUtil;
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.server.fs.VolumeManager;
@@ -265,7 +266,8 @@ public class TabletServerLogger {
               }
 
               // Need to release
-              if (!(commitSession.getExtent().isMeta() || commitSession.getExtent().isRootTablet()) && tserver.isReplicationEnabled()) {
+              KeyExtent extent = commitSession.getExtent();tserver.getTableConfiguration(extent).getNamespaceConfiguration();
+              if (ReplicationConfigurationUtil.isEnabled(extent, tserver.getTableConfiguration(extent))) {
                 Set<String> logs = new HashSet<String>();
                 for (DfsLogger logger : copy) {
                   logs.add(logger.getFileName());

@@ -58,7 +58,6 @@ public class ReplicationTest extends ConfigurableMacIT {
   @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
     hadoopCoreSite.set("fs.file.impl", RawLocalFileSystem.class.getName());
-    cfg.setProperty(Property.REPLICATION_ENABLED, "true");
     cfg.setNumTservers(1);
   }
 
@@ -99,6 +98,8 @@ public class ReplicationTest extends ConfigurableMacIT {
     Connector conn = getConnector();
     String table = "table1";
     conn.tableOperations().create(table);
+    // If we have more than one tserver, this is subject to a race condition.
+    conn.tableOperations().setProperty(table, Property.TABLE_REPLICATION.getKey(), "true");
 
     BatchWriter bw = conn.createBatchWriter(table, new BatchWriterConfig());
     for (int i = 0; i < 10; i++) {
