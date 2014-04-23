@@ -26,7 +26,6 @@ import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.MutationsRejectedException;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.TableNotFoundException;
-import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Mutation;
@@ -36,7 +35,6 @@ import org.apache.accumulo.core.replication.ReplicationSchema.StatusSection;
 import org.apache.accumulo.core.replication.ReplicationSchema.WorkSection;
 import org.apache.accumulo.core.replication.ReplicationTable;
 import org.apache.accumulo.core.replication.ReplicationTarget;
-import org.apache.accumulo.core.util.Daemon;
 import org.apache.accumulo.fate.util.UtilWaitThread;
 import org.apache.accumulo.server.conf.ServerConfiguration;
 import org.apache.accumulo.server.conf.TableConfiguration;
@@ -45,66 +43,70 @@ import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
 
 /**
- * Reads replication records from the replication table and creates work records which include
- * target replication system information.
+ * Reads replication records from the replication table and creates work records which include target replication system information.
  */
-public class WorkMaker extends Daemon {
+public class WorkMaker {
   private static final Logger log = Logger.getLogger(WorkMaker.class);
 
-  final Connector conn;
-  final AccumuloConfiguration conf;
+  private final Connector conn;
 
-  public WorkMaker(Connector conn, AccumuloConfiguration conf) {
-    super("Replication Table Work Maker");
+  private BatchWriter writer;
+
+  public WorkMaker(Connector conn) {
     this.conn = conn;
-    this.conf = conf;
   }
 
-  @Override
   public void run() {
-    while (true) {
-      if (!conn.tableOperations().exists(ReplicationTable.NAME)) {
-        log.trace("Replication table does not yet exist");
-        UtilWaitThread.sleep(5000);
+    if (!conn.tableOperations().exists(ReplicationTable.NAME)) {
+      log.trace("Replication table does not yet exist");
+      UtilWaitThread.sleep(5000);
+    }
+
+    final Scanner s;
+    try {
+      s = ReplicationTable.getScanner(conn);
+      if (null == writer) {
+        writer = conn.createBatchWriter(ReplicationTable.NAME, new BatchWriterConfig());
       }
+    } catch (TableNotFoundException e) {
+      log.warn("Replication table was deleted");
+      writer = null;
+      return;
+    }
 
-      final Scanner s;
-      try {
-        s = ReplicationTable.getScanner(conn);
-      } catch (TableNotFoundException e) {
-        log.warn("Replication table was deleted");
-        continue;
-      }
+    // Only pull records about data that has been ingested and is ready for replication
+    StatusSection.limit(s);
 
-      // Only pull records about data that has been ingested and is ready for replication
-      StatusSection.limit(s);
+    TableConfiguration tableConf;
 
-      TableConfiguration tableConf;
+    Text file = new Text(), tableId = new Text();
+    for (Entry<Key,Value> entry : s) {
+      // Extract the useful bits from the ~repl keys
+      ReplicationSchema.StatusSection.getFile(entry.getKey(), file);
+      ReplicationSchema.StatusSection.getTableId(entry.getKey(), tableId);
 
-      Text file = new Text(), tableId = new Text();
-      for (Entry<Key,Value> entry : s) {
-        // Extract the useful bits from the ~repl keys
-        ReplicationSchema.StatusSection.getFile(entry.getKey(), file);
-        ReplicationSchema.StatusSection.getTableId(entry.getKey(), tableId); 
+      // Get the table configuration for the ~repl record
+      tableConf = ServerConfiguration.getTableConfiguration(conn.getInstance(), tableId.toString());
 
-        // Get the table configuration for the ~repl record
-        tableConf = ServerConfiguration.getTableConfiguration(conn.getInstance(), tableId.toString());
+      // Pull the relevant replication targets
+      // TODO Cache this instead of pulling it every time
+      Map<String,String> replicationTargets = tableConf.getAllPropertiesWithPrefix(Property.TABLE_REPLICATION_TARGETS);
 
-        // Pull the relevant replication targets
-        // TODO Cache this instead of pulling it every time
-        Map<String,String> replicationTargets = tableConf.getAllPropertiesWithPrefix(Property.TABLE_REPLICATION_TARGETS);
-
-        // If we have targets, we need to make a work record
-        if (!replicationTargets.isEmpty()) {
-          try {
-            addWorkRecord(file, entry.getValue(), replicationTargets);
-          } catch (TableNotFoundException e) {
-            log.warn("Replication table was deleted");
-            continue;
-          }
+      // If we have targets, we need to make a work record
+      if (!replicationTargets.isEmpty()) {
+        try {
+          addWorkRecord(file, entry.getValue(), replicationTargets);
+        } catch (TableNotFoundException e) {
+          log.warn("Replication table was deleted");
+          writer = null;
+          continue;
         }
       }
     }
+  }
+
+  protected void setBatchWriter(BatchWriter bw) {
+    this.writer = bw;
   }
 
   protected void addWorkRecord(Text file, Value v, Map<String,String> targets) throws TableNotFoundException {
