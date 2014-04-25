@@ -35,6 +35,7 @@ import org.apache.accumulo.core.iterators.IteratorUtil.IteratorScope;
 import org.apache.accumulo.core.replication.ReplicationSchema.StatusSection;
 import org.apache.accumulo.core.replication.ReplicationSchema.WorkSection;
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.accumulo.core.security.TablePermission;
 import org.apache.accumulo.fate.util.UtilWaitThread;
 import org.apache.hadoop.io.Text;
 import org.apache.log4j.Logger;
@@ -52,20 +53,26 @@ public class ReplicationTable {
   public static final Set<Text> WORK_LG_COLFAMS = Collections.singleton(WorkSection.NAME);
   public static final Map<String,Set<Text>> LOCALITY_GROUPS = ImmutableMap.of(STATUS_LG_NAME, STATUS_LG_COLFAMS, WORK_LG_NAME, WORK_LG_COLFAMS);
 
-  public static synchronized void create(TableOperations tops) {
+  public static synchronized void create(Connector conn) {
+    TableOperations tops = conn.tableOperations();
     if (tops.exists(NAME)) {
-      return;
+      if (configure(conn)) {
+        return;
+      }
     }
 
     for (int i = 0; i < 5; i++) {
       try {
         tops.create(NAME);
+        configure(conn);
         return;
       } catch (AccumuloException e) {
         log.error("Failed to create replication table", e);
       } catch (AccumuloSecurityException e) {
         log.error("Failed to create replication table", e);
       } catch (TableExistsException e) {
+        // Shouldn't happen unless FATE is broken
+        configure(conn);
         return;
       }
       log.error("Retrying table creation in 1 second...");
@@ -76,11 +83,18 @@ public class ReplicationTable {
   /**
    * Attempts to configure the replication table, will return false if it fails
    * 
-   * @param tops
-   *          TableOperations for the instance
+   * @param conn
+   *          Connector for the instance
    * @return True if the replication table is properly configured
    */
-  protected static synchronized boolean configure(TableOperations tops) {
+  protected static synchronized boolean configure(Connector conn) {
+    try {
+      conn.securityOperations().grantTablePermission("root", NAME, TablePermission.READ);
+    } catch (AccumuloException | AccumuloSecurityException e) {
+      log.warn("Could not grant root user read access to replication table", e);
+    }
+
+    TableOperations tops = conn.tableOperations();
     Map<String,EnumSet<IteratorScope>> iterators = null;
     try {
       iterators = tops.listIterators(NAME);
