@@ -156,7 +156,7 @@ public class StatusUtil {
     if (status.getInfiniteEnd()) {
       return Long.MAX_VALUE == status.getBegin();
     } else {
-      return status.getBegin() == status.getEnd();
+      return status.getBegin() >= status.getEnd();
     }
   }
 }
