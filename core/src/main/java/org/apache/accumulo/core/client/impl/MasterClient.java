@@ -16,6 +16,8 @@
  */
 package org.apache.accumulo.core.client.impl;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.net.UnknownHostException;
 import java.util.List;
 

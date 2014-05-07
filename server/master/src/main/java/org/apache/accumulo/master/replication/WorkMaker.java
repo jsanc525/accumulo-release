@@ -143,7 +143,7 @@ public class WorkMaker {
         buffer.reset();
 
         // Set up the writable
-        target.setRemoteName(entry.getKey());
+        target.setPeerName(entry.getKey());
         target.setRemoteIdentifier(entry.getValue());
         target.write(buffer);
 
