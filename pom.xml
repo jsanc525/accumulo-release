@@ -841,6 +841,12 @@
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>.pc/**</exclude>
+            <exclude>debian/**</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>check-licenses</id>
