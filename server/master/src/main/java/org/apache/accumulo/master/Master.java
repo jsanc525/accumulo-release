@@ -76,6 +76,7 @@ import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeExistsPolicy;
 import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeMissingPolicy;
 import org.apache.accumulo.master.recovery.RecoveryManager;
 import org.apache.accumulo.master.replication.ReplicationDriver;
+import org.apache.accumulo.master.replication.ReplicationWorkAssigner;
 import org.apache.accumulo.master.state.TableCounts;
 import org.apache.accumulo.server.Accumulo;
 import org.apache.accumulo.server.ServerConstants;
@@ -165,6 +166,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
   final EventCoordinator nextEvent = new EventCoordinator();
   final private Object mergeLock = new Object();
   private ReplicationDriver replicationWorkDriver;
+  private ReplicationWorkAssigner replicationWorkAssigner;
   RecoveryManager recoveryManager = null;
 
   ZooLock masterLock = null;
@@ -941,6 +943,14 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
     replicationWorkDriver = new ReplicationDriver(this);
     replicationWorkDriver.start();
 
+    // Start the daemon to assign work to tservers to replicate to our peers
+    try {
+      replicationWorkAssigner = new ReplicationWorkAssigner(this, getConnector());
+    } catch (AccumuloException | AccumuloSecurityException e) {
+      throw new RuntimeException(e);
+    }
+    replicationWorkAssigner.start();
+
     // Once we are sure the upgrade is complete, we can safely allow fate use.
     waitForMetadataUpgrade.await();
 
@@ -986,6 +996,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
 
     final long deadline = System.currentTimeMillis() + MAX_CLEANUP_WAIT_TIME;
     statusThread.join(remaining(deadline));
+    replicationWorkAssigner.join(remaining(deadline));
     replicationWorkDriver.join(remaining(deadline));
 
     // quit, even if the tablet servers somehow jam up and the watchers
