@@ -170,6 +170,8 @@ public class ReplicationTable {
       }
     }
 
+    log.debug("Successfully configured replication table");
+
     return true;
   }
 
