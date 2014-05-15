@@ -78,7 +78,7 @@ import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeMissingPolicy;
 import org.apache.accumulo.master.recovery.RecoveryManager;
 import org.apache.accumulo.master.replication.MasterReplicationCoordinator;
 import org.apache.accumulo.master.replication.ReplicationDriver;
-import org.apache.accumulo.master.replication.ReplicationWorkAssigner;
+import org.apache.accumulo.master.replication.WorkDriver;
 import org.apache.accumulo.master.state.TableCounts;
 import org.apache.accumulo.server.Accumulo;
 import org.apache.accumulo.server.ServerConstants;
@@ -168,7 +168,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
   final EventCoordinator nextEvent = new EventCoordinator();
   final private Object mergeLock = new Object();
   private ReplicationDriver replicationWorkDriver;
-  private ReplicationWorkAssigner replicationWorkAssigner;
+  private WorkDriver replicationWorkAssigner;
   RecoveryManager recoveryManager = null;
 
   ZooLock masterLock = null;
@@ -947,7 +947,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
 
     // Start the daemon to assign work to tservers to replicate to our peers
     try {
-      replicationWorkAssigner = new ReplicationWorkAssigner(this, getConnector());
+      replicationWorkAssigner = new WorkDriver(this, getConnector());
     } catch (AccumuloException | AccumuloSecurityException e) {
       throw new RuntimeException(e);
     }
