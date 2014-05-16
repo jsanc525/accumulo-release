@@ -28,8 +28,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class StatusUtil {
 
-  private static final Status NEW_REPLICATION_STATUS, INF_END_REPLICATION_STATUS, CLOSED_STATUS;
-  private static final Value INF_END_REPLICATION_STATUS_VALUE, CLOSED_STATUS_VALUE;
+  private static final Status NEW_REPLICATION_STATUS, INF_END_REPLICATION_STATUS;
+  private static final Value NEW_REPLICATION_STATUS_VALUE, INF_END_REPLICATION_STATUS_VALUE;
+
+  private static final Status.Builder CLOSED_STATUS_BUILDER;
 
   static {
     Builder builder = Status.newBuilder();
@@ -47,13 +49,11 @@ public class StatusUtil {
     INF_END_REPLICATION_STATUS = builder.build();
     INF_END_REPLICATION_STATUS_VALUE = ProtobufUtil.toValue(INF_END_REPLICATION_STATUS);
 
-    builder = Status.newBuilder();
-    builder.setBegin(0);
-    builder.setEnd(0);
-    builder.setInfiniteEnd(true);
-    builder.setClosed(true);
-    CLOSED_STATUS = builder.build();
-    CLOSED_STATUS_VALUE = ProtobufUtil.toValue(CLOSED_STATUS);
+    CLOSED_STATUS_BUILDER = Status.newBuilder();
+    CLOSED_STATUS_BUILDER.setBegin(0);
+    CLOSED_STATUS_BUILDER.setEnd(0);
+    CLOSED_STATUS_BUILDER.setInfiniteEnd(true);
+    CLOSED_STATUS_BUILDER.setClosed(true);
   }
 
   /**
@@ -129,15 +129,31 @@ public class StatusUtil {
   /**
    * @return A {@link Status} for a closed file of unknown length
    */
-  public static Status fileClosed() {
-    return CLOSED_STATUS;
+  public static synchronized Status fileClosed(long timeClosed) {
+    // We're using a shared builder, so we need to synchronize access on it until we make a Status (which is then immutable)
+    CLOSED_STATUS_BUILDER.setClosedTime(timeClosed);
+    return CLOSED_STATUS_BUILDER.build();
   }
 
   /**
    * @return A {@link Value} for a closed file of unspecified length, all of which needs replicating.
    */
-  public static Value fileClosedValue() {
-    return CLOSED_STATUS_VALUE;
+  public static Value fileClosedValue(long timeClosed) {
+    return ProtobufUtil.toValue(fileClosed(timeClosed));
+  }
+
+  /**
+   * @return A {@link Status} for an open file of unspecified length, all of which needs replicating.
+   */
+  public static Status openWithUnknownLength() {
+    return INF_END_REPLICATION_STATUS;
+  }
+
+  /**
+   * @return A {@link Value} for an open file of unspecified length, all of which needs replicating.
+   */
+  public static Value openWithUnknownLengthValue() {
+    return INF_END_REPLICATION_STATUS_VALUE;
   }
 
   /**

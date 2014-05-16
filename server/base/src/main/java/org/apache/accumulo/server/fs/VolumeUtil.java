@@ -224,8 +224,14 @@ public class VolumeUtil {
       tabletDir = switchedDir;
     }
 
-    if (logsToRemove.size() + filesToRemove.size() > 0 || switchedDir != null)
-      MetadataTableUtil.updateTabletVolumes(extent, logsToRemove, logsToAdd, filesToRemove, filesToAdd, switchedDir, zooLock, SystemCredentials.get());
+    if (logsToRemove.size() + filesToRemove.size() > 0 || switchedDir != null) {
+      Credentials creds = SystemCredentials.get();
+      MetadataTableUtil.updateTabletVolumes(extent, logsToRemove, logsToAdd, filesToRemove, filesToAdd, switchedDir, zooLock, creds);
+      if (replicate) {
+        // Before deleting these logs, we need to mark them for replication
+        ReplicationTableUtil.updateLogs(creds, extent, logsToRemove, StatusUtil.fileClosed(System.currentTimeMillis()));
+      }
+    }
 
     ret.dir = decommisionedTabletDir(zooLock, vm, extent, tabletDir);
 
