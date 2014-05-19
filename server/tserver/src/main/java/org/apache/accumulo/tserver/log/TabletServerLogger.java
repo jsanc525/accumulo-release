@@ -236,8 +236,8 @@ public class TabletServerLogger {
     List<CommitSession> sessions = Collections.singletonList(commitSession);
     return write(sessions, mincFinish, writer);
   }
-  
-  private int write(Collection<CommitSession> sessions, boolean mincFinish, Writer writer) throws IOException {
+
+  private int write(final Collection<CommitSession> sessions, boolean mincFinish, Writer writer) throws IOException {
     // Work very hard not to lock this during calls to the outside world
     int currentLogSet = logSetId.get();
     
@@ -267,7 +267,7 @@ public class TabletServerLogger {
               }
 
               // Need to release
-              KeyExtent extent = commitSession.getExtent();tserver.getTableConfiguration(extent).getNamespaceConfiguration();
+              KeyExtent extent = commitSession.getExtent();
               if (ReplicationConfigurationUtil.isEnabled(extent, tserver.getTableConfiguration(extent))) {
                 Set<String> logs = new HashSet<String>();
                 for (DfsLogger logger : copy) {
@@ -327,6 +327,7 @@ public class TabletServerLogger {
           @Override
           void withWriteLock() throws IOException {
             close();
+            closeForReplication(sessions);
           }
         });
       }
@@ -340,11 +341,16 @@ public class TabletServerLogger {
       
       void withWriteLock() throws IOException {
         close();
+        closeForReplication(sessions);
       }
     });
     return seq;
   }
-  
+
+  protected void closeForReplication(Collection<CommitSession> sessions) {
+    // TODO We can close the WAL here for replication purposes
+  }
+
   public int defineTablet(final CommitSession commitSession) throws IOException {
     // scribble this into the metadata tablet, too.
     if (!enabled(commitSession))
