@@ -198,7 +198,6 @@ public class DistributedWorkQueue {
     
     lookForWork(processor, children);
     
-    Random r = new Random();
     // Add a little jitter to avoid all the tservers slamming zookeeper at once
     SimpleTimer.getInstance().schedule(new Runnable() {
       @Override
