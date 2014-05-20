@@ -321,20 +321,8 @@ public class MasterMetadataUtil {
 
       // hostname/fileURI
       for (String entry : unusedWalLogs) {
-        Text textEntry = new Text(entry);
-        m.putDelete(LogColumnFamily.NAME, textEntry);
-
-        // Only add the new column when we're replicating this tablet
-        // We already know this isn't the root tablet
-        if (!extent.isMeta() && replication) {
-          // We only want the fileURI, split off the host
-          int offset = entry.indexOf('/');
-          Text filename = textEntry;
-          if (-1 != offset) {
-            filename = new Text(entry.substring(offset + 1));
-          }
-          m.put(ReplicationColumnFamily.NAME, filename, replValue);
-        }
+        log.info("Removed WAL " + entry + " from " + extent, new Exception());
+        m.putDelete(LogColumnFamily.NAME, new Text(entry));
       }
     }
 

@@ -126,6 +126,8 @@ public class WorkMaker {
           } finally {
             workSpan.stop();
           }
+        } else {
+          log.warn("No configured targets for table with ID {}", tableId);
         }
       }
     } finally {
