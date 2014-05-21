@@ -3117,7 +3117,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
   }
 
   private HostAndPort startReplicationService() throws UnknownHostException {
-    ReplicationServicer.Iface repl = TraceWrap.service(new ReplicationServicerHandler(HdfsZooInstance.getInstance(), getSystemConfiguration()));
+    ReplicationServicer.Iface repl = TraceWrap.service(new ReplicationServicerHandler(HdfsZooInstance.getInstance()));
     ReplicationServicer.Processor<ReplicationServicer.Iface> processor = new ReplicationServicer.Processor<ReplicationServicer.Iface>(repl);
     AccumuloConfiguration conf = getSystemConfiguration();
     Property maxMessageSizeProperty = (conf.get(Property.TSERV_MAX_MESSAGE_SIZE) != null ? Property.TSERV_MAX_MESSAGE_SIZE : Property.GENERAL_MAX_MESSAGE_SIZE);
@@ -3202,7 +3202,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
   // main loop listens for client requests
   public void run() {
     SecurityUtil.serverLogin(ServerConfiguration.getSiteConfiguration());
-    
+
     try {
       clientAddress = startTabletClientService();
     } catch (UnknownHostException e1) {
@@ -3232,6 +3232,8 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     } catch (UnknownHostException e) {
       throw new RuntimeException("Failed to start replication service", e);
     }
+
+    log.info("Started replication service at " + replicationAddress);
 
     // Start the pool to handle outgoing replications
     ThreadPoolExecutor replicationThreadPool = new SimpleThreadPool(getSystemConfiguration().getCount(Property.REPLICATION_WORKER_THREADS), "replication task");

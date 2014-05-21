@@ -254,9 +254,11 @@ public class MetadataSchema {
 
     /**
      * Extract the table ID from the colfam (inefficiently if called repeatedly)
-     * @param k Key to extract from
+     * 
+     * @param k
+     *          Key to extract from
      * @return The table ID
-     * @see #getTableId(Key,Text) 
+     * @see #getTableId(Key,Text)
      */
     public static String getTableId(Key k) {
       Text buff = new Text();
@@ -266,8 +268,11 @@ public class MetadataSchema {
 
     /**
      * Extract the table ID from the colfam into the given {@link Text}
-     * @param k Key to extract from
-     * @param buff Text to place table ID into
+     * 
+     * @param k
+     *          Key to extract from
+     * @param buff
+     *          Text to place table ID into
      */
     public static void getTableId(Key k, Text buff) {
       Preconditions.checkNotNull(k);
@@ -278,8 +283,11 @@ public class MetadataSchema {
 
     /**
      * Extract the file name from the row suffix into the given {@link Text}
-     * @param k Key to extract from
-     * @param buff Text to place file name into
+     * 
+     * @param k
+     *          Key to extract from
+     * @param buff
+     *          Text to place file name into
      */
     public static void getFile(Key k, Text buff) {
       Preconditions.checkNotNull(k);
@@ -287,7 +295,7 @@ public class MetadataSchema {
       Preconditions.checkArgument(COLF_BYTE_SEQ.equals(k.getColumnFamilyData()), "Given metadata replication status key with incorrect colfam");
 
       k.getRow(buff);
-      
+
       buff.set(buff.getBytes(), section.getRowPrefix().length(), buff.getLength() - section.getRowPrefix().length());
     }
   }
