@@ -33,6 +33,6 @@ public class ProtobufUtil {
 
   public static String toString(GeneratedMessage msg) {
     // Too much typing
-    return TextFormat.shortDebugString(msg);
+    return LEFT_BRACKET + TextFormat.shortDebugString(msg) + RIGHT_BRACKET;
   }
 }
