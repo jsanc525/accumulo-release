@@ -135,7 +135,7 @@ public class TableLoadBalancerTest {
     tops.create("t3");
     String t1Id = tops.tableIdMap().get("t1"), t2Id = tops.tableIdMap().get("t2"), t3Id = tops.tableIdMap().get("t3");
     state = new TreeMap<TServerInstance,TabletServerStatus>();
-    TServerInstance svr = mkts("10.0.0.1", "0x01020304");
+    TServerInstance svr = mkts("10.0.0.1:1234", "0x01020304");
     state.put(svr, status(t1Id, 10, t2Id, 10, t3Id, 10));
     
     Set<KeyExtent> migrations = Collections.emptySet();
