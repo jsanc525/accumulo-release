@@ -198,10 +198,7 @@ import org.slf4j.LoggerFactory;
     }
     this.entries = other.entries;
     if (other.isSetSources()) {
-      List<String> __this__sources = new ArrayList<String>();
-      for (String other_element : other.sources) {
-        __this__sources.add(other_element);
-      }
+      List<String> __this__sources = new ArrayList<String>(other.sources);
       this.sources = __this__sources;
     }
   }
@@ -751,7 +748,7 @@ import org.slf4j.LoggerFactory;
                 struct.sources = new ArrayList<String>(_list3.size);
                 for (int _i4 = 0; _i4 < _list3.size; ++_i4)
                 {
-                  String _elem5; // required
+                  String _elem5;
                   _elem5 = iprot.readString();
                   struct.sources.add(_elem5);
                 }
@@ -897,9 +894,9 @@ import org.slf4j.LoggerFactory;
           struct.values = new ArrayList<ByteBuffer>(_list10.size);
           for (int _i11 = 0; _i11 < _list10.size; ++_i11)
           {
-            ByteBuffer _elem7;
-            _elem7 = iprot.readBinary();
-            struct.values.add(_elem7);
+            ByteBuffer _elem12;
+            _elem12 = iprot.readBinary();
+            struct.values.add(_elem12);
           }
         }
         struct.setValuesIsSet(true);
@@ -914,7 +911,7 @@ import org.slf4j.LoggerFactory;
           struct.sources = new ArrayList<String>(_list13.size);
           for (int _i14 = 0; _i14 < _list13.size; ++_i14)
           {
-            String _elem15; // required
+            String _elem15;
             _elem15 = iprot.readString();
             struct.sources.add(_elem15);
           }

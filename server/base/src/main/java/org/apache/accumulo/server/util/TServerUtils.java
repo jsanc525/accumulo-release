@@ -197,8 +197,7 @@ public class TServerUtils {
   }
 
   public static ServerAddress createNonBlockingServer(HostAndPort address, TProcessor processor, final String serverName, String threadName,
-      final int numThreads,
-      long timeBetweenThreadChecks, long maxMessageSize) throws TTransportException {
+      final int numThreads, long timeBetweenThreadChecks, long maxMessageSize) throws TTransportException {
     TNonblockingServerSocket transport = new TNonblockingServerSocket(new InetSocketAddress(address.getHostText(), address.getPort()));
     CustomNonBlockingServer.Args options = new CustomNonBlockingServer.Args(transport);
     options.protocolFactory(ThriftUtil.protocolFactory());
@@ -282,12 +281,12 @@ public class TServerUtils {
 
   public static ServerAddress startTServer(HostAndPort address, TProcessor processor, String serverName, String threadName, int numThreads,
       long timeBetweenThreadChecks, long maxMessageSize, SslConnectionParams sslParams, long sslSocketTimeout) throws TTransportException {
-    return startTServer(address, new TimedProcessor(processor, serverName, threadName), serverName, threadName, numThreads, timeBetweenThreadChecks,
-        maxMessageSize, sslParams, sslSocketTimeout);
+    return startTServer(address, new TimedProcessor(processor, serverName, threadName), serverName, threadName, numThreads,
+        timeBetweenThreadChecks, maxMessageSize, sslParams, sslSocketTimeout);
   }
 
   public static ServerAddress startTServer(HostAndPort address, TimedProcessor processor, String serverName, String threadName, int numThreads,
-      long timeBetweenThreadChecks, long maxMessageSize, SslConnectionParams sslParams, long sslSocketTimeout) throws TTransportException {
+    long timeBetweenThreadChecks, long maxMessageSize, SslConnectionParams sslParams, long sslSocketTimeout) throws TTransportException {
 
     ServerAddress serverAddress;
     if (sslParams != null) {

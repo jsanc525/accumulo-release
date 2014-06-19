@@ -565,12 +565,12 @@ import org.slf4j.LoggerFactory;
                 struct.failedExtents = new HashMap<TKeyExtent,Long>(2*_map58.size);
                 for (int _i59 = 0; _i59 < _map58.size; ++_i59)
                 {
-                  TKeyExtent _key52;
-                  long _val53;
-                  _key52 = new TKeyExtent();
-                  _key52.read(iprot);
-                  _val53 = iprot.readI64();
-                  struct.failedExtents.put(_key52, _val53);
+                  TKeyExtent _key60;
+                  long _val61;
+                  _key60 = new TKeyExtent();
+                  _key60.read(iprot);
+                  _val61 = iprot.readI64();
+                  struct.failedExtents.put(_key60, _val61);
                 }
                 iprot.readMapEnd();
               }
@@ -586,10 +586,10 @@ import org.slf4j.LoggerFactory;
                 struct.violationSummaries = new ArrayList<TConstraintViolationSummary>(_list62.size);
                 for (int _i63 = 0; _i63 < _list62.size; ++_i63)
                 {
-                  TConstraintViolationSummary _elem56;
-                  _elem56 = new TConstraintViolationSummary();
-                  _elem56.read(iprot);
-                  struct.violationSummaries.add(_elem56);
+                  TConstraintViolationSummary _elem64;
+                  _elem64 = new TConstraintViolationSummary();
+                  _elem64.read(iprot);
+                  struct.violationSummaries.add(_elem64);
                 }
                 iprot.readListEnd();
               }
@@ -605,12 +605,12 @@ import org.slf4j.LoggerFactory;
                 struct.authorizationFailures = new HashMap<TKeyExtent,org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode>(2*_map65.size);
                 for (int _i66 = 0; _i66 < _map65.size; ++_i66)
                 {
-                  TKeyExtent _key59;
-                  org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode _val60;
-                  _key59 = new TKeyExtent();
-                  _key59.read(iprot);
-                  _val60 = org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode.findByValue(iprot.readI32());
-                  struct.authorizationFailures.put(_key59, _val60);
+                  TKeyExtent _key67;
+                  org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode _val68;
+                  _key67 = new TKeyExtent();
+                  _key67.read(iprot);
+                  _val68 = org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode.findByValue(iprot.readI32());
+                  struct.authorizationFailures.put(_key67, _val68);
                 }
                 iprot.readMapEnd();
               }
@@ -741,12 +741,12 @@ import org.slf4j.LoggerFactory;
           struct.failedExtents = new HashMap<TKeyExtent,Long>(2*_map75.size);
           for (int _i76 = 0; _i76 < _map75.size; ++_i76)
           {
-            TKeyExtent _key69;
-            long _val70;
-            _key69 = new TKeyExtent();
-            _key69.read(iprot);
-            _val70 = iprot.readI64();
-            struct.failedExtents.put(_key69, _val70);
+            TKeyExtent _key77;
+            long _val78;
+            _key77 = new TKeyExtent();
+            _key77.read(iprot);
+            _val78 = iprot.readI64();
+            struct.failedExtents.put(_key77, _val78);
           }
         }
         struct.setFailedExtentsIsSet(true);
@@ -757,10 +757,10 @@ import org.slf4j.LoggerFactory;
           struct.violationSummaries = new ArrayList<TConstraintViolationSummary>(_list79.size);
           for (int _i80 = 0; _i80 < _list79.size; ++_i80)
           {
-            TConstraintViolationSummary _elem73;
-            _elem73 = new TConstraintViolationSummary();
-            _elem73.read(iprot);
-            struct.violationSummaries.add(_elem73);
+            TConstraintViolationSummary _elem81;
+            _elem81 = new TConstraintViolationSummary();
+            _elem81.read(iprot);
+            struct.violationSummaries.add(_elem81);
           }
         }
         struct.setViolationSummariesIsSet(true);
@@ -771,12 +771,12 @@ import org.slf4j.LoggerFactory;
           struct.authorizationFailures = new HashMap<TKeyExtent,org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode>(2*_map82.size);
           for (int _i83 = 0; _i83 < _map82.size; ++_i83)
           {
-            TKeyExtent _key76;
-            org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode _val77;
-            _key76 = new TKeyExtent();
-            _key76.read(iprot);
-            _val77 = org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode.findByValue(iprot.readI32());
-            struct.authorizationFailures.put(_key76, _val77);
+            TKeyExtent _key84;
+            org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode _val85;
+            _key84 = new TKeyExtent();
+            _key84.read(iprot);
+            _val85 = org.apache.accumulo.core.client.impl.thrift.SecurityErrorCode.findByValue(iprot.readI32());
+            struct.authorizationFailures.put(_key84, _val85);
           }
         }
         struct.setAuthorizationFailuresIsSet(true);

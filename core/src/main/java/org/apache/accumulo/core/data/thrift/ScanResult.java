@@ -438,10 +438,10 @@ import org.slf4j.LoggerFactory;
                 struct.results = new ArrayList<TKeyValue>(_list16.size);
                 for (int _i17 = 0; _i17 < _list16.size; ++_i17)
                 {
-                  TKeyValue _elem10;
-                  _elem10 = new TKeyValue();
-                  _elem10.read(iprot);
-                  struct.results.add(_elem10);
+                  TKeyValue _elem18;
+                  _elem18 = new TKeyValue();
+                  _elem18.read(iprot);
+                  struct.results.add(_elem18);
                 }
                 iprot.readListEnd();
               }
@@ -537,10 +537,10 @@ import org.slf4j.LoggerFactory;
           struct.results = new ArrayList<TKeyValue>(_list21.size);
           for (int _i22 = 0; _i22 < _list21.size; ++_i22)
           {
-            TKeyValue _elem15;
-            _elem15 = new TKeyValue();
-            _elem15.read(iprot);
-            struct.results.add(_elem15);
+            TKeyValue _elem23;
+            _elem23 = new TKeyValue();
+            _elem23.read(iprot);
+            struct.results.add(_elem23);
           }
         }
         struct.setResultsIsSet(true);

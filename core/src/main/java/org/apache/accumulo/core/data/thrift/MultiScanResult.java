@@ -856,10 +856,10 @@ import org.slf4j.LoggerFactory;
                 struct.results = new ArrayList<TKeyValue>(_list24.size);
                 for (int _i25 = 0; _i25 < _list24.size; ++_i25)
                 {
-                  TKeyValue _elem18;
-                  _elem18 = new TKeyValue();
-                  _elem18.read(iprot);
-                  struct.results.add(_elem18);
+                  TKeyValue _elem26;
+                  _elem26 = new TKeyValue();
+                  _elem26.read(iprot);
+                  struct.results.add(_elem26);
                 }
                 iprot.readListEnd();
               }
@@ -875,19 +875,19 @@ import org.slf4j.LoggerFactory;
                 struct.failures = new HashMap<TKeyExtent,List<TRange>>(2*_map27.size);
                 for (int _i28 = 0; _i28 < _map27.size; ++_i28)
                 {
-                  TKeyExtent _key21;
-                  List<TRange> _val22;
-                  _key21 = new TKeyExtent();
-                  _key21.read(iprot);
+                  TKeyExtent _key29;
+                  List<TRange> _val30;
+                  _key29 = new TKeyExtent();
+                  _key29.read(iprot);
                   {
                     org.apache.thrift.protocol.TList _list31 = iprot.readListBegin();
                     _val30 = new ArrayList<TRange>(_list31.size);
                     for (int _i32 = 0; _i32 < _list31.size; ++_i32)
                     {
-                      TRange _elem25;
-                      _elem25 = new TRange();
-                      _elem25.read(iprot);
-                      _val22.add(_elem25);
+                      TRange _elem33;
+                      _elem33 = new TRange();
+                      _elem33.read(iprot);
+                      _val30.add(_elem33);
                     }
                     iprot.readListEnd();
                   }
@@ -907,10 +907,10 @@ import org.slf4j.LoggerFactory;
                 struct.fullScans = new ArrayList<TKeyExtent>(_list34.size);
                 for (int _i35 = 0; _i35 < _list34.size; ++_i35)
                 {
-                  TKeyExtent _elem28;
-                  _elem28 = new TKeyExtent();
-                  _elem28.read(iprot);
-                  struct.fullScans.add(_elem28);
+                  TKeyExtent _elem36;
+                  _elem36 = new TKeyExtent();
+                  _elem36.read(iprot);
+                  struct.fullScans.add(_elem36);
                 }
                 iprot.readListEnd();
               }
@@ -1126,10 +1126,10 @@ import org.slf4j.LoggerFactory;
           struct.results = new ArrayList<TKeyValue>(_list45.size);
           for (int _i46 = 0; _i46 < _list45.size; ++_i46)
           {
-            TKeyValue _elem39;
-            _elem39 = new TKeyValue();
-            _elem39.read(iprot);
-            struct.results.add(_elem39);
+            TKeyValue _elem47;
+            _elem47 = new TKeyValue();
+            _elem47.read(iprot);
+            struct.results.add(_elem47);
           }
         }
         struct.setResultsIsSet(true);
@@ -1140,19 +1140,19 @@ import org.slf4j.LoggerFactory;
           struct.failures = new HashMap<TKeyExtent,List<TRange>>(2*_map48.size);
           for (int _i49 = 0; _i49 < _map48.size; ++_i49)
           {
-            TKeyExtent _key42;
-            List<TRange> _val43;
-            _key42 = new TKeyExtent();
-            _key42.read(iprot);
+            TKeyExtent _key50;
+            List<TRange> _val51;
+            _key50 = new TKeyExtent();
+            _key50.read(iprot);
             {
               org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
               _val51 = new ArrayList<TRange>(_list52.size);
               for (int _i53 = 0; _i53 < _list52.size; ++_i53)
               {
-                TRange _elem46;
-                _elem46 = new TRange();
-                _elem46.read(iprot);
-                _val43.add(_elem46);
+                TRange _elem54;
+                _elem54 = new TRange();
+                _elem54.read(iprot);
+                _val51.add(_elem54);
               }
             }
             struct.failures.put(_key50, _val51);
@@ -1166,10 +1166,10 @@ import org.slf4j.LoggerFactory;
           struct.fullScans = new ArrayList<TKeyExtent>(_list55.size);
           for (int _i56 = 0; _i56 < _list55.size; ++_i56)
           {
-            TKeyExtent _elem49;
-            _elem49 = new TKeyExtent();
-            _elem49.read(iprot);
-            struct.fullScans.add(_elem49);
+            TKeyExtent _elem57;
+            _elem57 = new TKeyExtent();
+            _elem57.read(iprot);
+            struct.fullScans.add(_elem57);
           }
         }
         struct.setFullScansIsSet(true);

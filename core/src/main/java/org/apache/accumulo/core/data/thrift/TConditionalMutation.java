@@ -518,10 +518,10 @@ import org.slf4j.LoggerFactory;
                 struct.conditions = new ArrayList<TCondition>(_list86.size);
                 for (int _i87 = 0; _i87 < _list86.size; ++_i87)
                 {
-                  TCondition _elem80;
-                  _elem80 = new TCondition();
-                  _elem80.read(iprot);
-                  struct.conditions.add(_elem80);
+                  TCondition _elem88;
+                  _elem88 = new TCondition();
+                  _elem88.read(iprot);
+                  struct.conditions.add(_elem88);
                 }
                 iprot.readListEnd();
               }
@@ -637,10 +637,10 @@ import org.slf4j.LoggerFactory;
           struct.conditions = new ArrayList<TCondition>(_list91.size);
           for (int _i92 = 0; _i92 < _list91.size; ++_i92)
           {
-            TCondition _elem85;
-            _elem85 = new TCondition();
-            _elem85.read(iprot);
-            struct.conditions.add(_elem85);
+            TCondition _elem93;
+            _elem93 = new TCondition();
+            _elem93.read(iprot);
+            struct.conditions.add(_elem93);
           }
         }
         struct.setConditionsIsSet(true);
