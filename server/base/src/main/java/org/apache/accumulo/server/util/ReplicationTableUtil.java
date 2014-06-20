@@ -58,7 +58,10 @@ public class ReplicationTableUtil {
       Connector conn;
       try {
         conn = inst.getConnector(credentials.getPrincipal(), credentials.getToken());
-      } catch (AccumuloException|AccumuloSecurityException e) {
+      } catch (AccumuloException e) {
+        log.error(e);
+        throw new RuntimeException(e);
+      } catch (AccumuloSecurityException e) {
         log.error(e);
         throw new RuntimeException(e);
       }

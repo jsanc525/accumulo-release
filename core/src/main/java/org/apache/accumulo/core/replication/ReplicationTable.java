@@ -39,7 +39,10 @@ public class ReplicationTable {
       try {
         tops.create(NAME);
         return;
-      } catch (AccumuloException|AccumuloSecurityException e) {
+      } catch (AccumuloException e) {
+        log.warn("Failed to create " + NAME + ", will retry", e);
+        UtilWaitThread.sleep(1000);
+      } catch (AccumuloSecurityException e) {
         log.warn("Failed to create " + NAME + ", will retry", e);
         UtilWaitThread.sleep(1000);
       } catch (TableExistsException e) {
