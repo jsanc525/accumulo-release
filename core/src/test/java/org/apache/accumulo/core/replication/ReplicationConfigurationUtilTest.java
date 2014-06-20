@@ -39,7 +39,7 @@ public class ReplicationConfigurationUtilTest {
 
   @Before
   public void setupConfiguration() {
-    Map<String,String> map = new HashMap<>();
+    Map<String,String> map = new HashMap<String,String>();
     map.put(Property.TABLE_REPLICATION.getKey(), "true");
     conf = new ConfigurationCopy(map);
   }

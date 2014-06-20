@@ -53,7 +53,7 @@ import com.google.common.collect.ImmutableMap;
  */
 public class WorkMakerTest {
 
-  private final Map<String,TableConfiguration> tableConfs = new HashMap<>();
+  private final Map<String,TableConfiguration> tableConfs = new HashMap<String,TableConfiguration>();
 
   private MockInstance instance;
   private Connector conn;
@@ -131,7 +131,7 @@ public class WorkMakerTest {
     WorkMaker workMaker = new WorkMaker(conn, conf);
 
     Map<String,String> targetClusters = ImmutableMap.of("remote_cluster_1", "4", "remote_cluster_2", "6", "remote_cluster_3", "8");
-    Set<ReplicationTarget> expectedTargets = new HashSet<>();
+    Set<ReplicationTarget> expectedTargets = new HashSet<ReplicationTarget>();
     for (Entry<String,String> cluster : targetClusters.entrySet()) {
       expectedTargets.add(new ReplicationTarget(cluster.getKey(), cluster.getValue()));
     }
@@ -140,7 +140,7 @@ public class WorkMakerTest {
     Scanner s = ReplicationTable.getScanner(conn);
     WorkSection.limit(s);
 
-    Set<ReplicationTarget> actualTargets = new HashSet<>();
+    Set<ReplicationTarget> actualTargets = new HashSet<ReplicationTarget>();
     for (Entry<Key,Value> entry : s) {
       Assert.assertEquals(file, entry.getKey().getRow().toString());
       Assert.assertEquals(WorkSection.NAME, entry.getKey().getColumnFamily());
