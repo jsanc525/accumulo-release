@@ -96,7 +96,7 @@ public class FinishedWorkUpdater implements Runnable {
 
         log.debug("Processing work progress for {} with {} columns", serializedRow.getKey().getRow(), wholeRow.size());
 
-        Map<String,Long> tableIdToProgress = new HashMap<>();
+        Map<String,Long> tableIdToProgress = new HashMap<String,Long>();
         boolean error = false;
         Text buffer = new Text();
 

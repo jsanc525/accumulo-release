@@ -207,7 +207,7 @@ public class ReplicationIT extends ConfigurableMacIT {
   @Test(timeout = 1000 * 60 * 5)
   public void noRecordsWithoutReplication() throws Exception {
     Connector conn = getConnector();
-    List<String> tables = new ArrayList<>();
+    List<String> tables = new ArrayList<String>();
 
     // replication shouldn't exist when we begin
     Assert.assertFalse(conn.tableOperations().exists(ReplicationTable.NAME));
@@ -359,7 +359,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     s = conn.createScanner(MetadataTable.NAME, Authorizations.EMPTY);
     s.setRange(MetadataSchema.ReplicationSection.getRange());
 
-    List<Entry<Key,Value>> records = new ArrayList<>();
+    List<Entry<Key,Value>> records = new ArrayList<Entry<Key,Value>>();
     for (Entry<Key,Value> metadata : s) {
       records.add(metadata);
     }
@@ -482,7 +482,7 @@ public class ReplicationIT extends ConfigurableMacIT {
 
     Scanner s = ReplicationTable.getScanner(conn);
     StatusSection.limit(s);
-    Set<String> replFiles = new HashSet<>();
+    Set<String> replFiles = new HashSet<String>();
     for (Entry<Key,Value> entry : s) {
       replFiles.add(entry.getKey().getRow().toString());
     }
@@ -559,7 +559,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     conn.securityOperations().grantTablePermission("root", ReplicationTable.NAME, TablePermission.WRITE);
 
     final AtomicBoolean keepRunning = new AtomicBoolean(true);
-    final Set<String> metadataWals = new HashSet<>();
+    final Set<String> metadataWals = new HashSet<String>();
 
     Thread t = new Thread(new Runnable() {
       @Override
@@ -678,7 +678,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     Scanner s = conn.createScanner(MetadataTable.NAME, Authorizations.EMPTY);
     s.fetchColumnFamily(TabletsSection.LogColumnFamily.NAME);
     s.setRange(TabletsSection.getRange(tableId));
-    Set<String> wals = new HashSet<>();
+    Set<String> wals = new HashSet<String>();
     for (Entry<Key,Value> entry : s) {
       LogEntry logEntry = LogEntry.fromKeyValue(entry.getKey(), entry.getValue());
       for (String file : logEntry.logSet) {
@@ -1055,7 +1055,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     conn.securityOperations().grantTablePermission("root", ReplicationTable.NAME, TablePermission.WRITE);
 
     final AtomicBoolean keepRunning = new AtomicBoolean(true);
-    final Set<String> metadataWals = new HashSet<>();
+    final Set<String> metadataWals = new HashSet<String>();
 
     Thread t = new Thread(new Runnable() {
       @Override

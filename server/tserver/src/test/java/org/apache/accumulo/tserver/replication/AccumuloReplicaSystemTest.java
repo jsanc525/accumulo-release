@@ -150,7 +150,7 @@ public class AccumuloReplicaSystemTest {
 
     dos.close();
 
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
@@ -255,7 +255,7 @@ public class AccumuloReplicaSystemTest {
 
     dos.close();
 
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
@@ -278,14 +278,14 @@ public class AccumuloReplicaSystemTest {
   @Test
   public void mutationsNotReReplicatedToPeers() throws Exception {
     AccumuloReplicaSystem ars = new AccumuloReplicaSystem();
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMapString,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
     ars.setConf(conf);
 
     LogFileValue value = new LogFileValue();
-    value.mutations = new ArrayList<>();
+    value.mutations = new ArrayList<Mutation>();
 
     Mutation m = new Mutation("row");
     m.put("", "", new Value(new byte[0]));
@@ -320,7 +320,7 @@ public class AccumuloReplicaSystemTest {
 
   @Test
   public void endOfFileExceptionOnClosedWalImpliesFullyReplicated() throws Exception {
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
@@ -342,7 +342,7 @@ public class AccumuloReplicaSystemTest {
 
   @Test
   public void endOfFileExceptionOnOpenWalImpliesMoreReplication() throws Exception {
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
@@ -403,7 +403,7 @@ public class AccumuloReplicaSystemTest {
 
     dos.close();
 
-    Map<String,String> confMap = new HashMap<>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 
@@ -413,7 +413,7 @@ public class AccumuloReplicaSystemTest {
     Status status = Status.newBuilder().setBegin(0).setEnd(0).setInfiniteEnd(true).setClosed(false).build();
     DataInputStream dis = new DataInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
-    HashSet<Integer> tids = new HashSet<>();
+    HashSet<Integer> tids = new HashSet<Integer>();
 
     // Only consume the first mutation, not the second
     WalReplication repl = ars.getWalEdits(new ReplicationTarget("peer", "1", "1"), dis, new Path("/accumulo/wals/tserver+port/wal"), status, 1l, tids);
@@ -450,7 +450,7 @@ public class AccumuloReplicaSystemTest {
     long sizeLimit = Long.MAX_VALUE;
     String remoteTableId = target.getRemoteIdentifier();
     TCredentials tcreds = null;
-    Set<Integer> tids = new HashSet<>();
+    Set<Integer> tids = new HashSet<Integer>();
 
     WalClientExecReturn walClientExec = ars.new WalClientExecReturn(target, input, p, status, sizeLimit, remoteTableId, tcreds, tids);
 
@@ -479,7 +479,7 @@ public class AccumuloReplicaSystemTest {
     long sizeLimit = Long.MAX_VALUE;
     String remoteTableId = target.getRemoteIdentifier();
     TCredentials tcreds = null;
-    Set<Integer> tids = new HashSet<>();
+    Set<Integer> tids = new HashSet<Integer>();
 
     WalClientExecReturn walClientExec = ars.new WalClientExecReturn(target, input, p, status, sizeLimit, remoteTableId, tcreds, tids);
 

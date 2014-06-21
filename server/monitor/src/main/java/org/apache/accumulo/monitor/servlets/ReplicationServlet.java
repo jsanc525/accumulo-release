@@ -100,7 +100,7 @@ public class ReplicationServlet extends BasicServlet {
     replicationStats.addSortableColumn("Files needing replication", new NumberType<Long>(), null);
 
     Map<String,String> properties = conn.instanceOperations().getSystemConfiguration();
-    Map<String,String> peers = new HashMap<>();
+    Map<String,String> peers = new HashMap<String,String>>();
     String definedPeersPrefix = Property.REPLICATION_PEERS.getKey();
 
     // Get the defined peers and what ReplicaSystem impl they're using
@@ -124,10 +124,10 @@ public class ReplicationServlet extends BasicServlet {
     final String targetPrefix = Property.TABLE_REPLICATION_TARGET.getKey();
 
     // The total set of configured targets
-    Set<ReplicationTarget> allConfiguredTargets = new HashSet<>();
+    Set<ReplicationTarget> allConfiguredTargets = new HashSet<ReplicationTarget>();
 
     // Number of files per target we have to replicate
-    Map<ReplicationTarget,Long> targetCounts = new HashMap<>();
+    Map<ReplicationTarget,Long> targetCounts = new HashMap<ReplicationTarget,Long>();
 
     Map<String,String> tableNameToId = tops.tableIdMap();
     Map<String,String> tableIdToName = invert(tableNameToId);

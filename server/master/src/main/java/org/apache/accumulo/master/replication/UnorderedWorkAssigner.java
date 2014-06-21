@@ -75,7 +75,7 @@ public class UnorderedWorkAssigner extends DistributedWorkQueueWorkAssigner {
       return;
     }
 
-    queuedWork = new HashSet<>();
+    queuedWork = new HashSet<String>();
     while (true) {
       try {
         queuedWork.addAll(workQueue.getWorkQueued());
@@ -155,7 +155,7 @@ public class UnorderedWorkAssigner extends DistributedWorkQueueWorkAssigner {
     String desiredQueueKeySuffix = DistributedWorkQueueWorkAssignerHelper.KEY_SEPARATOR + target.getPeerName()
         + DistributedWorkQueueWorkAssignerHelper.KEY_SEPARATOR + target.getRemoteIdentifier() + DistributedWorkQueueWorkAssignerHelper.KEY_SEPARATOR
         + target.getSourceTableId();
-    Set<String> queuedWorkForTarget = new HashSet<>();
+    Set<String> queuedWorkForTarget = new HashSet<String>();
     for (String queuedWork : this.queuedWork) {
       if (queuedWork.endsWith(desiredQueueKeySuffix)) {
         queuedWorkForTarget.add(queuedWork);

@@ -75,11 +75,11 @@ public class StatusMakerTest {
     String walPrefix = "hdfs://localhost:8020/accumulo/wals/tserver+port/";
     Set<String> files = Sets.newHashSet(walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(),
         walPrefix + UUID.randomUUID());
-    Map<String,Integer> fileToTableId = new HashMap<>();
+    Map<String,Integer> fileToTableId = new HashMap<String,Integer>();
 
     int index = 1;
     long timeCreated = 0;
-    Map<String,Long> fileToTimeCreated = new HashMap<>();
+    Map<String,Long> fileToTimeCreated = new HashMap<String,Longer>();
     for (String file : files) {
       Mutation m = new Mutation(ReplicationSection.getRowPrefix() + file);
       m.put(ReplicationSection.COLF, new Text(Integer.toString(index)), StatusUtil.fileCreatedValue(timeCreated));
@@ -126,7 +126,7 @@ public class StatusMakerTest {
     String walPrefix = "hdfs://localhost:8020/accumulo/wals/tserver+port/";
     Set<String> files = Sets.newHashSet(walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(),
         walPrefix + UUID.randomUUID());
-    Map<String,Integer> fileToTableId = new HashMap<>();
+    Map<String,Integer> fileToTableId = new HashMap<String,Integer>();
 
     int index = 1;
     long timeCreated = 0;
@@ -166,7 +166,7 @@ public class StatusMakerTest {
     String walPrefix = "hdfs://localhost:8020/accumulo/wals/tserver+port/";
     Set<String> files = Sets.newHashSet(walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(),
         walPrefix + UUID.randomUUID());
-    Map<String,Integer> fileToTableId = new HashMap<>();
+    Map<String,Integer> fileToTableId = new HashMap<String,Integer>();
 
     Status stat = Status.newBuilder().setBegin(0).setEnd(0).setInfiniteEnd(true).setClosed(true).setCreatedTime(System.currentTimeMillis()).build();
 
@@ -213,7 +213,7 @@ public class StatusMakerTest {
     String walPrefix = "hdfs://localhost:8020/accumulo/wals/tserver+port/";
     List<String> files = Arrays.asList(walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(), walPrefix + UUID.randomUUID(),
         walPrefix + UUID.randomUUID());
-    Map<String,Integer> fileToTableId = new HashMap<>();
+    Map<String,Integer> fileToTableId = new HashMap<String,Integer>();
 
     Status.Builder statBuilder = Status.newBuilder().setBegin(0).setEnd(0).setInfiniteEnd(true).setClosed(true);
 

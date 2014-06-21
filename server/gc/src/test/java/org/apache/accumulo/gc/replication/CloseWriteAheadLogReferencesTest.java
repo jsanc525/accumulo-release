@@ -87,7 +87,7 @@ public class CloseWriteAheadLogReferencesTest {
     BatchScanner bs = createMock(BatchScanner.class);
 
     // Fake out some data
-    final ArrayList<Entry<Key,Value>> data = new ArrayList<>();
+    final ArrayList<Entry<Key,Value>> data = new ArrayList<Entry<Key,Value>>();
     LogEntry logEntry = new LogEntry();
     logEntry.extent = new KeyExtent(new Text("1"), new Text("b"), new Text("a"));
     logEntry.filename = "hdfs://localhost:8020/accumulo/wal/tserver+port/" + UUID.randomUUID();
@@ -129,7 +129,7 @@ public class CloseWriteAheadLogReferencesTest {
     BatchScanner bs = createMock(BatchScanner.class);
 
     // Fake out some data
-    final ArrayList<Entry<Key,Value>> data = new ArrayList<>();
+    final ArrayList<Entry<Key,Value>> data = new ArrayList<Entry<Key,Value>>();
     LogEntry logEntry = new LogEntry();
     logEntry.extent = new KeyExtent(new Text("1"), new Text("b"), new Text("a"));
     logEntry.filename = "hdfs://localhost:8020/accumulo/wal/tserver+port/" + UUID.randomUUID();
@@ -174,7 +174,7 @@ public class CloseWriteAheadLogReferencesTest {
     String uuid = UUID.randomUUID().toString();
 
     // Fake out some data
-    final ArrayList<Entry<Key,Value>> data = new ArrayList<>();
+    final ArrayList<Entry<Key,Value>> data = new ArrayList<Entry<Key,Value>>();
     LogEntry logEntry = new LogEntry();
     logEntry.extent = new KeyExtent(new Text("1"), new Text("b"), new Text("a"));
     logEntry.filename = "hdfs://localhost:8020/accumulo/wal/tserver+port/" + uuid;
@@ -231,7 +231,7 @@ public class CloseWriteAheadLogReferencesTest {
         + UUID.randomUUID(), file3 = "hdfs://localhost:8020/accumulo/wal/tserver3+port/" + UUID.randomUUID();
 
     // Fake out some data
-    final ArrayList<Entry<Key,Value>> data = new ArrayList<>();
+    final ArrayList<Entry<Key,Value>> data = new ArrayList<Entry<Key,Value>>();
     LogEntry logEntry = new LogEntry();
     logEntry.extent = new KeyExtent(new Text("1"), new Text("b"), new Text("a"));
     logEntry.filename = file1;

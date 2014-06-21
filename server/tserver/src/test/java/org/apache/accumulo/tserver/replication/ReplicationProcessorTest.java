@@ -47,7 +47,7 @@ public class ReplicationProcessorTest {
     VolumeManager fs = EasyMock.createMock(VolumeManager.class);
     Credentials creds = new Credentials("foo", new PasswordToken("bar"));
 
-    Map<String,String> data = new HashMap<>();
+    Map<String,String> data = new HashMap<String,String>();
 
     String peerName = "peer";
     String configuration = "java.lang.String,foo";
@@ -65,7 +65,7 @@ public class ReplicationProcessorTest {
     VolumeManager fs = EasyMock.createMock(VolumeManager.class);
     Credentials creds = new Credentials("foo", new PasswordToken("bar"));
 
-    Map<String,String> data = new HashMap<>();
+    Map<String,String> data = new HashMap<String,String>();
     ConfigurationCopy conf = new ConfigurationCopy(data);
 
     ReplicationProcessor proc = new ReplicationProcessor(inst, conf, fs, creds);

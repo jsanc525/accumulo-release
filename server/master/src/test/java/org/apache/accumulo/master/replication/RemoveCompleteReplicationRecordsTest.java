@@ -213,7 +213,7 @@ public class RemoveCompleteReplicationRecordsTest {
       replBw.addMutation(m);
     }
 
-    Set<String> filesToRemove = new HashSet<>();
+    Set<String> filesToRemove = new HashSet<String>();
     // We created two mutations for each file
     numRecords *= 2;
     int finalNumRecords = numRecords;

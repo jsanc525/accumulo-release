@@ -120,7 +120,7 @@ public class Mutation implements Writable {
     this.values = ByteBufferUtil.toBytesList(tmutation.values);
 
     if (tmutation.isSetSources()) {
-      this.replicationSources = new HashSet<>(tmutation.sources);
+      this.replicationSources = new HashSet<String>(tmutation.sources);
     }
     
     if (this.row == null) {
@@ -465,7 +465,7 @@ public class Mutation implements Writable {
    */
   public void addReplicationSource(String peer) {
     if (null == replicationSources || replicationSources == EMPTY) {
-      replicationSources = new HashSet<>();
+      replicationSources = new HashSet<String>();
     }
 
     replicationSources.add(peer);
@@ -536,7 +536,7 @@ public class Mutation implements Writable {
 
     if (0x02 == (first & 0x02)) {
       int numMutations = WritableUtils.readVInt(in);
-      this.replicationSources = new HashSet<>();
+      this.replicationSources = new HashSet<String>();
       for (int i = 0; i < numMutations; i++) {
         replicationSources.add(WritableUtils.readString(in));
       }
@@ -698,7 +698,7 @@ public class Mutation implements Writable {
     serialize();
     TMutation tmutation = new TMutation(java.nio.ByteBuffer.wrap(row), java.nio.ByteBuffer.wrap(data), ByteBufferUtil.toByteBuffers(values), entries);
     if (!this.replicationSources.isEmpty()) {
-      tmutation.setSources(new ArrayList<>(replicationSources));
+      tmutation.setSources(new ArrayList<String>(replicationSources));
     }
     return tmutation;
   }

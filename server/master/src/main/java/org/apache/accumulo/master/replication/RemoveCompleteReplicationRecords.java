@@ -146,7 +146,7 @@ public class RemoveCompleteReplicationRecords implements Runnable {
     }
 
     Mutation m = new Mutation(row);
-    Map<String,Long> tableToTimeCreated = new HashMap<>();
+    Map<String,Long> tableToTimeCreated = new HashMap<String,Long>();
     for (Entry<Key,Value> entry : columns.entrySet()) {
       Status status = null;
       try {
@@ -191,7 +191,7 @@ public class RemoveCompleteReplicationRecords implements Runnable {
 
     log.info("Removing {} from the replication table", row);
 
-    List<Mutation> mutations = new ArrayList<>();
+    List<Mutation> mutations = new ArrayList<Mutation>();
     mutations.add(m);
     for (Entry<String,Long> entry : tableToTimeCreated.entrySet()) {
       log.info("Removing order mutation for table {} at {} for {}", entry.getKey(), entry.getValue(), row.toString());

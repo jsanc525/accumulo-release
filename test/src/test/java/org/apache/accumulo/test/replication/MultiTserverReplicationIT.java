@@ -62,10 +62,10 @@ public class MultiTserverReplicationIT extends ConfigurableMacIT {
     Assert.assertEquals(0, Iterables.size(s));
 
     ZooReader zreader = new ZooReader(inst.getZooKeepers(), inst.getZooKeepersSessionTimeOut());
-    Set<String> tserverHost = new HashSet<>();
+    Set<String> tserverHost = new HashSet<String>();
     tserverHost.addAll(zreader.getChildren(ZooUtil.getRoot(inst) + Constants.ZTSERVERS));
 
-    Set<HostAndPort> replicationServices = new HashSet<>();
+    Set<HostAndPort> replicationServices = new HashSet<HostAndPort>();
 
     for (String tserver : tserverHost) {
       try {

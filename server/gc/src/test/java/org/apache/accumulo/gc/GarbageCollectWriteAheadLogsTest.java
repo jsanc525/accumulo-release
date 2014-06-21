@@ -324,7 +324,7 @@ public class GarbageCollectWriteAheadLogsTest {
     Connector conn = createMock(Connector.class);
 
     // Write a Status record which should prevent file1 from being deleted
-    LinkedList<Entry<Key,Value>> replData = new LinkedList<>();
+    LinkedList<Entry<Key,Value>> replData = new LinkedList<Entry<Key,Value>>();
     replData.add(Maps.immutableEntry(new Key("/wals/" + file1, StatusSection.NAME.toString(), "1"), StatusUtil.fileCreatedValue(System.currentTimeMillis())));
 
     ReplicationGCWAL replGC = new ReplicationGCWAL(instance, volMgr, false, replData);
@@ -372,7 +372,7 @@ public class GarbageCollectWriteAheadLogsTest {
     bw.addMutation(m);
 
     // These WALs are potential candidates for deletion from fs
-    Map<String,Path> nameToFileMap = new HashMap<>();
+    Map<String,Path> nameToFileMap = new HashMap<String,Path>();
     nameToFileMap.put(file1, new Path("/wals/" + file1));
     nameToFileMap.put(file2, new Path("/wals/" + file2));
 
@@ -418,7 +418,7 @@ public class GarbageCollectWriteAheadLogsTest {
     bw.addMutation(m);
 
     // These WALs are potential candidates for deletion from fs
-    Map<String,Path> nameToFileMap = new HashMap<>();
+    Map<String,Path> nameToFileMap = new HashMap<String,Path>();
     nameToFileMap.put(file1, new Path("/wals/" + file1));
     nameToFileMap.put(file2, new Path("/wals/" + file2));
 
@@ -482,7 +482,7 @@ public class GarbageCollectWriteAheadLogsTest {
     GarbageCollectWriteAheadLogs gcWALs = new GarbageCollectWriteAheadLogs(inst, volMgr, false);
 
     Iterable<Entry<Key,Value>> iter = gcWALs.getReplicationStatusForFile(conn, wal);
-    Map<Key,Value> data = new HashMap<>();
+    Map<Key,Value> data = new HashMap<Key,Value>();
     for (Entry<Key,Value> e : iter) {
       data.put(e.getKey(), e.getValue());
     }

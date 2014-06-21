@@ -479,11 +479,11 @@ public class AccumuloReplicaSystem implements ReplicaSystem {
   }
 
   protected Set<Integer> consumeWalPrefix(ReplicationTarget target, DataInputStream wal, Path p, Status status, long sizeLimit) throws IOException {
-    Set<Integer> tids = new HashSet<>();
+    Set<Integer> tids = new HashSet<Integer>();
     LogFileKey key = new LogFileKey();
     LogFileValue value = new LogFileValue();
 
-    Set<Integer> desiredTids = new HashSet<>();
+    Set<Integer> desiredTids = new HashSet<Integer>();
 
     // Read through the stuff we've already processed in a previous replication attempt
     // We also need to track the tids that occurred earlier in the file as mutations

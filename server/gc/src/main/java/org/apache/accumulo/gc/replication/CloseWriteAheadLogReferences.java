@@ -142,7 +142,7 @@ public class CloseWriteAheadLogReferences implements Runnable {
 
         });
 
-    HashSet<String> referencedWals = new HashSet<>();
+    HashSet<String> referencedWals = new HashSet<String>();
     BatchScanner bs = null;
     try {
       // TODO Configurable number of threads

@@ -85,7 +85,7 @@ public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
       return;
     }
 
-    queuedWorkByPeerName = new HashMap<>();
+    queuedWorkByPeerName = new HashMap<String,Map<String,String>>();
     List<String> existingWork;
     try {
       existingWork = workQueue.getWorkQueued();
@@ -105,7 +105,7 @@ public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
 
       Map<String,String> replicationForPeer = queuedWorkByPeerName.get(peerName);
       if (null == replicationForPeer) {
-        replicationForPeer = new HashMap<>();
+        replicationForPeer = new HashMap<String,String>();
         queuedWorkByPeerName.put(sourceTableId, replicationForPeer);
       }
 
@@ -171,7 +171,7 @@ public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
     String queueKey = DistributedWorkQueueWorkAssignerHelper.getQueueKey(path.getName(), target);
     Map<String,String> workForPeer = this.queuedWorkByPeerName.get(target.getPeerName());
     if (null == workForPeer) {
-      workForPeer = new HashMap<>();
+      workForPeer = new HashMap<String,String>();
       this.queuedWorkByPeerName.put(target.getPeerName(), workForPeer);
     }
 

@@ -117,7 +117,7 @@ public class SequentialWorkAssignerTest {
     bw.close();
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    Map<String,Map<String,String>> queuedWork = new HashMap<>();
+    Map<String,Map<String,String>> queuedWork = new HashMap<String,Map<String,String>>();
     assigner.setQueuedWork(queuedWork);
     assigner.setWorkQueue(workQueue);
     assigner.setMaxQueueSize(Integer.MAX_VALUE);
@@ -190,7 +190,7 @@ public class SequentialWorkAssignerTest {
     bw.close();
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    Map<String,Map<String,String>> queuedWork = new HashMap<>();
+    Map<String,Map<String,String>> queuedWork = new HashMap<String,Map<String,String>>();
     assigner.setQueuedWork(queuedWork);
     assigner.setWorkQueue(workQueue);
     assigner.setMaxQueueSize(Integer.MAX_VALUE);
@@ -270,7 +270,7 @@ public class SequentialWorkAssignerTest {
     bw.close();
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    Map<String,Map<String,String>> queuedWork = new HashMap<>();
+    Map<String,Map<String,String>> queuedWork = new HashMap<String,Map<String,String>>();
     assigner.setQueuedWork(queuedWork);
     assigner.setWorkQueue(workQueue);
     assigner.setMaxQueueSize(Integer.MAX_VALUE);
@@ -310,8 +310,8 @@ public class SequentialWorkAssignerTest {
     ZooCache zooCache = createMock(ZooCache.class);
     Instance inst = createMock(Instance.class);
 
-    Map<String,Map<String,String>> queuedWork = new TreeMap<>();
-    Map<String,String> cluster1Work = new TreeMap<>();
+    Map<String,Map<String,String>> queuedWork = new TreeMap<String,Map<String,String>>();
+    Map<String,String> cluster1Work = new TreeMap<String,String>();
 
     // Two files for cluster1, one for table '1' and another for table '2' we havce assigned work for
     cluster1Work.put("1", DistributedWorkQueueWorkAssignerHelper.getQueueKey("file1", new ReplicationTarget("cluster1", "1", "1")));
@@ -393,8 +393,8 @@ public class SequentialWorkAssignerTest {
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
 
     // Treat filename1 as we have already submitted it for replication
-    Map<String,Map<String,String>> queuedWork = new HashMap<>();
-    Map<String,String> queuedWorkForCluster = new HashMap<>();
+    Map<String,Map<String,String>> queuedWork = new HashMap<String,Map<String,String>>();
+    Map<String,String> queuedWorkForCluster = new HashMap<String,String>();
     queuedWorkForCluster.put(target.getSourceTableId(), DistributedWorkQueueWorkAssignerHelper.getQueueKey(filename1, target));
     queuedWork.put("cluster1", queuedWorkForCluster);
 

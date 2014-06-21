@@ -863,7 +863,7 @@ public class Tablet {
       Set<String> logFileOnly = null;
       if (replicate) {
         // unusedWalLogs is of the form host/fileURI, need to strip off the host portion
-        logFileOnly = new HashSet<>();
+        logFileOnly = new HashSet<String>();
         for (String unusedWalLog : unusedWalLogs) {
           int index = unusedWalLog.indexOf('/');
           if (-1 == index) {

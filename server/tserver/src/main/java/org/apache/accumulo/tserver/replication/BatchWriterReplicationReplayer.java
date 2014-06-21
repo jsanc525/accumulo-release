@@ -88,7 +88,7 @@ public class BatchWriterReplicationReplayer implements AccumuloReplicationReplay
 
         // If we got a ServerMutation, we have to make sure that we preserve the systemTimestamp otherwise
         // the local system will assign a new timestamp.
-        List<Mutation> mutationsCopy = new ArrayList<>(value.mutations.size());
+        List<Mutation> mutationsCopy = new ArrayList<Mutation>(value.mutations.size());
         long mutationsCopied = 0l;
         for (Mutation orig : value.mutations) {
           if (orig instanceof ServerMutation) {

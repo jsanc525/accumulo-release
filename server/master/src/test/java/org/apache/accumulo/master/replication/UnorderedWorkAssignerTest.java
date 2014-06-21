@@ -79,7 +79,7 @@ public class UnorderedWorkAssignerTest {
     ReplicationTarget target = new ReplicationTarget("cluster1", "table1", "1");
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    Set<String> queuedWork = new HashSet<>();
+    Set<String> queuedWork = new HashSet<String>();
     assigner.setQueuedWork(queuedWork);
     assigner.setWorkQueue(workQueue);
 
@@ -164,7 +164,7 @@ public class UnorderedWorkAssignerTest {
     bw.close();
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    HashSet<String> queuedWork = new HashSet<>();
+    HashSet<String> queuedWork = new HashSet<String>();
     assigner.setQueuedWork(queuedWork);
     assigner.setWorkQueue(workQueue);
     assigner.setMaxQueueSize(Integer.MAX_VALUE);
@@ -217,7 +217,7 @@ public class UnorderedWorkAssignerTest {
     bw.close();
 
     DistributedWorkQueue workQueue = createMock(DistributedWorkQueue.class);
-    HashSet<String> queuedWork = new HashSet<>();
+    HashSet<String> queuedWork = new HashSet<String>();
     assigner.setQueuedWork(queuedWork);
     assigner.setMaxQueueSize(Integer.MAX_VALUE);
 
@@ -230,7 +230,7 @@ public class UnorderedWorkAssignerTest {
 
   @Test
   public void workNotInZooKeeperIsCleanedUp() {
-    Set<String> queuedWork = new LinkedHashSet<>(Arrays.asList("wal1", "wal2"));
+    Set<String> queuedWork = new LinkedHashSet<String>(Arrays.asList("wal1", "wal2"));
     assigner.setQueuedWork(queuedWork);
 
     Instance inst = createMock(Instance.class);
@@ -252,7 +252,7 @@ public class UnorderedWorkAssignerTest {
 
   @Test
   public void workNotReAdded() throws Exception {
-    Set<String> queuedWork = new HashSet<>();
+    Set<String> queuedWork = new HashSet<String>();
 
     assigner.setQueuedWork(queuedWork);
 

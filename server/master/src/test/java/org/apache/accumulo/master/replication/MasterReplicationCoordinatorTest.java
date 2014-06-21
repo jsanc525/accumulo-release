@@ -83,7 +83,7 @@ public class MasterReplicationCoordinatorTest {
 
     EasyMock.verify(master, reader, inst);
 
-    TreeSet<TServerInstance> instances = new TreeSet<>();
+    TreeSet<TServerInstance> instances = new TreeSet<TServerInstance>();
     TServerInstance inst1 = new TServerInstance(HostAndPort.fromParts("host1", 1234), "session");
     instances.add(inst1);
     TServerInstance inst2 = new TServerInstance(HostAndPort.fromParts("host2", 1234), "session");

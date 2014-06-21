@@ -134,7 +134,7 @@ public class ReplicationTableUtilTest {
     TableOperations tops = createMock(TableOperations.class);
 
     String myMetadataTable = "mymetadata";
-    Map<String,EnumSet<IteratorScope>> iterators = new HashMap<>();
+    Map<String,EnumSet<IteratorScope>> iterators = new HashMap<String,EnumSet<IteratorScope>>();
     iterators.put("vers", EnumSet.of(IteratorScope.majc, IteratorScope.minc, IteratorScope.scan));
     IteratorSetting combiner = new IteratorSetting(9, "replcombiner", StatusCombiner.class);
     Combiner.setColumns(combiner, Collections.singletonList(new Column(ReplicationSection.COLF)));
