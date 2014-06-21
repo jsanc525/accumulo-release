@@ -56,7 +56,13 @@ public class ReplicaSystemFactory {
       }
 
       throw new IllegalArgumentException("Class is not assignable to ReplicaSystem: " + name);
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+    } catch (ClassNotFoundException e) {
+      log.error("Error creating ReplicaSystem object", e);
+      throw new IllegalArgumentException(e);
+    } catch (InstantiationException e) {
+      log.error("Error creating ReplicaSystem object", e);
+      throw new IllegalArgumentException(e);
+    } catch (IllegalAccessException e) {
       log.error("Error creating ReplicaSystem object", e);
       throw new IllegalArgumentException(e);
     }

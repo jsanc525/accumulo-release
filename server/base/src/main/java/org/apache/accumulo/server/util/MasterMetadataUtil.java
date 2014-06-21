@@ -312,13 +312,6 @@ public class MasterMetadataUtil {
         lastLocation.clearLastLocation(m);
     }
     if (unusedWalLogs != null) {
-      Value replValue = null;
-      if (replication) {
-        // This WAL is no longer used, so we can replicate the whole file
-        Status replStatus = StatusUtil.fileClosed();
-        replValue = ProtobufUtil.toValue(replStatus);
-      }
-
       // hostname/fileURI
       for (String entry : unusedWalLogs) {
         m.putDelete(LogColumnFamily.NAME, new Text(entry));

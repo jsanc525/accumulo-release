@@ -110,7 +110,11 @@ public class ReplicationTableUtil {
     Map<String,EnumSet<IteratorScope>> iterators = null;
     try {
       iterators = tops.listIterators(tableName);
-    } catch (AccumuloSecurityException | AccumuloException | TableNotFoundException e) {
+    } catch (AccumuloException e) {
+      throw new RuntimeException(e);
+    } catch (AccumuloSecurityException e) {
+      throw new RuntimeException(e);
+    } catch (TableNotFoundException e) {
       throw new RuntimeException(e);
     }
 
@@ -121,7 +125,11 @@ public class ReplicationTableUtil {
       Combiner.setColumns(setting, Collections.singletonList(new Column(MetadataSchema.ReplicationSection.COLF)));
       try {
         tops.attachIterator(tableName, setting);
-      } catch (AccumuloSecurityException | AccumuloException | TableNotFoundException e) {
+      } catch (AccumuloException e) {
+        throw new RuntimeException(e);
+      } catch (AccumuloSecurityException e) {
+        throw new RuntimeException(e);
+      } catch (TableNotFoundException e) {
         throw new RuntimeException(e);
       }
     }
@@ -130,7 +138,9 @@ public class ReplicationTableUtil {
     Iterable<Entry<String,String>> properties;
     try {
       properties = tops.getProperties(tableName);
-    } catch (AccumuloException | TableNotFoundException e) {
+    } catch (AccumuloException e) {
+      throw new RuntimeException(e);
+    } catch (TableNotFoundException e) {
       throw new RuntimeException(e);
     }
 
@@ -140,7 +150,9 @@ public class ReplicationTableUtil {
           log.info("Setting formatter for {} from {} to {}", tableName, property.getValue(), STATUS_FORMATTER_CLASS_NAME);
           try {
             tops.setProperty(tableName, Property.TABLE_FORMATTER_CLASS.getKey(), STATUS_FORMATTER_CLASS_NAME);
-          } catch (AccumuloException | AccumuloSecurityException e) {
+          } catch (AccumuloException e) {
+            throw new RuntimeException(e);
+          } catch (AccumuloSecurityException e) {
             throw new RuntimeException(e);
           }
         }
@@ -153,7 +165,9 @@ public class ReplicationTableUtil {
     // Set the formatter on the table because it wasn't already there
     try {
       tops.setProperty(tableName, Property.TABLE_FORMATTER_CLASS.getKey(), STATUS_FORMATTER_CLASS_NAME);
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      throw new RuntimeException(e);
+    } catch (AccumuloSecurityException e) {
       throw new RuntimeException(e);
     }
   }
