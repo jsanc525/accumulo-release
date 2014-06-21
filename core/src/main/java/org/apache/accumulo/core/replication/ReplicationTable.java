@@ -26,6 +26,7 @@ import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.BatchWriterConfig;
 import org.apache.accumulo.core.client.Connector;
+import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.TableExistsException;
 import org.apache.accumulo.core.client.TableNotFoundException;
@@ -46,6 +47,8 @@ public class ReplicationTable {
   private static final Logger log = Logger.getLogger(ReplicationTable.class);
 
   public static final String NAME = "replication";
+
+  public static final String COMBINER_NAME = "statuscombiner";
 
   public static final String STATUS_LG_NAME = StatusSection.NAME.toString();
   public static final Set<Text> STATUS_LG_COLFAMS = Collections.singleton(StatusSection.NAME);
@@ -90,7 +93,9 @@ public class ReplicationTable {
   protected static synchronized boolean configure(Connector conn) {
     try {
       conn.securityOperations().grantTablePermission("root", NAME, TablePermission.READ);
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.warn("Could not grant root user read access to replication table", e);
+    } catch (AccumuloSecurityException e) {
       log.warn("Could not grant root user read access to replication table", e);
     }
 
@@ -98,7 +103,13 @@ public class ReplicationTable {
     Map<String,EnumSet<IteratorScope>> iterators = null;
     try {
       iterators = tops.listIterators(NAME);
-    } catch (AccumuloSecurityException | AccumuloException | TableNotFoundException e) {
+    } catch (AccumuloException e) {
+      log.error("Could not fetch iterators for " + NAME, e);
+      return false;
+    } catch (AccumuloSecurityException e) {
+      log.error("Could not fetch iterators for " + NAME, e);
+      return false;
+    } catch (TableNotFoundException e) {
       log.error("Could not fetch iterators for " + NAME, e);
       return false;
     }
@@ -109,7 +120,13 @@ public class ReplicationTable {
       Combiner.setCombineAllColumns(setting, true);
       try {
         tops.attachIterator(NAME, setting);
-      } catch (AccumuloSecurityException | AccumuloException | TableNotFoundException e) {
+      } catch (AccumuloException e) {
+        log.error("Could not set StatusCombiner on replication table", e);
+        return false;
+      } catch (AccumuloSecurityException e) {
+        log.error("Could not set StatusCombiner on replication table", e);
+        return false;
+      } catch (TableNotFoundException e) {
         log.error("Could not set StatusCombiner on replication table", e);
         return false;
       }
@@ -118,7 +135,10 @@ public class ReplicationTable {
     Map<String,Set<Text>> localityGroups;
     try {
       localityGroups = tops.getLocalityGroups(NAME);
-    } catch (TableNotFoundException | AccumuloException e) {
+    } catch (AccumuloException e) {
+      log.error("Could not fetch locality groups", e);
+      return false;
+    } catch (TableNotFoundException e) {
       log.error("Could not fetch locality groups", e);
       return false;
     }
@@ -127,7 +147,13 @@ public class ReplicationTable {
     if (null == statusColfams || null == workColfams) {
       try {
         tops.setLocalityGroups(NAME, LOCALITY_GROUPS);
-      } catch (AccumuloException | AccumuloSecurityException | TableNotFoundException e) {
+      } catch (AccumuloException e) {
+        log.error("Could not set locality groups on replication table", e);
+        return false;
+      } catch (AccumuloSecurityException e) {
+        log.error("Could not set locality groups on replication table", e);
+        return false;
+      } catch (TableNotFoundException e) {
         log.error("Could not set locality groups on replication table", e);
         return false;
       }

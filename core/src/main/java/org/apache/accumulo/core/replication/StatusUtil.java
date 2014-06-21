@@ -16,6 +16,8 @@
  */
 package org.apache.accumulo.core.replication;
 
+import org.apache.accumulo.core.data.Value;
+import org.apache.accumulo.core.protobuf.ProtobufUtil;
 import org.apache.accumulo.core.replication.proto.Replication.Status;
 import org.apache.accumulo.core.replication.proto.Replication.Status.Builder;
 
@@ -24,10 +26,11 @@ import org.apache.accumulo.core.replication.proto.Replication.Status.Builder;
  */
 public class StatusUtil {
 
-  private static final Status NEW_REPLICATION_STATUS, CLOSED_REPLICATION_STATUS;
+  private static final Status NEW_REPLICATION_STATUS, INF_END_REPLICATION_STATUS, CLOSED_STATUS;
+  private static final Value INF_END_REPLICATION_STATUS_VALUE, CLOSED_STATUS_VALUE;
 
   static {
-    Status.Builder builder = Status.newBuilder();
+    Builder builder = Status.newBuilder();
     builder.setBegin(0);
     builder.setEnd(0);
     builder.setInfiniteEnd(false);
@@ -38,8 +41,17 @@ public class StatusUtil {
     builder.setBegin(0);
     builder.setEnd(0);
     builder.setInfiniteEnd(true);
+    builder.setClosed(false);
+    INF_END_REPLICATION_STATUS = builder.build();
+    INF_END_REPLICATION_STATUS_VALUE = ProtobufUtil.toValue(INF_END_REPLICATION_STATUS);
+
+    builder = Status.newBuilder();
+    builder.setBegin(0);
+    builder.setEnd(0);
+    builder.setInfiniteEnd(true);
     builder.setClosed(true);
-    CLOSED_REPLICATION_STATUS = builder.build();
+    CLOSED_STATUS = builder.build();
+    CLOSED_STATUS_VALUE = ProtobufUtil.toValue(CLOSED_STATUS);
   }
 
   /**
@@ -116,14 +128,14 @@ public class StatusUtil {
    * @return A {@link Status} for a closed file of unknown length
    */
   public static Status fileClosed() {
-    return CLOSED_REPLICATION_STATUS;
+    return CLOSED_STATUS;
   }
 
   /**
    * @return A {@link Value} for a closed file of unspecified length, all of which needs replicating.
    */
   public static Value fileClosedValue() {
-    return CLOSED_REPLICATION_STATUS_VALUE;
+    return CLOSED_STATUS_VALUE;
   }
 
   /**
