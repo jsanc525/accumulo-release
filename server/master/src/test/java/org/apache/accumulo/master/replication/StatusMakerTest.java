@@ -53,9 +53,6 @@ import org.junit.rules.TestName;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
-/**
- * 
- */
 public class StatusMakerTest {
 
   @Rule
@@ -79,7 +76,7 @@ public class StatusMakerTest {
 
     int index = 1;
     long timeCreated = 0;
-    Map<String,Long> fileToTimeCreated = new HashMap<String,Longer>();
+    Map<String,Long> fileToTimeCreated = new HashMap<String,Long>();
     for (String file : files) {
       Mutation m = new Mutation(ReplicationSection.getRowPrefix() + file);
       m.put(ReplicationSection.COLF, new Text(Integer.toString(index)), StatusUtil.fileCreatedValue(timeCreated));

@@ -989,10 +989,14 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
     // Start the daemon to assign work to tservers to replicate to our peers
     try {
       replicationWorkAssigner = new WorkDriver(this, getConnector());
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.error("Caught exception trying to initialize replication WorkDriver", e);
+      throw new RuntimeException(e);
+    } catch (AccumuloSecurityException e) {
       log.error("Caught exception trying to initialize replication WorkDriver", e);
       throw new RuntimeException(e);
     }
+
     replicationWorkAssigner.start();
 
     // Start the replication coordinator which assigns tservers to service replication requests
@@ -1006,7 +1010,7 @@ public class Master implements LiveTServerSet.Listener, TableObserver, CurrentSt
 
     // Advertise that port we used so peers don't have to be told what it is
     ZooReaderWriter.getInstance().putPersistentData(ZooUtil.getRoot(instance) + Constants.ZMASTER_REPLICATION_COORDINATOR_ADDR,
-        replAddress.address.toString().getBytes(StandardCharsets.UTF_8), NodeExistsPolicy.OVERWRITE);
+        replAddress.address.toString().getBytes(Constants.UTF8), NodeExistsPolicy.OVERWRITE);
 
     while (clientService.isServing()) {
       UtilWaitThread.sleep(500);

@@ -16,10 +16,10 @@
  */
 package org.apache.accumulo.tserver.replication;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.Instance;
 import org.apache.accumulo.core.client.replication.ReplicaSystem;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
@@ -77,7 +77,8 @@ public class ReplicationProcessorTest {
   public void filesWhichMakeNoProgressArentReplicatedAgain() throws Exception {
     ReplicaSystem replica = EasyMock.createMock(ReplicaSystem.class);
     ReplicaSystemHelper helper = EasyMock.createMock(ReplicaSystemHelper.class);
-    ReplicationProcessor proc = EasyMock.createMockBuilder(ReplicationProcessor.class).addMockedMethods("getReplicaSystem", "doesFileExist", "getStatus", "getHelper").createMock();
+    ReplicationProcessor proc = EasyMock.createMockBuilder(ReplicationProcessor.class)
+        .addMockedMethods("getReplicaSystem", "doesFileExist", "getStatus", "getHelper").createMock();
 
     ReplicationTarget target = new ReplicationTarget("peer", "1", "1");
     Status status = Status.newBuilder().setBegin(0).setEnd(0).setInfiniteEnd(true).setClosed(true).build();
@@ -93,7 +94,7 @@ public class ReplicationProcessorTest {
 
     EasyMock.replay(replica, proc);
 
-    proc.process(queueKey, path.toString().getBytes(StandardCharsets.UTF_8));
+    proc.process(queueKey, path.toString().getBytes(Constants.UTF8));
 
     EasyMock.verify(replica, proc);
   }

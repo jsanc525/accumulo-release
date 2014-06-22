@@ -36,11 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates work in ZK which is <code>filename.serialized_ReplicationTarget => filename</code>, but replicates
- * files in the order in which they were created.
+ * Creates work in ZK which is <code>filename.serialized_ReplicationTarget => filename</code>, but replicates files in the order in which they were created.
  * <p>
- * The intent is to ensure that WALs are replayed in the same order on the peer in which
- * they were applied on the primary.
+ * The intent is to ensure that WALs are replayed in the same order on the peer in which they were applied on the primary.
  */
 public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
   private static final Logger log = LoggerFactory.getLogger(SequentialWorkAssigner.class);
@@ -89,7 +87,9 @@ public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
     List<String> existingWork;
     try {
       existingWork = workQueue.getWorkQueued();
-    } catch (KeeperException | InterruptedException e) {
+    } catch (KeeperException e) {
+      throw new RuntimeException("Error reading existing queued replication work", e);
+    } catch (InterruptedException e) {
       throw new RuntimeException("Error reading existing queued replication work", e);
     }
 
@@ -180,7 +180,10 @@ public class SequentialWorkAssigner extends DistributedWorkQueueWorkAssigner {
       try {
         workQueue.addWork(queueKey, path.toString());
         workForPeer.put(target.getSourceTableId(), queueKey);
-      } catch (KeeperException | InterruptedException e) {
+      } catch (KeeperException e) {
+        log.warn("Could not queue work for {} to {}", path, target, e);
+        return false;
+      } catch (InterruptedException e) {
         log.warn("Could not queue work for {} to {}", path, target, e);
         return false;
       }

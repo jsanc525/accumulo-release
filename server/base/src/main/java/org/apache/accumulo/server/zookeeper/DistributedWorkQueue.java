@@ -16,7 +16,6 @@
  */
 package org.apache.accumulo.server.zookeeper;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.accumulo.core.conf.AccumuloConfiguration;
+import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeExistsPolicy;
 import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeMissingPolicy;
 import org.apache.accumulo.server.util.time.SimpleTimer;
@@ -49,7 +48,6 @@ public class DistributedWorkQueue {
   private ThreadPoolExecutor threadPool;
   private ZooReaderWriter zoo = ZooReaderWriter.getInstance();
   private String path;
-  private AccumuloConfiguration config;
   private long timerInitialDelay, timerPeriod;
 
   private AtomicInteger numTask = new AtomicInteger(0);
@@ -151,14 +149,13 @@ public class DistributedWorkQueue {
     void process(String workID, byte[] data);
   }
   
-  public DistributedWorkQueue(String path, AccumuloConfiguration config) {
+  public DistributedWorkQueue(String path) {
     // Preserve the old delay and period
-    this(path, config, new Random().nextInt(60*1000), 60*1000);
+    this(path, new Random().nextInt(60*1000), 60*1000);
   }
 
-  public DistributedWorkQueue(String path, AccumuloConfiguration config, long timerInitialDelay, long timerPeriod) {
+  public DistributedWorkQueue(String path, long timerInitialDelay, long timerPeriod) {
     this.path = path;
-    this.config = config;
     this.timerInitialDelay = timerInitialDelay;
     this.timerPeriod = timerPeriod;
   }
@@ -216,14 +213,14 @@ public class DistributedWorkQueue {
   }
 
   /**
-   * Adds work to the queue, automatically converting the String to bytes using {@link StandardCharsets#UTF_8}
+   * Adds work to the queue, automatically converting the String to bytes using UTF-8
    * @param workId
    * @param data
    * @throws KeeperException
    * @throws InterruptedException
    */
   public void addWork(String workId, String data) throws KeeperException, InterruptedException {
-    addWork(workId, data.getBytes(StandardCharsets.UTF_8));
+    addWork(workId, data.getBytes(Constants.UTF8));
   }
   
   public void addWork(String workId, byte[] data) throws KeeperException, InterruptedException {

@@ -42,9 +42,6 @@ import org.junit.rules.TestName;
 
 import com.google.common.collect.Iterables;
 
-/**
- * 
- */
 public class FinishedWorkUpdaterTest {
 
   @Rule
@@ -100,12 +97,11 @@ public class FinishedWorkUpdaterTest {
     ReplicationTable.create(conn);
 
     String file = "/accumulo/wals/tserver+port/" + UUID.randomUUID();
-    Status stat1 = Status.newBuilder().setBegin(100).setEnd(1000).setClosed(true).setInfiniteEnd(false).build(),
-        stat2 = Status.newBuilder().setBegin(500).setEnd(1000).setClosed(true).setInfiniteEnd(false).build(),
-        stat3 = Status.newBuilder().setBegin(1).setEnd(1000).setClosed(true).setInfiniteEnd(false).build();
-    ReplicationTarget target1 = new ReplicationTarget("peer1", "table1", "1"),
-        target2 = new ReplicationTarget("peer2", "table2", "1"),
-        target3 = new ReplicationTarget("peer3", "table3", "1");
+    Status stat1 = Status.newBuilder().setBegin(100).setEnd(1000).setClosed(true).setInfiniteEnd(false).build(), stat2 = Status.newBuilder().setBegin(500)
+        .setEnd(1000).setClosed(true).setInfiniteEnd(false).build(), stat3 = Status.newBuilder().setBegin(1).setEnd(1000).setClosed(true).setInfiniteEnd(false)
+        .build();
+    ReplicationTarget target1 = new ReplicationTarget("peer1", "table1", "1"), target2 = new ReplicationTarget("peer2", "table2", "1"), target3 = new ReplicationTarget(
+        "peer3", "table3", "1");
 
     // Create a single work record for a file to some peer
     BatchWriter bw = ReplicationTable.getBatchWriter(conn);
@@ -136,12 +132,11 @@ public class FinishedWorkUpdaterTest {
     ReplicationTable.create(conn);
 
     String file = "/accumulo/wals/tserver+port/" + UUID.randomUUID();
-    Status stat1 = Status.newBuilder().setBegin(100).setEnd(1000).setClosed(true).setInfiniteEnd(true).build(),
-        stat2 = Status.newBuilder().setBegin(1).setEnd(1000).setClosed(true).setInfiniteEnd(true).build(),
-        stat3 = Status.newBuilder().setBegin(500).setEnd(1000).setClosed(true).setInfiniteEnd(true).build();
-    ReplicationTarget target1 = new ReplicationTarget("peer1", "table1", "1"),
-        target2 = new ReplicationTarget("peer2", "table2", "1"),
-        target3 = new ReplicationTarget("peer3", "table3", "1");
+    Status stat1 = Status.newBuilder().setBegin(100).setEnd(1000).setClosed(true).setInfiniteEnd(true).build(), stat2 = Status.newBuilder().setBegin(1)
+        .setEnd(1000).setClosed(true).setInfiniteEnd(true).build(), stat3 = Status.newBuilder().setBegin(500).setEnd(1000).setClosed(true).setInfiniteEnd(true)
+        .build();
+    ReplicationTarget target1 = new ReplicationTarget("peer1", "table1", "1"), target2 = new ReplicationTarget("peer2", "table2", "1"), target3 = new ReplicationTarget(
+        "peer3", "table3", "1");
 
     // Create a single work record for a file to some peer
     BatchWriter bw = ReplicationTable.getBatchWriter(conn);

@@ -278,7 +278,7 @@ public class AccumuloReplicaSystemTest {
   @Test
   public void mutationsNotReReplicatedToPeers() throws Exception {
     AccumuloReplicaSystem ars = new AccumuloReplicaSystem();
-    Map<String,String> confMap = new HashMapString,String>();
+    Map<String,String> confMap = new HashMap<String,String>();
     confMap.put(Property.REPLICATION_NAME.getKey(), "source");
     AccumuloConfiguration conf = new ConfigurationCopy(confMap);
 

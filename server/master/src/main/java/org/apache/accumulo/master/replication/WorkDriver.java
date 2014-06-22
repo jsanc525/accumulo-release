@@ -57,11 +57,17 @@ public class WorkDriver extends Daemon {
         Class<?> clz = Class.forName(workAssignerClass);
         Class<? extends WorkAssigner> workAssignerClz = clz.asSubclass(WorkAssigner.class);
         this.assigner = workAssignerClz.newInstance();
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      } catch (ClassNotFoundException e) {
+        log.error("Could not instantiate configured work assigner {}", workAssignerClass, e);
+        throw new RuntimeException(e);
+      } catch (InstantiationException e) {
+        log.error("Could not instantiate configured work assigner {}", workAssignerClass, e);
+        throw new RuntimeException(e);
+      } catch (IllegalAccessException e) {
         log.error("Could not instantiate configured work assigner {}", workAssignerClass, e);
         throw new RuntimeException(e);
       }
-  
+
       this.assigner.configure(conf, conn);
       this.assignerImplName = assigner.getClass().getName();
       this.setName(assigner.getName());

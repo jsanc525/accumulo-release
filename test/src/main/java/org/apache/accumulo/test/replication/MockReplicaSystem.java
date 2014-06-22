@@ -70,7 +70,10 @@ public class MockReplicaSystem implements ReplicaSystem {
     } catch (TableNotFoundException e) {
       log.error("Tried to update status in replication table for {} as {}, but the table did not exist", p, ProtobufUtil.toString(newStatus), e);
       return status;
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.error("Tried to record new status in replication table for {} as {}, but got an error", p, ProtobufUtil.toString(newStatus), e);
+      return status;
+    } catch (AccumuloSecurityException e) {
       log.error("Tried to record new status in replication table for {} as {}, but got an error", p, ProtobufUtil.toString(newStatus), e);
       return status;
     }

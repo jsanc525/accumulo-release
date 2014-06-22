@@ -18,7 +18,6 @@ package org.apache.accumulo.core.client.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.accumulo.core.Constants;
@@ -83,7 +82,6 @@ public class ReplicationClient {
       return null;
     }
 
-
     AccumuloConfiguration conf = ServerConfigurationUtil.getConfiguration(instance);
 
     String zkPath = ZooUtil.getRoot(instance) + Constants.ZMASTER_REPLICATION_COORDINATOR_ADDR;
@@ -94,7 +92,7 @@ public class ReplicationClient {
     // Get the coordinator port for the master we're trying to connect to
     try {
       ZooReader reader = new ZooReader(instance.getZooKeepers(), instance.getZooKeepersSessionTimeOut());
-      replCoordinatorAddr = new String(reader.getData(zkPath, null), StandardCharsets.UTF_8);
+      replCoordinatorAddr = new String(reader.getData(zkPath, null), Constants.UTF8);
     } catch (KeeperException e) {
       log.error("Could not fetch remote coordinator port", e);
       return null;
@@ -110,8 +108,7 @@ public class ReplicationClient {
 
     try {
       // Master requests can take a long time: don't ever time out
-      ReplicationCoordinator.Client client = ThriftUtil.getClientNoTimeout(new ReplicationCoordinator.Client.Factory(), coordinatorAddr.toString(),
-          conf);
+      ReplicationCoordinator.Client client = ThriftUtil.getClientNoTimeout(new ReplicationCoordinator.Client.Factory(), coordinatorAddr.toString(), conf);
       return client;
     } catch (TTransportException tte) {
       log.debug("Failed to connect to master coordinator service ({})", coordinatorAddr.toString(), tte);

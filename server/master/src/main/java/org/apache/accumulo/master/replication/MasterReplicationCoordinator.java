@@ -16,11 +16,11 @@
  */
 package org.apache.accumulo.master.replication;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.Instance;
 import org.apache.accumulo.core.client.impl.thrift.ThriftSecurityException;
 import org.apache.accumulo.core.replication.ReplicationConstants;
@@ -65,10 +65,9 @@ public class MasterReplicationCoordinator implements ReplicationCoordinator.Ifac
     this.security = SecurityOperation.getInstance(inst.getInstanceID(), false);
   }
 
-
   @Override
   public String getServicerAddress(String remoteTableId, TCredentials creds) throws ReplicationCoordinatorException, TException {
-    try { 
+    try {
       security.authenticateUser(SystemCredentials.get().toThrift(inst), creds);
     } catch (ThriftSecurityException e) {
       log.error("{} failed to authenticate for replication to {}", creds.getPrincipal(), remoteTableId);
@@ -83,8 +82,12 @@ public class MasterReplicationCoordinator implements ReplicationCoordinator.Ifac
     TServerInstance tserver = getRandomTServer(tservers, rand.nextInt(tservers.size()));
     String replServiceAddr;
     try {
-      replServiceAddr = new String(reader.getData(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_TSERVERS + "/" + tserver.hostPort(), null), StandardCharsets.UTF_8);
-    } catch (KeeperException | InterruptedException e) {
+      replServiceAddr = new String(reader.getData(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_TSERVERS + "/" + tserver.hostPort(), null), Constants.UTF8);
+    } catch (KeeperException e) {
+      log.error("Could not fetch repliation service port for tserver", e);
+      throw new ReplicationCoordinatorException(ReplicationCoordinatorErrorCode.SERVICE_CONFIGURATION_UNAVAILABLE,
+          "Could not determine port for replication service running at " + tserver.hostPort());
+    } catch (InterruptedException e) {
       log.error("Could not fetch repliation service port for tserver", e);
       throw new ReplicationCoordinatorException(ReplicationCoordinatorErrorCode.SERVICE_CONFIGURATION_UNAVAILABLE,
           "Could not determine port for replication service running at " + tserver.hostPort());

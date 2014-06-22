@@ -60,7 +60,7 @@ public class MasterMetadataUtilTest {
     EasyMock.expect(lockMock.getSessionId()).andReturn(1l).anyTimes();
 
     Mutation m = MasterMetadataUtil.getUpdateForTabletDataFile(extent, path, null, dfv, time, filesInUseByScans, address, lockMock, unusedWalLogs,
-        lastLocation, flushId, true);
+        lastLocation, flushId);
     EasyMock.replay();
 
     Assert.assertEquals(extent.getMetadataEntry(), new Text(m.getRow()));
@@ -100,7 +100,7 @@ public class MasterMetadataUtilTest {
     EasyMock.expect(lockMock.getSessionId()).andReturn(1l).anyTimes();
 
     Mutation m = MasterMetadataUtil.getUpdateForTabletDataFile(extent, path, null, dfv, time, filesInUseByScans, address, lockMock, unusedWalLogs,
-        lastLocation, flushId, true);
+        lastLocation, flushId);
     EasyMock.replay();
 
     Assert.assertEquals(extent.getMetadataEntry(), new Text(m.getRow()));
@@ -139,7 +139,7 @@ public class MasterMetadataUtilTest {
     EasyMock.expect(lockMock.getSessionId()).andReturn(1l).anyTimes();
 
     Mutation m = MasterMetadataUtil.getUpdateForTabletDataFile(extent, path, null, dfv, time, filesInUseByScans, address, lockMock, unusedWalLogs,
-        lastLocation, flushId, true);
+        lastLocation, flushId);
     EasyMock.replay();
 
     Assert.assertEquals(extent.getMetadataEntry(), new Text(m.getRow()));
@@ -172,7 +172,7 @@ public class MasterMetadataUtilTest {
     EasyMock.expect(lockMock.getSessionId()).andReturn(1l).anyTimes();
 
     Mutation m = MasterMetadataUtil.getUpdateForTabletDataFile(extent, path, null, dfv, time, filesInUseByScans, address, lockMock, unusedWalLogs,
-        lastLocation, flushId, true);
+        lastLocation, flushId);
     EasyMock.replay();
 
     Assert.assertEquals(extent.getMetadataEntry(), new Text(m.getRow()));

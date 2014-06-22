@@ -51,9 +51,6 @@ import org.junit.rules.TestName;
 
 import com.google.common.collect.Iterables;
 
-/**
- * 
- */
 public class RemoveCompleteReplicationRecordsTest {
 
   private RemoveCompleteReplicationRecords rcrr;

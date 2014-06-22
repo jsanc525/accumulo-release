@@ -181,7 +181,7 @@ public class RemoveCompleteReplicationRecords implements Runnable {
         Long timeClosed = tableToTimeCreated.get(tableId);
         if (null == timeClosed) {
           tableToTimeCreated.put(tableId, status.getCreatedTime());
-        } else if (timeClosed != status.getCreatedTime()){
+        } else if (timeClosed != status.getCreatedTime()) {
           log.warn("Found multiple values for timeClosed for {}: {} and {}", row, timeClosed, status.getCreatedTime());
         }
       }

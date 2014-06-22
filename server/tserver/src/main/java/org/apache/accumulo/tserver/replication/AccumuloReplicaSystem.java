@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
 /**
- * 
+ * Implementation of {@link ReplicaSystem} which can replicate data to an Accumulo instance
  */
 public class AccumuloReplicaSystem implements ReplicaSystem {
   private static final Logger log = LoggerFactory.getLogger(AccumuloReplicaSystem.class);
@@ -175,7 +175,11 @@ public class AccumuloReplicaSystem implements ReplicaSystem {
             }
 
           });
-        } catch (AccumuloException | AccumuloSecurityException e) {
+        } catch (AccumuloException e) {
+          // No progress is made
+          log.error("Could not connect to master at {}, cannot proceed with replication. Will retry", target, e);
+          continue;
+        } catch (AccumuloSecurityException e) {
           // No progress is made
           log.error("Could not connect to master at {}, cannot proceed with replication. Will retry", target, e);
           continue;
@@ -212,7 +216,13 @@ public class AccumuloReplicaSystem implements ReplicaSystem {
           log.debug("New status for {} after replicating to {} is {}", p, peerInstance, ProtobufUtil.toString(finalStatus));
 
           return finalStatus;
-        } catch (TTransportException | AccumuloException | AccumuloSecurityException e) {
+        } catch (AccumuloException e) {
+          log.warn("Could not connect to remote server {}, will retry", peerTserver, e);
+          UtilWaitThread.sleep(1000);
+        } catch (AccumuloSecurityException e) {
+          log.warn("Could not connect to remote server {}, will retry", peerTserver, e);
+          UtilWaitThread.sleep(1000);
+        } catch (TTransportException e) {
           log.warn("Could not connect to remote server {}, will retry", peerTserver, e);
           UtilWaitThread.sleep(1000);
         }
@@ -373,8 +383,8 @@ public class AccumuloReplicaSystem implements ReplicaSystem {
     private TCredentials tcreds;
     private Set<Integer> tids;
 
-    public WalClientExecReturn(ReplicationTarget target, DataInputStream input, Path p, Status status, long sizeLimit, String remoteTableId, TCredentials tcreds,
-        Set<Integer> tids) {
+    public WalClientExecReturn(ReplicationTarget target, DataInputStream input, Path p, Status status, long sizeLimit, String remoteTableId,
+        TCredentials tcreds, Set<Integer> tids) {
       this.target = target;
       this.input = input;
       this.p = p;
@@ -423,7 +433,8 @@ public class AccumuloReplicaSystem implements ReplicaSystem {
     private String remoteTableId;
     private TCredentials tcreds;
 
-    public RFileClientExecReturn(ReplicationTarget target, DataInputStream input, Path p, Status status, long sizeLimit, String remoteTableId, TCredentials tcreds) {
+    public RFileClientExecReturn(ReplicationTarget target, DataInputStream input, Path p, Status status, long sizeLimit, String remoteTableId,
+        TCredentials tcreds) {
       this.target = target;
       this.input = input;
       this.p = p;

@@ -98,7 +98,13 @@ public class ReplicationProcessor implements Processor {
     Status status;
     try {
       status = getStatus(file, target);
-    } catch (TableNotFoundException | AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.error("Could not look for replication record", e);
+      throw new IllegalStateException("Could not look for replication record", e);
+    } catch (AccumuloSecurityException e) {
+      log.error("Could not look for replication record", e);
+      throw new IllegalStateException("Could not look for replication record", e);
+    } catch (TableNotFoundException e) {
       log.error("Could not look for replication record", e);
       throw new IllegalStateException("Could not look for replication record", e);
     } catch (InvalidProtocolBufferException e) {

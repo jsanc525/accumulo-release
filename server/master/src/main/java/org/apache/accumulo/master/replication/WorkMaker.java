@@ -33,7 +33,6 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.replication.ReplicationSchema;
 import org.apache.accumulo.core.replication.ReplicationSchema.StatusSection;
 import org.apache.accumulo.core.replication.ReplicationSchema.WorkSection;
-import org.apache.accumulo.core.replication.ReplicationTable;
 import org.apache.accumulo.core.replication.ReplicationTarget;
 import org.apache.accumulo.core.replication.StatusUtil;
 import org.apache.accumulo.core.replication.proto.Replication.Status;
@@ -182,7 +181,7 @@ public class WorkMaker {
         WorkSection.add(m, t, v);
       }
       try {
-        bw.addMutation(m);
+        writer.addMutation(m);
       } catch (MutationsRejectedException e) {
         log.warn("Failed to write work mutations for replication, will retry", e);
       }
@@ -190,7 +189,7 @@ public class WorkMaker {
       log.warn("Failed to serialize data to Text, will retry", e);
     } finally {
       try {
-        bw.close();
+        writer.flush();
       } catch (MutationsRejectedException e) {
         log.warn("Failed to write work mutations for replication, will retry", e);
       }

@@ -63,14 +63,16 @@ public class ReplicationWorker implements Runnable {
       DistributedWorkQueue workQueue;
       if (defaultDelay != delay && defaultPeriod != period) {
         log.debug("Configuration DistributedWorkQueue with delay and period of {} and {}", delay, period);
-        workQueue = new DistributedWorkQueue(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_WORK_QUEUE, conf, delay, period);
+        workQueue = new DistributedWorkQueue(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_WORK_QUEUE, delay, period);
       } else {
         log.debug("Configuring DistributedWorkQueue with default delay and period");
-        workQueue = new DistributedWorkQueue(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_WORK_QUEUE, conf);
+        workQueue = new DistributedWorkQueue(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_WORK_QUEUE);
       }
 
       workQueue.startProcessing(new ReplicationProcessor(inst, conf, fs, SystemCredentials.get()), executor);
-    } catch (KeeperException | InterruptedException e) {
+    } catch (KeeperException e) {
+      throw new RuntimeException(e);
+    } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }

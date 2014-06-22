@@ -3131,8 +3131,8 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     try {
       // The replication service is unique to the thrift service for a tserver, not just a host.
       // Advertise the host and port for replication service given the host and port for the tserver.
-      ZooReaderWriter.getInstance().putPersistentData(ZooUtil.getRoot(getInstance()) + ReplicationConstants.ZOO_TSERVERS + "/" + clientAddress.toString(),
-          sp.address.toString().getBytes(StandardCharsets.UTF_8), NodeExistsPolicy.OVERWRITE);
+      ZooReaderWriter.getInstance().putPersistentData(ZooUtil.getRoot(instance) + ReplicationConstants.ZOO_TSERVERS + "/" + clientAddress.toString(),
+          sp.address.toString().getBytes(Constants.UTF8), NodeExistsPolicy.OVERWRITE);
     } catch (Exception e) {
       log.error("Could not advertise replication service port", e);
       throw new RuntimeException(e);
@@ -3208,8 +3208,11 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     // To make things easier on users/devs, and to avoid creating an upgrade path to 1.7
     // We can just make the zookeeper paths before we try to use.
     try {
-      ZooKeeperInitialization.ensureZooKeeperInitialized(ZooReaderWriter.getInstance(), ZooUtil.getRoot(getInstance()));
-    } catch (KeeperException | InterruptedException e) {
+      ZooKeeperInitialization.ensureZooKeeperInitialized(ZooReaderWriter.getInstance(), ZooUtil.getRoot(instance));
+    } catch (KeeperException e) {
+      log.error("Could not ensure that ZooKeeper is properly initialized", e);
+      throw new RuntimeException(e);
+    } catch (InterruptedException e) {
       log.error("Could not ensure that ZooKeeper is properly initialized", e);
       throw new RuntimeException(e);
     }
@@ -3261,7 +3264,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
         }
       }
     };
-    SimpleTimer.getInstance(aconf).schedule(replicationWorkThreadPoolResizer, 10000, 30000);
+    SimpleTimer.getInstance().schedule(replicationWorkThreadPoolResizer, 10000, 30000);
 
     try {
       OBJECT_NAME = new ObjectName("accumulo.server.metrics:service=TServerInfo,name=TabletServerMBean,instance=" + Thread.currentThread().getName());
@@ -3530,6 +3533,14 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
     if (clientAddress == null)
       return null;
     return clientAddress.getHostText() + ":" + clientAddress.getPort();
+  }
+
+  public String getReplicationAddressString() {
+    if (null == replicationAddress) {
+      return null;
+    }
+
+    return replicationAddress.getHostText() + ":" + replicationAddress.getPort();
   }
 
   TServerInstance getTabletSession() {

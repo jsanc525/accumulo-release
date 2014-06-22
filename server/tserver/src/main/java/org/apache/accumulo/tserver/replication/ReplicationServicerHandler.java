@@ -63,7 +63,10 @@ public class ReplicationServicerHandler implements Iface {
 
     try {
       conn = inst.getConnector(creds.getPrincipal(), creds.getToken());
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.error("Could not get connection", e);
+      throw new RemoteReplicationException(RemoteReplicationErrorCode.CANNOT_AUTHENTICATE, "Cannot get connector as " + creds.getPrincipal());
+    } catch (AccumuloSecurityException e) {
       log.error("Could not get connection", e);
       throw new RemoteReplicationException(RemoteReplicationErrorCode.CANNOT_AUTHENTICATE, "Cannot get connector as " + creds.getPrincipal());
     }
@@ -105,10 +108,12 @@ public class ReplicationServicerHandler implements Iface {
     AccumuloReplicationReplayer replayer;
     try {
       replayer = clz.newInstance();
-    } catch (InstantiationException | IllegalAccessException e1) {
-      log.error("Could not instantiate replayer class {}", clz.getName());
-      throw new RemoteReplicationException(RemoteReplicationErrorCode.CANNOT_INSTANTIATE_REPLAYER, "Could not instantiate replayer class"
-          + clz.getName());
+    } catch (InstantiationException e) {
+      log.error("Could not instantiate replayer class {}", clz.getName(), e);
+      throw new RemoteReplicationException(RemoteReplicationErrorCode.CANNOT_INSTANTIATE_REPLAYER, "Could not instantiate replayer class" + clz.getName());
+    } catch (IllegalAccessException e) {
+      log.error("Could not instantiate replayer class {}", clz.getName(), e);
+      throw new RemoteReplicationException(RemoteReplicationErrorCode.CANNOT_INSTANTIATE_REPLAYER, "Could not instantiate replayer class" + clz.getName());
     }
 
     long entriesReplicated = replayer.replicateLog(conn, ServerConfiguration.getSystemConfiguration(HdfsZooInstance.getInstance()), tableName, data);

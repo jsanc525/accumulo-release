@@ -60,7 +60,12 @@ public class ReplicationDriver extends Daemon {
       if (null == workMaker) {
         try {
           conn = master.getConnector();
-        } catch (AccumuloException | AccumuloSecurityException e) {
+        } catch (AccumuloException e) {
+          // couldn't get a connector, try again in a "short" amount of time
+          log.warn("Error trying to get connector to process replication records", e);
+          UtilWaitThread.sleep(2000);
+          continue;
+        } catch (AccumuloSecurityException e) {
           // couldn't get a connector, try again in a "short" amount of time
           log.warn("Error trying to get connector to process replication records", e);
           UtilWaitThread.sleep(2000);

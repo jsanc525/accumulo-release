@@ -51,7 +51,6 @@ import org.apache.accumulo.core.zookeeper.ZooUtil;
 import org.apache.accumulo.monitor.util.Table;
 import org.apache.accumulo.monitor.util.celltypes.NumberType;
 import org.apache.accumulo.server.client.HdfsZooInstance;
-import org.apache.accumulo.server.conf.ServerConfiguration;
 import org.apache.accumulo.server.replication.DistributedWorkQueueWorkAssignerHelper;
 import org.apache.accumulo.server.security.SystemCredentials;
 import org.apache.accumulo.server.zookeeper.DistributedWorkQueue;
@@ -79,7 +78,7 @@ public class ReplicationServlet extends BasicServlet {
   protected String getTitle(HttpServletRequest req) {
     return "Replication Overview";
   }
-  
+
   @Override
   protected void pageBody(HttpServletRequest req, HttpServletResponse response, StringBuilder sb) throws Exception {
     Instance inst = HdfsZooInstance.getInstance();
@@ -100,18 +99,19 @@ public class ReplicationServlet extends BasicServlet {
     replicationStats.addSortableColumn("Files needing replication", new NumberType<Long>(), null);
 
     Map<String,String> properties = conn.instanceOperations().getSystemConfiguration();
-    Map<String,String> peers = new HashMap<String,String>>();
+    Map<String,String> peers = new HashMap<String,String>();
     String definedPeersPrefix = Property.REPLICATION_PEERS.getKey();
 
     // Get the defined peers and what ReplicaSystem impl they're using
     for (Entry<String,String> property : properties.entrySet()) {
       String key = property.getKey();
       // Filter out cruft that we don't want
-      if (key.startsWith(definedPeersPrefix) && !key.startsWith(Property.REPLICATION_PEER_USER.getKey()) && !key.startsWith(Property.REPLICATION_PEER_PASSWORD.getKey())) {
+      if (key.startsWith(definedPeersPrefix) && !key.startsWith(Property.REPLICATION_PEER_USER.getKey())
+          && !key.startsWith(Property.REPLICATION_PEER_PASSWORD.getKey())) {
         String peerName = property.getKey().substring(definedPeersPrefix.length());
         ReplicaSystem replica;
         try {
-         replica = ReplicaSystemFactory.get(property.getValue());
+          replica = ReplicaSystemFactory.get(property.getValue());
         } catch (Exception e) {
           log.warn("Could not instantiate ReplicaSystem for {} with configuration {}", property.getKey(), property.getValue(), e);
           continue;
@@ -192,7 +192,8 @@ public class ReplicationServlet extends BasicServlet {
 
       Long numFiles = targetCounts.get(configuredTarget);
 
-      replicationStats.addRow(tableName, configuredTarget.getPeerName(), configuredTarget.getRemoteIdentifier(), replicaSystemClass, (null == numFiles) ? 0 : numFiles); 
+      replicationStats.addRow(tableName, configuredTarget.getPeerName(), configuredTarget.getRemoteIdentifier(), replicaSystemClass, (null == numFiles) ? 0
+          : numFiles);
     }
 
     replicationStats.generate(req, sb);
@@ -209,16 +210,16 @@ public class ReplicationServlet extends BasicServlet {
     String zkRoot = ZooUtil.getRoot(inst);
     final String workQueuePath = zkRoot + ReplicationConstants.ZOO_WORK_QUEUE;
 
-    DistributedWorkQueue workQueue = new DistributedWorkQueue(workQueuePath, ServerConfiguration.getSystemConfiguration(inst));
+    DistributedWorkQueue workQueue = new DistributedWorkQueue(workQueuePath);
 
     try {
       for (String queueKey : workQueue.getWorkQueued()) {
         Entry<String,ReplicationTarget> queueKeyPair = DistributedWorkQueueWorkAssignerHelper.fromQueueKey(queueKey);
         String filename = queueKeyPair.getKey();
         ReplicationTarget target = queueKeyPair.getValue();
-  
+
         byte[] data = zooCache.get(workQueuePath + "/" + queueKey);
-  
+
         // We could try to grep over the table, but without knowing the full file path, we
         // can't find the status quickly
         String status = "Unknown";
@@ -228,18 +229,18 @@ public class ReplicationServlet extends BasicServlet {
           Scanner s = conn.createScanner(ReplicationConstants.TABLE_NAME, Authorizations.EMPTY);
           s.setRange(Range.exact(path));
           s.fetchColumn(WorkSection.NAME, target.toText());
-    
+
           // Fetch the work entry for this item
           Entry<Key,Value> kv = null;
           try {
             kv = Iterables.getOnlyElement(s);
           } catch (NoSuchElementException e) {
-           log.trace("Could not find status of {} replicating to {}", filename, target);
-           status = "Unknown";
+            log.trace("Could not find status of {} replicating to {}", filename, target);
+            status = "Unknown";
           } finally {
             s.close();
           }
-    
+
           // If we found the work entry for it, try to compute some progress
           if (null != kv) {
             try {
@@ -259,11 +260,14 @@ public class ReplicationServlet extends BasicServlet {
             }
           }
         }
-  
+
         // Add a row in the table
-        replicationInProgress.addRow(null == path ? ".../" + filename : path, target.getPeerName(), target.getSourceTableId(), target.getRemoteIdentifier(), status);
+        replicationInProgress.addRow(null == path ? ".../" + filename : path, target.getPeerName(), target.getSourceTableId(), target.getRemoteIdentifier(),
+            status);
       }
-    } catch (KeeperException | InterruptedException e) {
+    } catch (KeeperException e) {
+      log.warn("Could not calculate replication in progress", e);
+    } catch (InterruptedException e) {
       log.warn("Could not calculate replication in progress", e);
     }
 
@@ -272,7 +276,7 @@ public class ReplicationServlet extends BasicServlet {
 
   protected Map<String,String> invert(Map<String,String> map) {
     Map<String,String> newMap = Maps.newHashMapWithExpectedSize(map.size());
-    for(Entry<String,String> entry : map.entrySet()) {
+    for (Entry<String,String> entry : map.entrySet()) {
       newMap.put(entry.getValue(), entry.getKey());
     }
     return newMap;

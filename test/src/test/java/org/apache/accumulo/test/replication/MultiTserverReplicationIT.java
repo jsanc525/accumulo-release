@@ -16,7 +16,6 @@
  */
 package org.apache.accumulo.test.replication;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,7 +69,7 @@ public class MultiTserverReplicationIT extends ConfigurableMacIT {
     for (String tserver : tserverHost) {
       try {
         byte[] portData = zreader.getData(ZooUtil.getRoot(inst) + ReplicationConstants.ZOO_TSERVERS + "/" + tserver, null);
-        HostAndPort replAddress = HostAndPort.fromString(new String(portData, StandardCharsets.UTF_8));
+        HostAndPort replAddress = HostAndPort.fromString(new String(portData, Constants.UTF8));
         replicationServices.add(replAddress);
       } catch (Exception e) {
         log.error("Could not find port for {}", tserver, e);
@@ -102,7 +101,7 @@ public class MultiTserverReplicationIT extends ConfigurableMacIT {
     String masterAddr = Iterables.getOnlyElement(inst.getMasterLocations());
 
     // Get the master replication coordinator addr
-    String replCoordAddr = new String(zreader.getData(ZooUtil.getRoot(inst) + Constants.ZMASTER_REPLICATION_COORDINATOR_ADDR, null), StandardCharsets.UTF_8);
+    String replCoordAddr = new String(zreader.getData(ZooUtil.getRoot(inst) + Constants.ZMASTER_REPLICATION_COORDINATOR_ADDR, null), Constants.UTF8);
 
     // They shouldn't be the same
     Assert.assertNotEquals(masterAddr, replCoordAddr);

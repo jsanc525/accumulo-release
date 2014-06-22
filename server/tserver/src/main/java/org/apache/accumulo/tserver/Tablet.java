@@ -1379,7 +1379,7 @@ public class Tablet {
         for (FileRef ref : datafiles.keySet())
           absPaths.add(ref.path().toString());
 
-        tabletServer.recover(this.tabletServer.getFileSystem(), extent, acuTableConf, logEntries, absPaths, new MutationReceiver() {
+        tabletServer.recover(this.tabletServer.getFileSystem(), this, logEntries, absPaths, new MutationReceiver() {
           @Override
           public void receive(Mutation m) {
             // LogReader.printMutation(m);

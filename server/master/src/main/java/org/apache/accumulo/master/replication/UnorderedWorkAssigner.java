@@ -115,7 +115,10 @@ public class UnorderedWorkAssigner extends DistributedWorkQueueWorkAssigner {
       log.debug("Queued work for {} and {}", queueKey, path);
       workQueue.addWork(queueKey, path.toString());
       queuedWork.add(queueKey);
-    } catch (KeeperException | InterruptedException e) {
+    } catch (KeeperException e) {
+      log.warn("Could not queue work for {}", path, e);
+      return false;
+    } catch (InterruptedException e) {
       log.warn("Could not queue work for {}", path, e);
       return false;
     }
