@@ -126,7 +126,7 @@
     <!-- surefire/failsafe plugin option -->
     <forkCount>1</forkCount>
     <!-- overwritten in profiles hadoop-1 or hadoop-2 -->
-    <hadoop.version>[2.5.0.2.2.0.0,2.5.0.2.3.0.0)</hadoop.version>
+    <hadoop.version>[2.5.0.2.2.0.0-200,2.5.0.2.3.0.0)</hadoop.version>
     <httpclient.version>3.1</httpclient.version>
     <!-- the maven-release-plugin makes this recommendation, due to plugin bugs -->
     <maven.min-version>3.0.4</maven.min-version>
@@ -1144,7 +1144,7 @@
         <!-- Denotes intention and allows the enforcer plugin to pass when
              the user is relying on default behavior; won't work to activate profile -->
         <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>[2.5.0.2.2.0.0,2.5.0.2.3.0.0)</hadoop.version>
+        <hadoop.version>[2.5.0.2.2.0.0-200,2.5.0.2.3.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
