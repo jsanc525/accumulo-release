@@ -48,9 +48,9 @@ in the \texttt{replication} table which track which peers the given WAL should b
 replicated to. The Master latter uses these work entries to assign the actual
 replication task to a local TabletServer using ZooKeeper. A TabletServer will get
 a lock in ZooKeeper for the replication of this file to a peer, and proceed to
-replicate to the peer, recording progress in the \textt{replication} table as
+replicate to the peer, recording progress in the \texttt{replication} table as
 data is successfully replicated on the peer. Later, the Master and Garbage Collector
-will remove records from the \textt{accumulo.metadata} and \textt{replication} tables
+will remove records from the \texttt{accumulo.metadata} and \texttt{replication} tables
 and files from HDFS, respectively, after replication to all peers is complete.
 
 \subsection{Configuration}
@@ -83,8 +83,8 @@ replication implementation for the peer.
 These can be set in the site configuration to ease deployments; however, as they may
 change, it can be useful to set this information using the Accumulo shell.
 
-To configure a peer with the name \textt{peer1} which is an Accumulo system with an instance name of
-\textt{accumulo_peer}
+To configure a peer with the name \texttt{peer1} which is an Accumulo system with an instance name of
+\texttt{accumulo\_peer}
 and a ZooKeeper quorum of \texttt{10.0.0.1,10.0.2.1,10.0.3.1}, invoke the following
 command in the shell.
 
@@ -109,8 +109,8 @@ Now, we presently have a peer defined, so we just need to configure which tables
 replicate to that peer. We also need to configure an identifier to determine where
 this data will be replicated on the peer. Since we're replicating to another Accumulo
 cluster, this is a table ID. In this example, we want to enable replication on
-\texttt{my_table} and configure our peer \texttt{accumulo_peer} as a target, sending
-the data to the table with an ID of \texttt{2} in \texttt{accumulo_peer}.
+\texttt{my\_table} and configure our peer \texttt{accumulo\_peer} as a target, sending
+the data to the table with an ID of \texttt{2} in \texttt{accumulo\_peer}.
 
 \begingroup\fontsize{8pt}{8pt}\selectfont\begin{verbatim}
 root@accumulo_primary> config -t my_table -s table.replication=true
@@ -135,9 +135,9 @@ On this page, information is broken down into the following sections:
 \section{Work Assignment}
 
 Depending on the schema of a table, different implementations of the WorkAssigner used could
-be configured. The implementation is controlled via the property \textt{replication.work.assigner}
+be configured. The implementation is controlled via the property \texttt{replication.work.assigner}
 and the full class name for the implementation. This can be configured via the shell or
-\textt{accumulo-site.xml}.
+\texttt{accumulo-site.xml}.
 
 \begingroup\fontsize{8pt}{8pt}\selectfont\begin{verbatim}
 <property>
@@ -151,13 +151,13 @@ and the full class name for the implementation. This can be configured via the s
 root@accumulo_primary> config -t my_table -s replication.work.assigner=org.apache.accumulo.master.replication.SequentialWorkAssigner
 \end{verbatim}\endgroup
 
-Two implementations are provided. By default, the \textt{SequentialWorkAssigner} is configured for an
+Two implementations are provided. By default, the \texttt{SequentialWorkAssigner} is configured for an
 instance. The SequentialWorkAssigner ensures that, per peer and each remote identifier, each WAL is
 replicated in the order in which they were created. This is sufficient to ensure that updates to a table
 will be replayed in the correct order on the peer. This implementation has the downside of only replicating
 a single WAL at a time.
 
-The second implementation, the \textt{UnorderedWorkAssigner} can be used to overcome the limitation
+The second implementation, the \texttt{UnorderedWorkAssigner} can be used to overcome the limitation
 of only a single WAL being replicated to a target and peer at any time. Depending on the table schema,
 it's possible that multiple versions of the same Key with different values are infrequent or nonexistent.
 In this case, parallel replication to a peer and target is possible without any downsides. In the case
@@ -185,8 +185,6 @@ size (\texttt{replication.max.unit.size}). The TabletServer on the peer will rep
 records were applied back to the primary, which will be used to record how many records
 were successfully replicated. The TabletServer on the primary will continue to replicate
 data in these batches until no more data can be read from the file.
-<<<<<<< HEAD:docs/src/main/latex/accumulo_user_manual/chapters/replication.tex
-=======
 
 === Other Configuration
 
@@ -211,11 +209,11 @@ tserver.replication.batchwriter.replayer.memory,  Size of BatchWriter cache to u
 
 A real-life example is now provided to give concrete application of replication configuration. This
 example is a two instance Accumulo system, one primary system and one peer system. They are called
-primary and peer, respectively. Each system also have a table of the same name, "my_table". The instance
+primary and peer, respectively. Each system also have a table of the same name, "my\_table". The instance
 name for each is also the same (primary and peer), and both have ZooKeeper hosts on a node with a hostname
 with that name as well (primary:2181 and peer:2181).
 
-We want to configure these systems so that "my_table" on "primary" replicates to "my_table" on "peer".
+We want to configure these systems so that "my\_table" on "primary" replicates to "my\_table" on "peer".
 
 \subsection{conf/accumulo-site.xml}
 
@@ -263,7 +261,7 @@ root@peer> grant -t my_table -u peer Table.READ
 root@peer> tables -l
 \end{verbatim}\endgroup
 
-Remember what the table ID for 'my_table' is. You'll need that to configured the primary instance.
+Remember what the table ID for 'my\_table' is. You'll need that to configured the primary instance.
 
 \subsection{Primary}
 
@@ -280,7 +278,7 @@ root@primary> createtable my_table
 We're defining the instance with replication.name of 'peer' as a peer. We provide the implementation of ReplicaSystem
 that we want to use, and the configuration for the AccumuloReplicaSystem. In this case, the configuration is the Accumulo
 Instance name for 'peer' and the ZooKeeper quorum string. The configuration key is of the form
-"replication.peer.$peer_name".
+"replication.peer.\$peer\_name".
 
 \begingroup\fontsize{8pt}{8pt}\selectfont\begin{verbatim}
 root@primary> config -s replication.peer.peer=org.apache.accumulo.tserver.replication.AccumuloReplicaSystem,peer,$peer_zk_quorum
@@ -289,7 +287,7 @@ root@primary> config -s replication.peer.peer=org.apache.accumulo.tserver.replic
 \subsection{Set the authentication credentials}
 
 We want to use that special username and password that we created on the peer, so we have a means to write data to
-the table that we want to replicate to. The configuration key is of the form "replication.peer.user.$peer_name".
+the table that we want to replicate to. The configuration key is of the form "replication.peer.user.\$peer\_name".
 
 \begingroup\fontsize{8pt}{8pt}\selectfont\begin{verbatim}
 root@primary> config -s replication.peer.user.peer=peer
@@ -303,8 +301,8 @@ our table with the implementation of ReplicaSystem we want to use to replicate t
 is an Accumulo instance, so we want to use the AccumuloReplicaSystem.
 
 The configuration for the AccumuloReplicaSystem is the table ID for the table on the peer instance that we
-want to replicate into. Be sure to use the correct value for $peer_table_id. The configuration key is of
-the form "table.replication.target.$peer_name".
+want to replicate into. Be sure to use the correct value for \$peer\_table\_id. The configuration key is of
+the form "table.replication.target.\$peer\_name".
 
 \begingroup\fontsize{8pt}{8pt}\selectfont\begin{verbatim}
 root@primary> config -t my_table -s table.replication.target.peer=$peer_table_id
@@ -365,7 +363,7 @@ While there are changes that could be made to the replication implementation whi
 presently, it is not recommended to configure Iterators or Combiners which are not idempotent to support cases where
 inaccuracy of aggregations is not acceptable.
 
-==== Server-Assigned Timestamps
+\subsection{Server-Assigned Timestamps}
 
 Accumulo has the ability to, when not provided by the client, assign a timestamp to updates made to a table. This is a
 very useful feature as it reduces the amount of code a client must write and also gives some notion of ordering to the
