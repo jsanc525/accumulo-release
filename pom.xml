@@ -1177,7 +1177,7 @@
         </property>
       </activation>
       <properties>
-        <hadoop.version>[2.5.0.2.2.0.0,2.5.0.2.3.0.0)</hadoop.version>
+        <hadoop.version>[2.5.0.2.2.0.0-200,2.5.0.2.3.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
