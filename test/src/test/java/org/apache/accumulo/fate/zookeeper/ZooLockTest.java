@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.accumulo.fate.zookeeper.ZooLock.AsyncLockWatcher;
 import org.apache.accumulo.fate.zookeeper.ZooLock.LockLossReason;
@@ -95,16 +96,16 @@ public class ZooLockTest {
     accumulo = new MiniAccumuloCluster(folder.getRoot(), "superSecret");
 
     accumulo.start();
-
+    Thread.sleep(2000);
   }
 
-  private static int pdCount = 0;
+  private static AtomicInteger pdCount = new AtomicInteger(0);
 
   @Test(timeout = 10000)
   public void testDeleteParent() throws Exception {
     accumulo.getZooKeepers();
 
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
     ZooLock zl = new ZooLock(accumulo.getZooKeepers(), 30000, "digest", "secret".getBytes(), parent);
 
@@ -137,7 +138,7 @@ public class ZooLockTest {
   public void testNoParent() throws Exception {
     accumulo.getZooKeepers();
 
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
     ZooLock zl = new ZooLock(accumulo.getZooKeepers(), 30000, "digest", "secret".getBytes(), parent);
 
@@ -159,7 +160,7 @@ public class ZooLockTest {
   public void testDeleteLock() throws Exception {
     accumulo.getZooKeepers();
 
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
     ZooReaderWriter zk = ZooReaderWriter.getInstance(accumulo.getZooKeepers(), 30000, "digest", "secret".getBytes());
     zk.mkdirs(parent);
@@ -192,7 +193,7 @@ public class ZooLockTest {
   public void testDeleteWaiting() throws Exception {
     accumulo.getZooKeepers();
 
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
     ZooReaderWriter zk = ZooReaderWriter.getInstance(accumulo.getZooKeepers(), 30000, "digest", "secret".getBytes());
     zk.mkdirs(parent);
@@ -260,7 +261,7 @@ public class ZooLockTest {
   public void testUnexpectedEvent() throws Exception {
     accumulo.getZooKeepers();
 
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
     ZooKeeper zk = new ZooKeeper(accumulo.getZooKeepers(), 30000, null);
     zk.addAuthInfo("digest", "secret".getBytes());
@@ -297,13 +298,13 @@ public class ZooLockTest {
 
   }
 
-  @Test(timeout = 10000)
+  @Test(timeout = 30000)
   public void testTryLock() throws Exception {
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
 
-    ZooLock zl = new ZooLock(accumulo.getZooKeepers(), 1000, "digest", "secret".getBytes(), parent);
+    ZooLock zl = new ZooLock(accumulo.getZooKeepers(), 5000, "digest", "secret".getBytes(), parent);
 
-    ZooKeeper zk = new ZooKeeper(accumulo.getZooKeepers(), 1000, null);
+    ZooKeeper zk = new ZooKeeper(accumulo.getZooKeepers(), 5000, null);
     zk.addAuthInfo("digest", "secret".getBytes());
 
     for (int i = 0; i < 10; i++) {
@@ -331,7 +332,7 @@ public class ZooLockTest {
 
   @Test(timeout = 10000)
   public void testChangeData() throws Exception {
-    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount++;
+    String parent = "/zltest-" + this.hashCode() + "-l" + pdCount.incrementAndGet();
     ZooKeeper zk = new ZooKeeper(accumulo.getZooKeepers(), 1000, null);
     zk.addAuthInfo("digest", "secret".getBytes());
     zk.create(parent, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -350,7 +351,7 @@ public class ZooLockTest {
   @AfterClass
   public static void tearDownMiniCluster() throws Exception {
     accumulo.stop();
-    folder.delete();
+//    folder.delete();
   }
 
 }
