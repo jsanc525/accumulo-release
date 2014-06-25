@@ -119,7 +119,7 @@ public class ZooLockTest {
     Thread.sleep(2000);
   }
 
-  private static AtomicInteger pdCount = new AtomicInteger(0);
+  private static final AtomicInteger pdCount = new AtomicInteger(0);
 
   @Test(timeout = 10000)
   public void testDeleteParent() throws Exception {

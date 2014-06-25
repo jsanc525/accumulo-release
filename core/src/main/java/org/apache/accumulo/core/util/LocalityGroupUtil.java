@@ -153,7 +153,7 @@ public class LocalityGroupUtil {
     StringBuilder sb = new StringBuilder();
     
     for (Text text : colFams) {
-      String ecf = encodeColumnFamily(sb, text.getBytes(), 0, text.getLength());
+      String ecf = encodeColumnFamily(sb, text.getBytes(), text.getLength());
       ecfs.add(ecf);
     }
     
@@ -161,10 +161,13 @@ public class LocalityGroupUtil {
   }
   
   public static String encodeColumnFamily(ByteSequence bs) {
-    return encodeColumnFamily(new StringBuilder(), bs.getBackingArray(), bs.offset(), bs.length());
+    if (bs.offset() != 0) {
+      throw new IllegalArgumentException("The offset cannot be non-zero.");
+    }
+    return encodeColumnFamily(new StringBuilder(), bs.getBackingArray(), bs.length());
   }
   
-  private static String encodeColumnFamily(StringBuilder sb, byte[] ba, int offset, int len) {
+  private static String encodeColumnFamily(StringBuilder sb, byte[] ba, int len) {
     sb.setLength(0);
     
     for (int i = 0; i < len; i++) {

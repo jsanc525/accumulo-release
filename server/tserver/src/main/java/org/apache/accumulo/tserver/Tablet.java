@@ -156,6 +156,8 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /*
  * We need to be able to have the master tell a tabletServer to
  * close this file, and the tablet server to handle all pending client reads
@@ -1090,6 +1092,18 @@ public class Tablet {
     splitCreationTime = System.currentTimeMillis();
   }
 
+  /**
+   * Only visibile for testing
+   */
+  @VisibleForTesting
+  protected Tablet(TabletTime tabletTime, String tabletDirectory, int logId, Path location, DatafileManager datafileManager) {
+    this.tabletTime = tabletTime;
+    this.tabletDirectory = tabletDirectory;
+    this.logId = logId;
+    this.location = location;
+    this.datafileManager = datafileManager; 
+  }
+
   private Tablet(TabletServer tabletServer, Text location, KeyExtent extent, TabletResourceManager trm, Configuration conf,
       SortedMap<Key,Value> tabletsKeyValues) throws IOException {
     this(tabletServer, location, extent, trm, conf, VolumeManagerImpl.get(), tabletsKeyValues);
@@ -1371,6 +1385,8 @@ public class Tablet {
     tabletResources.setTablet(this, acuTableConf);
     if (!logEntries.isEmpty()) {
       log.info("Starting Write-Ahead Log recovery for " + this.extent);
+      // count[0] = entries used on tablet
+      // count[1] = track max time from walog entries wihtout timestamps
       final long[] count = new long[2];
       final CommitSession commitSession = tabletMemory.getCommitSession();
       count[1] = Long.MIN_VALUE;
@@ -1402,6 +1418,7 @@ public class Tablet {
         commitSession.updateMaxCommittedTime(tabletTime.getTime());
 
         if (count[0] == 0) {
+          log.debug("No replayed mutations applied, removing unused entries for " + extent);
           MetadataTableUtil.removeUnusedWALEntries(extent, logEntries, tabletServer.getLock());
 
           // Ensure that we write a record marking each WAL as requiring replication to make sure we don't abandon the data
@@ -1435,7 +1452,7 @@ public class Tablet {
       currentLogs = new HashSet<DfsLogger>();
       for (LogEntry logEntry : logEntries) {
         for (String log : logEntry.logSet) {
-          currentLogs.add(new DfsLogger(tabletServer.getServerConfig(), log));
+          currentLogs.add(new DfsLogger(tabletServer.getServerConfig(), log, logEntry.getColumnQualifier().toString()));
         }
       }
 
@@ -3274,7 +3291,7 @@ public class Tablet {
     }
   }
 
-  private AccumuloConfiguration createTableConfiguration(TableConfiguration base, CompactionPlan plan) {
+  protected AccumuloConfiguration createTableConfiguration(TableConfiguration base, CompactionPlan plan) {
     if (plan == null || plan.writeParameters == null)
       return base;
     WriteParameters p = plan.writeParameters;
@@ -3284,7 +3301,7 @@ public class Tablet {
     if (p.getBlockSize() > 0)
       result.set(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE, "" + p.getBlockSize());
     if (p.getIndexBlockSize() > 0)
-      result.set(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE_INDEX, "" + p.getBlockSize());
+      result.set(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE_INDEX, "" + p.getIndexBlockSize());
     if (p.getCompressType() != null)
       result.set(Property.TABLE_FILE_COMPRESSION_TYPE, p.getCompressType());
     if (p.getReplication() != 0)
@@ -3693,12 +3710,12 @@ public class Tablet {
 
       for (DfsLogger logger : otherLogs) {
         otherLogsCopy.add(logger.toString());
-        doomed.add(logger.toString());
+        doomed.add(logger.getMeta());
       }
 
       for (DfsLogger logger : currentLogs) {
         currentLogsCopy.add(logger.toString());
-        doomed.remove(logger.toString());
+        doomed.remove(logger.getMeta());
       }
 
       otherLogs = Collections.emptySet();
@@ -3714,6 +3731,10 @@ public class Tablet {
 
     for (String logger : currentLogsCopy) {
       log.debug("Logs for current memory: " + getExtent() + " " + logger);
+    }
+
+    for (String logger : doomed) {
+      log.debug("Logs to be destroyed: " + getExtent() + " " + logger);
     }
 
     return doomed;

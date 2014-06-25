@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.core.client.ClientConfiguration;
 import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
@@ -29,7 +30,7 @@ import org.apache.accumulo.core.client.mock.MockInstance;
 import org.apache.accumulo.core.client.security.tokens.AuthenticationToken;
 import org.apache.accumulo.core.client.security.tokens.AuthenticationToken.AuthenticationTokenSerializer;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
-import org.apache.commons.codec.binary.Base64;
+import org.apache.accumulo.core.util.Base64;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -126,4 +127,11 @@ public class ConfiguratorBaseTest {
     assertEquals(Level.FATAL, ConfiguratorBase.getLogLevel(this.getClass(), conf));
   }
 
+  @Test
+  public void testSetVisibiltyCacheSize(){
+	 Configuration conf = new Configuration();
+	 assertEquals(Constants.DEFAULT_VISIBILITY_CACHE_SIZE,ConfiguratorBase.getVisibilityCacheSize(conf));
+	 ConfiguratorBase.setVisibilityCacheSize(conf, 2000);
+	 assertEquals(2000,ConfiguratorBase.getVisibilityCacheSize(conf));
+  }
 }

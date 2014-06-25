@@ -17,17 +17,13 @@
 package org.apache.accumulo.fate.zookeeper;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.SecurityPermission;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.accumulo.fate.util.UtilWaitThread;
 import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeExistsPolicy;
 import org.apache.accumulo.fate.zookeeper.ZooUtil.NodeMissingPolicy;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.BadVersionException;
@@ -154,28 +150,8 @@ public class ZooReaderWriter extends ZooReader implements IZooReaderWriter {
   public static synchronized IZooReaderWriter getRetryingInstance(String zookeepers, int timeInMillis, String scheme, byte[] auth) {
     
     if (retryingInstance == null) {
-      final IZooReaderWriter inst = getInstance(zookeepers, timeInMillis, scheme, auth);
-      
-      InvocationHandler ih = new InvocationHandler() {
-        @Override
-        public Object invoke(Object obj, Method method, Object[] args) throws Throwable {
-          long retryTime = 250;
-          while (true) {
-            try {
-              return method.invoke(inst, args);
-            } catch (InvocationTargetException e) {
-              if (e.getCause() instanceof KeeperException.ConnectionLossException) {
-                Logger.getLogger(ZooReaderWriter.class).warn("Error connecting to zookeeper, will retry in " + String.format("%.2f secs", retryTime / 1000.0), e.getCause());
-                UtilWaitThread.sleep(retryTime);
-                retryTime = Math.min(5000, retryTime + 250);
-              } else {
-                throw e.getCause();
-              }
-            }
-          }
-        }
-      };
-      
+      IZooReaderWriter inst = getInstance(zookeepers, timeInMillis, scheme, auth);
+      InvocationHandler ih = new RetryingInvocationHandler(inst);
       retryingInstance = (IZooReaderWriter) Proxy.newProxyInstance(ZooReaderWriter.class.getClassLoader(), new Class[] {IZooReaderWriter.class}, ih);
     }
     

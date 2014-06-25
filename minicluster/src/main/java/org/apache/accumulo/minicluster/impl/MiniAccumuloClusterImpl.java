@@ -41,6 +41,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.accumulo.cluster.AccumuloCluster;
 import org.apache.accumulo.core.client.AccumuloException;
@@ -67,12 +74,14 @@ import org.apache.accumulo.start.Main;
 import org.apache.accumulo.start.classloader.vfs.MiniDFSUtil;
 import org.apache.accumulo.tserver.TabletServer;
 import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.impl.VFSClassLoader;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.hdfs.DFSConfigKeys;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
+import org.apache.log4j.Logger;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 
 import com.google.common.base.Predicate;
@@ -85,6 +94,7 @@ import com.google.common.collect.Maps;
  * @since 1.6.0
  */
 public class MiniAccumuloClusterImpl implements AccumuloCluster {
+  private static final Logger log = Logger.getLogger(MiniAccumuloClusterImpl.class);
 
   public static class LogWriter extends Daemon {
     private BufferedReader in;
@@ -130,8 +140,6 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
       } catch (IOException e) {}
     }
   }
-
-  private static final long ZOOKEEPER_STARTUP_WAIT = 20*1000;
 
   private boolean initialized = false;
   private Process zooKeeperProcess = null;
@@ -391,6 +399,13 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     zooCfg.store(fileWriter, null);
 
     fileWriter.close();
+
+    // disable audit logging for mini....
+    InputStream auditStream = this.getClass().getResourceAsStream("/auditLog.xml");
+
+    if (auditStream != null) {
+      FileUtils.copyInputStreamToFile(auditStream, new File(config.getConfDir(), "auditLog.xml"));
+    }
   }
 
   private void writeConfig(File file, Iterable<Map.Entry<String,String>> settings) throws IOException {
@@ -456,8 +471,8 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
           if (n >= 4 && new String(buffer, 0, 4).equals("imok"))
             break;
         } catch (Exception e) {
-          if (System.currentTimeMillis() - startTime >= ZOOKEEPER_STARTUP_WAIT) {
-            throw new RuntimeException("Zookeeper did not start within " + (ZOOKEEPER_STARTUP_WAIT/1000) + " seconds. Check the logs in " + config.getLogDir() + " for errors.  Last exception: " + e);
+          if (System.currentTimeMillis() - startTime >= config.getZooKeeperStartupTime()) {
+            throw new RuntimeException("Zookeeper did not start within " + (config.getZooKeeperStartupTime()/1000) + " seconds. Check the logs in " + config.getLogDir() + " for errors.  Last exception: " + e);
           }
           UtilWaitThread.sleep(250);
         } finally {
@@ -599,24 +614,44 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     }
 
     if (gcProcess != null) {
-      gcProcess.destroy();
-      gcProcess.waitFor();
+      try {
+        stopProcessWithTimeout(gcProcess, 30, TimeUnit.SECONDS);
+      } catch (ExecutionException e) {
+        log.warn("GarbageCollector did not fully stop after 30 seconds", e);
+      } catch (TimeoutException e) {
+        log.warn("GarbageCollector did not fully stop after 30 seconds", e);
+      }
     }
     if (masterProcess != null) {
-      masterProcess.destroy();
-      masterProcess.waitFor();
+      try {
+        stopProcessWithTimeout(masterProcess, 30, TimeUnit.SECONDS);
+      } catch (ExecutionException e) {
+        log.warn("Master did not fully stop after 30 seconds", e);
+      } catch (TimeoutException e) {
+        log.warn("Master did not fully stop after 30 seconds", e);
+      }
     }
     if (tabletServerProcesses != null) {
       synchronized (tabletServerProcesses) {
         for (Process tserver : tabletServerProcesses) {
-          tserver.destroy();
-          tserver.waitFor();
+          try {
+            stopProcessWithTimeout(tserver, 30, TimeUnit.SECONDS);
+          } catch (ExecutionException e) {
+            log.warn("TabletServer did not fully stop after 30 seconds", e);
+          } catch (TimeoutException e) {
+            log.warn("TabletServer did not fully stop after 30 seconds", e);
+          }
         }
       }
     }
     if (zooKeeperProcess != null) {
-      zooKeeperProcess.destroy();
-      zooKeeperProcess.waitFor();
+      try {
+        stopProcessWithTimeout(zooKeeperProcess, 30, TimeUnit.SECONDS);
+      } catch (ExecutionException e) {
+        log.warn("ZooKeeper did not fully stop after 30 seconds", e);
+      } catch (TimeoutException e) {
+        log.warn("ZooKeeper did not fully stop after 30 seconds", e);
+      }
     }
 
     zooKeeperProcess = null;
@@ -663,5 +698,21 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+  private int stopProcessWithTimeout(final Process proc, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    FutureTask<Integer> future = new FutureTask<Integer>(new Callable<Integer>() {
+        @Override
+        public Integer call() throws InterruptedException {
+          proc.destroy();
+          return proc.waitFor();
+        }
+    });
+
+    executor.execute(future);
+
+    return future.get(timeout, unit);
   }
 }

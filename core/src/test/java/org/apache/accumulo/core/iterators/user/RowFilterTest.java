@@ -239,10 +239,8 @@ public class RowFilterTest {
     for (Mutation m : createMutations()) {
       bw.addMutation(m);
     }
-    conn.tableOperations().attachIterator("chained_row_filters", new IteratorSetting(40, "trueFilter1",
-        TrueFilter.class));
-    conn.tableOperations().attachIterator("chained_row_filters", new IteratorSetting(41, "trueFilter2",
-        TrueFilter.class));
+    conn.tableOperations().attachIterator("chained_row_filters", new IteratorSetting(40, "trueFilter1", TrueFilter.class));
+    conn.tableOperations().attachIterator("chained_row_filters", new IteratorSetting(41, "trueFilter2", TrueFilter.class));
     Scanner scanner = conn.createScanner("chained_row_filters", Authorizations.EMPTY);
     assertEquals(new HashSet<String>(Arrays.asList("0", "1", "2", "3", "4")), getRows(scanner));
   }
@@ -257,10 +255,8 @@ public class RowFilterTest {
     for (Mutation m : createMutations()) {
       bw.addMutation(m);
     }
-    conn.tableOperations().attachIterator("filter_conjunction", new IteratorSetting(40, "rowZeroOrOne",
-        RowZeroOrOneFilter.class));
-    conn.tableOperations().attachIterator("filter_conjunction", new IteratorSetting(41, "rowOneOrTwo",
-        RowOneOrTwoFilter.class));
+    conn.tableOperations().attachIterator("filter_conjunction", new IteratorSetting(40, "rowZeroOrOne", RowZeroOrOneFilter.class));
+    conn.tableOperations().attachIterator("filter_conjunction", new IteratorSetting(41, "rowOneOrTwo", RowOneOrTwoFilter.class));
     Scanner scanner = conn.createScanner("filter_conjunction", Authorizations.EMPTY);
     assertEquals(new HashSet<String>(Arrays.asList("1")), getRows(scanner));
   }
