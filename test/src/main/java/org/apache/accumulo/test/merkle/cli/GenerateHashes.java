@@ -216,7 +216,7 @@ public class GenerateHashes {
             }
 
             // Log some progress
-            log.info("{} computed digest for {} of {}", Thread.currentThread().getName(), range, Hex.encodeHexString(v.get()));
+            log.trace("{} {}", range, Hex.encodeHexString(v.get()));
 
             try {
               bw.addMutation(m);
