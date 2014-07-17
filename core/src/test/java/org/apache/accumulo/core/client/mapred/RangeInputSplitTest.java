@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.client.mapreduce;
+package org.apache.accumulo.core.client.mapred;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,8 +55,6 @@ public class RangeInputSplitTest {
     DataInputStream dis = new DataInputStream(bais);
     newSplit.readFields(dis);
     
-    Assert.assertEquals(split.getTableName(), newSplit.getTableName());
-    Assert.assertEquals(split.getTableId(), newSplit.getTableId());
     Assert.assertEquals(split.getRange(), newSplit.getRange());
     Assert.assertTrue(Arrays.equals(split.getLocations(), newSplit.getLocations()));
   }

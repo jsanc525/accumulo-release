@@ -37,12 +37,14 @@ import org.apache.accumulo.core.conf.DefaultConfiguration;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.KeyExtent;
+import org.apache.accumulo.core.file.rfile.RFile;
 import org.apache.accumulo.core.util.CachedConfiguration;
 import org.apache.accumulo.core.volume.NonConfiguredVolume;
 import org.apache.accumulo.core.volume.Volume;
 import org.apache.accumulo.core.volume.VolumeConfiguration;
 import org.apache.accumulo.server.conf.ServerConfiguration;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.ContentSummary;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -526,6 +528,8 @@ public class VolumeManagerImpl implements VolumeManager {
     return getFullPath(FileType.TABLE, path);
   }
 
+  private static final String RFILE_SUFFIX = "." + RFile.EXTENSION;
+
   @Override
   public Path getFullPath(FileType fileType, String path) {
     int colon = path.indexOf(':');
@@ -538,10 +542,30 @@ public class VolumeManagerImpl implements VolumeManager {
       }
     }
 
-    // normalize the path
-    Path fullPath = new Path(defaultVolume.getBasePath(), fileType.getDirectory());
     if (path.startsWith("/"))
       path = path.substring(1);
+
+    // ACCUMULO-2974 To ensure that a proper absolute path is created, the caller needs to include the table ID
+    // in the relative path. Fail when this doesn't appear to happen.
+    if (FileType.TABLE == fileType) {
+      // Trailing slash doesn't create an additional element
+      String[] pathComponents = StringUtils.split(path, Path.SEPARATOR_CHAR);
+
+      // Is an rfile
+      if (path.endsWith(RFILE_SUFFIX)) {
+        if (pathComponents.length < 3) {
+          throw new IllegalArgumentException("Fewer components in file path than expected");
+        }
+      } else {
+        // is a directory
+        if (pathComponents.length < 2) {
+          throw new IllegalArgumentException("Fewer components in directory path than expected");
+        }
+      }
+    }
+
+    // normalize the path
+    Path fullPath = new Path(defaultVolume.getBasePath(), fileType.getDirectory());
     fullPath = new Path(fullPath, path);
 
     FileSystem fs = getVolumeByPath(fullPath).getFileSystem();

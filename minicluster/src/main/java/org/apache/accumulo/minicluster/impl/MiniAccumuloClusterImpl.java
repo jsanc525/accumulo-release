@@ -162,6 +162,8 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
   private MiniDFSCluster miniDFS = null;
   private List<Process> cleanup = new ArrayList<Process>();
 
+  private ExecutorService executor;
+
   public Process exec(Class<?> clazz, String... args) throws IOException {
     return exec(clazz, null, args);
   }
@@ -509,6 +511,10 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     if (gcProcess == null) {
       gcProcess = _exec(SimpleGarbageCollector.class, ServerType.GARBAGE_COLLECTOR);
     }
+
+    if (null == executor) {
+      executor = Executors.newSingleThreadExecutor();
+    }
   }
 
   private List<String> buildRemoteDebugParams(int port) {
@@ -658,6 +664,19 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     masterProcess = null;
     gcProcess = null;
     tabletServerProcesses.clear();
+
+    // ACCUMULO-2985 stop the ExecutorService after we finished using it to stop accumulo procs
+    if (null != executor) {
+      List<Runnable> tasksRemaining = executor.shutdownNow();
+
+      // the single thread executor shouldn't have any pending tasks, but check anyways
+      if (!tasksRemaining.isEmpty()) {
+        log.warn("Unexpectedly had " + tasksRemaining.size() + " task(s) remaining in threadpool for execution when being stopped");
+      }
+
+      executor = null;
+    }
+
     if (config.useMiniDFS() && miniDFS != null)
       miniDFS.shutdown();
     for (Process p : cleanup) {
@@ -700,7 +719,15 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     }
   }
 
-  private final ExecutorService executor = Executors.newSingleThreadExecutor();
+  // Visible for testing
+  protected void setShutdownExecutor(ExecutorService svc) {
+    this.executor = svc;
+  }
+
+  // Visible for testing
+  protected ExecutorService getShutdownExecutor() {
+    return executor;
+  }
 
   private int stopProcessWithTimeout(final Process proc, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
     FutureTask<Integer> future = new FutureTask<Integer>(new Callable<Integer>() {
