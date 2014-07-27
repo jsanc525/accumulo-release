@@ -36,6 +36,7 @@ import org.apache.accumulo.core.trace.DistributedTrace;
 import org.apache.accumulo.fate.zookeeper.ZooReader;
 import org.apache.accumulo.trace.instrument.Span;
 import org.apache.accumulo.trace.instrument.Trace;
+import org.apache.log4j.Logger;
 
 import com.beust.jcommander.Parameter;
 
@@ -44,6 +45,7 @@ import com.beust.jcommander.Parameter;
  * 
  */
 public class TracingExample {
+  private static final Logger log = Logger.getLogger(TracingExample.class);
 
   private static final String DEFAULT_TABLE_NAME = "test";
 
@@ -129,14 +131,17 @@ public class TracingExample {
   }
 
   public static void main(String[] args) throws Exception {
-
-    TracingExample tracingExample = new TracingExample();
-    Opts opts = new Opts();
-    ScannerOpts scannerOpts = new ScannerOpts();
-    opts.parseArgs(TracingExample.class.getName(), args, scannerOpts);
-
-    tracingExample.enableTracing(opts);
-    tracingExample.execute(opts);
+    try {
+      TracingExample tracingExample = new TracingExample();
+      Opts opts = new Opts();
+      ScannerOpts scannerOpts = new ScannerOpts();
+      opts.parseArgs(TracingExample.class.getName(), args, scannerOpts);
+  
+      tracingExample.enableTracing(opts);
+      tracingExample.execute(opts);
+    } catch (Exception e) {
+      log.error("Caught exception running TracingExample", e);
+    }
   }
 
 }
