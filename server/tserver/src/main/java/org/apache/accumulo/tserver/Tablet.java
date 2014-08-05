@@ -177,7 +177,7 @@ import com.google.common.annotations.VisibleForTesting;
 public class Tablet {
 
   enum MinorCompactionReason {
-    USER, SYSTEM, CLOSE
+    USER, SYSTEM, CLOSE, RECOVERY
   }
 
   public class CommitSession {
@@ -2216,7 +2216,10 @@ public class Tablet {
     otherLogs = currentLogs;
     currentLogs = new HashSet<DfsLogger>();
 
-    FileRef mergeFile = datafileManager.reserveMergingMinorCompactionFile();
+    FileRef mergeFile = null;
+    if (mincReason != MinorCompactionReason.RECOVERY) {
+      mergeFile = datafileManager.reserveMergingMinorCompactionFile();
+    }
 
     return new MinorCompactionTask(mergeFile, oldCommitSession, flushId, mincReason);
 
@@ -2332,13 +2335,6 @@ public class Tablet {
             logMessage.append(" tabletMemory.getMemTable().getNumEntries() " + tabletMemory.getMemTable().getNumEntries());
           logMessage.append(" updatingFlushID " + updatingFlushID);
 
-          return null;
-        }
-        // We're still recovering log entries
-        if (datafileManager == null) {
-          logMessage = new StringBuilder();
-          logMessage.append(extent.toString());
-          logMessage.append(" datafileManager " + datafileManager);
           return null;
         }
 
