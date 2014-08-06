@@ -74,7 +74,7 @@ public class ReplicationUtil {
    * @return Configured replication peers
    */
   public Map<String,String> getPeers(Map<String,String> systemProperties) {
-    Map<String,String> peers = new HashMap<>();
+    Map<String,String> peers = new HashMap<String,String>();
     String definedPeersPrefix = Property.REPLICATION_PEERS.getKey();
 
     // Get the defined peers and what ReplicaSystem impl they're using
@@ -100,7 +100,7 @@ public class ReplicationUtil {
 
   public Set<ReplicationTarget> getReplicationTargets(TableOperations tops) {
     // The total set of configured targets
-    final Set<ReplicationTarget> allConfiguredTargets = new HashSet<>();
+    final Set<ReplicationTarget> allConfiguredTargets = new HashSet<ReplicationTarget>();
     final Map<String,String> tableNameToId = tops.tableIdMap();
 
     for (String table : tops.list()) {
@@ -139,7 +139,7 @@ public class ReplicationUtil {
   }
 
   public Map<ReplicationTarget,Long> getPendingReplications(Connector conn) {
-    final Map<ReplicationTarget,Long> counts = new HashMap<>();
+    final Map<ReplicationTarget,Long> counts = new HashMap<ReplicationTarget,Long>();
 
     // Read over the queued work
     BatchScanner bs;

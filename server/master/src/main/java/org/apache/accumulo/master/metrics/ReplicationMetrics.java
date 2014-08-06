@@ -62,7 +62,10 @@ public class ReplicationMetrics extends AbstractMetricsImpl implements Replicati
     Map<String,String> properties;
     try {
       properties = conn.instanceOperations().getSystemConfiguration();
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.debug("Could not extract system configuration", e);
+      return 0;
+    } catch (AccumuloSecurityException e) {
       log.debug("Could not extract system configuration", e);
       return 0;
     }
@@ -100,7 +103,10 @@ public class ReplicationMetrics extends AbstractMetricsImpl implements Replicati
     Map<String,String> properties;
     try {
       properties = conn.instanceOperations().getSystemConfiguration();
-    } catch (AccumuloException | AccumuloSecurityException e) {
+    } catch (AccumuloException e) {
+      log.debug("Could not extract system configuration", e);
+      return 0;
+    } catch (AccumuloSecurityException e) {
       log.debug("Could not extract system configuration", e);
       return 0;
     }
