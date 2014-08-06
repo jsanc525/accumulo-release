@@ -115,7 +115,7 @@ ${mvnProjBaseDir}
       $HADOOP_PREFIX/share/hadoop/mapreduce/[^.].*.jar,
       $HADOOP_PREFIX/share/hadoop/yarn/[^.].*.jar,
       /usr/lib/hadoop/[^.].*.jar,
-      /usr/lib/hadoop/lib/[^.].*.jar,
+      /usr/lib/hadoop/lib/(?!slf4j)[^.].*.jar,
       /usr/lib/hadoop-hdfs/[^.].*.jar,
       /usr/lib/hadoop-mapreduce/[^.].*.jar,
       /usr/lib/hadoop-yarn/[^.].*.jar,
