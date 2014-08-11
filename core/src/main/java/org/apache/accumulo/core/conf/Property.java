@@ -98,6 +98,8 @@ public enum Property {
   RPC_SSL_TRUSTSTORE_TYPE("rpc.javax.net.ssl.trustStoreType", "jks", PropertyType.STRING, "Type of SSL truststore"),
   RPC_USE_JSSE("rpc.useJsse", "false", PropertyType.BOOLEAN, "Use JSSE system properties to configure SSL rather than the " + RPC_PREFIX.getKey()
       + "javax.net.ssl.* Accumulo properties"),
+  RPC_SSL_CIPHER_SUITES("rpc.ssl.cipher.suites", "", PropertyType.STRING, "Comma separated list of cipher suites that can be used by accepted connections"),
+
   // instance properties (must be the same for every node in an instance)
   INSTANCE_PREFIX("instance.", null, PropertyType.PREFIX,
       "Properties in this category must be consistent throughout a cloud. This is enforced and servers won't be able to communicate if these differ."),
@@ -316,6 +318,8 @@ public enum Property {
   @Experimental
   @Sensitive
   MONITOR_SSL_TRUSTSTOREPASS("monitor.ssl.trustStorePassword", "", PropertyType.STRING, "The truststore password for enabling monitor SSL."),
+  MONITOR_SSL_INCLUDE_CIPHERS("monitor.ssl.include.ciphers", "", PropertyType.STRING, "A comma-separated list of allows SSL Ciphers, see monitor.ssl.exclude.ciphers to disallow ciphers"),
+  MONITOR_SSL_EXCLUDE_CIPHERS("monitor.ssl.exclude.ciphers", "", PropertyType.STRING, "A comma-separated list of disallowed SSL Ciphers, see mmonitor.ssl.include.ciphers to allow ciphers"),
 
   MONITOR_LOCK_CHECK_INTERVAL("monitor.lock.check.interval", "5s", PropertyType.TIMEDURATION,
       "The amount of time to sleep between checking for the Montior ZooKeeper lock"),
