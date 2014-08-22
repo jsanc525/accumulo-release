@@ -895,6 +895,9 @@ public class Tablet {
           // This WAL could still be in use by other Tablets *from the same table*, so we can only mark that there is data to replicate,
           // but it is *not* closed
           if (replicate) {
+            if (log.isDebugEnabled()) {
+              log.debug("Recording that data has been ingested into " + extent + " using " + logFileOnly);
+            }
             ReplicationTableUtil.updateFiles(SystemCredentials.get(), extent, logFileOnly, StatusUtil.openWithUnknownLength());
           }
         }
