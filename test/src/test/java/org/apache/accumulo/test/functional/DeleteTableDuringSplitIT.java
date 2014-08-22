@@ -40,13 +40,13 @@ public class DeleteTableDuringSplitIT extends SimpleMacIT {
 
   @Test
   public void test() throws Exception {
-    String[] tableNames = getUniqueNames(100);
+    String[] tableNames = getUniqueNames(50);
     // make a bunch of tables
     for (String tableName : tableNames) {
       getConnector().tableOperations().create(tableName);
     }
     final SortedSet<Text> splits = new TreeSet<Text>();
-    for (byte i = 0; i < 100; i++) {
+    for (byte i = 0; i < 50; i++) {
       splits.add(new Text(new byte[]{0, 0, i}));
     }
 
