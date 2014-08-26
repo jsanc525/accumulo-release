@@ -123,7 +123,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     return logs;
   }
 
-  @Test(timeout = 1000 * 60 * 5)
+  @Test(timeout = 1000 * 60 * 6)
   public void correctRecordsCompleteFile() throws Exception {
     Connector conn = getConnector();
     String table = "table1";
@@ -142,10 +142,10 @@ public class ReplicationIT extends ConfigurableMacIT {
 
     // After writing data, we'll get a replication table
     boolean exists = conn.tableOperations().exists(ReplicationTable.NAME);
-    int attempts = 5;
+    int attempts = 10;
     do {
       if (!exists) {
-        UtilWaitThread.sleep(500);
+        UtilWaitThread.sleep(1000);
         exists = conn.tableOperations().exists(ReplicationTable.NAME);
         attempts--;
       }
