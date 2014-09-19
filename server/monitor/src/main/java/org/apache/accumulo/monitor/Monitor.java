@@ -534,6 +534,8 @@ public class Monitor {
         }
       } catch (Exception ex) {
         log.debug(ex, ex);
+      } finally {
+        ThriftUtil.returnClient(tserver);
       }
     }
     // Age off old scan information
