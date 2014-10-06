@@ -1347,6 +1347,7 @@ public class ReplicationIT extends ConfigurableMacIT {
             case PERMISSION_DENIED:
               // retry -- the grant didn't happen yet
               log.warn("Sleeping because permission was denied");
+              Thread.sleep(2000);
               break;
             default:
               throw e;
@@ -1406,7 +1407,7 @@ public class ReplicationIT extends ConfigurableMacIT {
         foundResults = true;
         break;
       }
-      Thread.sleep(1000);
+      Thread.sleep(3000);
     }
 
     Assert.assertTrue("Did not find any replication entries in the replication table", foundResults);
@@ -1434,7 +1435,7 @@ public class ReplicationIT extends ConfigurableMacIT {
         foundResults = false;
         break;
       }
-      Thread.sleep(1000);
+      Thread.sleep(3000);
       log.info("");
     }
 
@@ -1457,7 +1458,7 @@ public class ReplicationIT extends ConfigurableMacIT {
       if (0 == recordsFound) {
         break;
       } else {
-        Thread.sleep(1000);
+        Thread.sleep(3000);
         log.info("");
       }
     }
