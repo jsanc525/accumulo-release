@@ -1195,6 +1195,8 @@ public class ReplicationIT extends ConfigurableMacIT {
         if (allClosed) {
           break;
         }
+
+        UtilWaitThread.sleep(1000);
       }
 
       if (!allClosed) {
@@ -1229,7 +1231,7 @@ public class ReplicationIT extends ConfigurableMacIT {
           break;
         }
 
-        UtilWaitThread.sleep(1000);
+        UtilWaitThread.sleep(3000);
       }
 
       if (!allClosed) {
