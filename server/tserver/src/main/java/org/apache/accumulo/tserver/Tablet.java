@@ -46,6 +46,7 @@ import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.impl.ScannerImpl;
+import org.apache.accumulo.core.client.impl.Tables;
 import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.ConfigurationCopy;
 import org.apache.accumulo.core.conf.ConfigurationObserver;
@@ -1282,8 +1283,20 @@ public class Tablet {
       final VolumeManager fs, final List<LogEntry> rawLogEntries, final SortedMap<FileRef,DataFileValue> rawDatafiles, String time,
       final TServerInstance lastLocation, Set<FileRef> scanFiles, long initFlushID, long initCompactID) throws IOException {
 
+    TableConfiguration tblConf = tabletServer.getTableConfiguration(extent);
+    if (null == tblConf) {
+      Tables.clearCache(HdfsZooInstance.getInstance());
+      tblConf = tabletServer.getTableConfiguration(extent);
+      if (null == tblConf) {
+        // Not guaranteed to be non-null, but should be. A failed load will be re-assigned though..
+        log.warn("Could not get table configuration for " + extent.getTableId().toString());
+      }
+    }
+
+    this.acuTableConf = tblConf;
+
     TabletFiles tabletPaths = VolumeUtil.updateTabletVolumes(tabletServer.getLock(), fs, extent, new TabletFiles(location.toString(), rawLogEntries,
-        rawDatafiles), ReplicationConfigurationUtil.isEnabled(extent, tabletServer.getTableConfiguration(extent)));
+        rawDatafiles), ReplicationConfigurationUtil.isEnabled(extent, this.acuTableConf));
 
     Path locationPath;
 
@@ -1300,7 +1313,6 @@ public class Tablet {
     this.lastLocation = lastLocation;
     this.tabletDirectory = tabletPaths.dir;
     this.conf = conf;
-    this.acuTableConf = tabletServer.getTableConfiguration(extent);
 
     this.fs = fs;
     this.extent = extent;
