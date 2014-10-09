@@ -62,7 +62,7 @@ public class NoMutationRecoveryIT extends ConfigurableMacIT {
     return akey.compareTo(bkey, PartialKey.ROW_COLFAM_COLQUAL_COLVIS) == 0 && a.getValue().equals(b.getValue()); 
   }
   
-  @Test(timeout = 2 * 60 * 1000)
+  @Test(timeout = 10 * 60 * 1000)
   public void test() throws Exception {
     Connector conn = getConnector();
     conn.tableOperations().create(TABLE);
