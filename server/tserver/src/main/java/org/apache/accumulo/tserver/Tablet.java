@@ -163,16 +163,16 @@ import com.google.common.annotations.VisibleForTesting;
  * We need to be able to have the master tell a tabletServer to
  * close this file, and the tablet server to handle all pending client reads
  * before closing
- * 
+ *
  */
 
 /**
- * 
+ *
  * this class just provides an interface to read from a MapFile mostly takes care of reporting start and end keys
- * 
+ *
  * need this because a single row extent can have multiple columns this manages all the columns (each handled by a store) for a single row-extent
- * 
- * 
+ *
+ *
  */
 
 public class Tablet {
@@ -428,7 +428,7 @@ public class Tablet {
 
   private long lastFlushID = -1;
   private long lastCompactID = -1;
-  
+
   private static class CompactionWaitInfo {
     long flushID = -1;
     long compactionID = -1;
@@ -529,7 +529,7 @@ public class Tablet {
     }
 
     if (files == null) {
-      if (tabletDir.getName().startsWith("c-"))
+      if (tabletDir.getName().startsWith(Constants.CLONE_PREFIX))
         log.debug("Tablet " + extent + " had no dir, creating " + tabletDir); // its a clone dir...
       else
         log.warn("Tablet " + extent + " had no dir, creating " + tabletDir);
@@ -839,7 +839,7 @@ public class Tablet {
               log.warn("Target map file already exist " + newDatafile);
               fs.deleteRecursively(newDatafile.path());
             }
-            
+
             rename(fs, tmpDatafile.path(), newDatafile.path());
           }
           break;
@@ -998,7 +998,7 @@ public class Tablet {
         // rename before putting in metadata table, so files in metadata table should
         // always exist
         rename(fs, tmpDatafile.path(), newDatafile.path());
-        
+
         if (dfv.getNumEntries() == 0) {
           fs.deleteRecursively(newDatafile.path());
         }
@@ -1113,7 +1113,7 @@ public class Tablet {
     this.tabletDirectory = tabletDirectory;
     this.logId = logId;
     this.location = location;
-    this.datafileManager = datafileManager; 
+    this.datafileManager = datafileManager;
   }
 
   private Tablet(TabletServer tabletServer, Text location, KeyExtent extent, TabletResourceManager trm, Configuration conf,
@@ -1399,9 +1399,9 @@ public class Tablet {
       }
 
     });
-    
+
     acuTableConf.getNamespaceConfiguration().addObserver(configObserver);
-    
+
     // Force a load of any per-table properties
     configObserver.propertiesChanged();
 
@@ -1767,7 +1767,7 @@ public class Tablet {
 
   /**
    * Determine if a JVM shutdown is in progress.
-   * 
+   *
    */
   private boolean shutdownInProgress() {
     try {
@@ -2105,7 +2105,7 @@ public class Tablet {
     public void setInterruptFlag(AtomicBoolean flag) {
       throw new UnsupportedOperationException();
     }
-    
+
   }
 
   private DataFileValue minorCompact(Configuration conf, VolumeManager fs, InMemoryMap memTable, FileRef tmpDatafile, FileRef newDatafile, FileRef mergeFile,
@@ -2829,7 +2829,7 @@ public class Tablet {
 
   /**
    * Returns a Path object representing the tablet's location on the DFS.
-   * 
+   *
    * @return location
    */
   public Path getLocation() {
@@ -2924,7 +2924,7 @@ public class Tablet {
 
   /**
    * Returns true if a major compaction should be performed on the tablet.
-   * 
+   *
    */
   public boolean needsMajorCompaction(MajorCompactionReason reason) {
     if (majorCompactionInProgress)
@@ -2936,7 +2936,7 @@ public class Tablet {
 
   /**
    * Returns an int representing the total block size of the mapfiles served by this tablet.
-   * 
+   *
    * @return size
    */
   // this is the size of just the mapfiles
@@ -3107,7 +3107,7 @@ public class Tablet {
 
   /**
    * Returns true if this tablet needs to be split
-   * 
+   *
    */
   public synchronized boolean needsSplit() {
     boolean ret;
@@ -3363,7 +3363,7 @@ public class Tablet {
 
     return smallestFiles;
   }
-  
+
   static void rename(VolumeManager fs, Path src, Path dst) throws IOException {
     if (!fs.rename(src, dst)) {
       throw new IOException("Rename " + src + " to " + dst + " returned false ");
@@ -3432,7 +3432,7 @@ public class Tablet {
 
   /**
    * Returns a KeyExtent object representing this tablet's key range.
-   * 
+   *
    * @return extent
    */
   public KeyExtent getExtent() {
@@ -3492,12 +3492,12 @@ public class Tablet {
 
   /**
    * operations are disallowed while we split which is ok since splitting is fast
-   * 
+   *
    * a minor compaction should have taken place before calling this so there should be relatively little left to compact
-   * 
+   *
    * we just need to make sure major compactions aren't occurring if we have the major compactor thread decide who needs splitting we can avoid synchronization
    * issues with major compactions
-   * 
+   *
    */
 
   static class SplitInfo {
