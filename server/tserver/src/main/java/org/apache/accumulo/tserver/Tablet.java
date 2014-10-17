@@ -817,7 +817,7 @@ public class Tablet {
     void bringMinorCompactionOnline(FileRef tmpDatafile, FileRef newDatafile, FileRef absMergeFile, DataFileValue dfv, CommitSession commitSession, long flushId)
         throws IOException {
 
-      IZooReaderWriter zoo = ZooReaderWriter.getRetryingInstance();
+      IZooReaderWriter zoo = ZooReaderWriter.getInstance();
       if (extent.isRootTablet()) {
         try {
           if (!zoo.isLockHeld(tabletServer.getLock().getLockID())) {
@@ -1009,7 +1009,7 @@ public class Tablet {
 
         t1 = System.currentTimeMillis();
 
-        IZooReaderWriter zoo = ZooReaderWriter.getRetryingInstance();
+        IZooReaderWriter zoo = ZooReaderWriter.getInstance();
 
         dataSourceDeletions.incrementAndGet();
 
@@ -2380,7 +2380,7 @@ public class Tablet {
     try {
       String zTablePath = Constants.ZROOT + "/" + HdfsZooInstance.getInstance().getInstanceID() + Constants.ZTABLES + "/" + extent.getTableId()
           + Constants.ZTABLE_FLUSH_ID;
-      return Long.parseLong(new String(ZooReaderWriter.getRetryingInstance().getData(zTablePath, null), Constants.UTF8));
+      return Long.parseLong(new String(ZooReaderWriter.getInstance().getData(zTablePath, null), Constants.UTF8));
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     } catch (NumberFormatException nfe) {
@@ -2399,7 +2399,7 @@ public class Tablet {
         + Constants.ZTABLE_COMPACT_CANCEL_ID;
 
     try {
-      return Long.parseLong(new String(ZooReaderWriter.getRetryingInstance().getData(zTablePath, null), Constants.UTF8));
+      return Long.parseLong(new String(ZooReaderWriter.getInstance().getData(zTablePath, null), Constants.UTF8));
     } catch (KeeperException e) {
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
@@ -2412,7 +2412,7 @@ public class Tablet {
       String zTablePath = Constants.ZROOT + "/" + HdfsZooInstance.getInstance().getInstanceID() + Constants.ZTABLES + "/" + extent.getTableId()
           + Constants.ZTABLE_COMPACT_ID;
 
-      String[] tokens = new String(ZooReaderWriter.getRetryingInstance().getData(zTablePath, null), Constants.UTF8).split(",");
+      String[] tokens = new String(ZooReaderWriter.getInstance().getData(zTablePath, null), Constants.UTF8).split(",");
       long compactID = Long.parseLong(tokens[0]);
 
       CompactionIterators iters = new CompactionIterators();
