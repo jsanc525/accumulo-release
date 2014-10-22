@@ -902,7 +902,8 @@ public class Tablet {
 
           // Mark that we have data we want to replicate
           // This WAL could still be in use by other Tablets *from the same table*, so we can only mark that there is data to replicate,
-          // but it is *not* closed
+          // but it is *not* closed. We know it is not closed by the fact that this MinC triggered. A MinC cannot happen unless the
+          // tablet is online and thus these WALs are referenced by that tablet. Therefore, the WAL replication status cannot be 'closed'.
           if (replicate) {
             if (log.isDebugEnabled()) {
               log.debug("Recording that data has been ingested into " + extent + " using " + logFileOnly);
@@ -1444,11 +1445,19 @@ public class Tablet {
           log.debug("No replayed mutations applied, removing unused entries for " + extent);
           MetadataTableUtil.removeUnusedWALEntries(extent, logEntries, tabletServer.getLock());
 
+          // No replication update to be made because the fact that this tablet didn't use any mutations
+          // from the WAL implies nothing about use of this WAL by other tablets. Do nothing.
+
           logEntries.clear();
         } else if (ReplicationConfigurationUtil.isEnabled(extent, tabletServer.getTableConfiguration(extent))) {
-          // The logs are about to be re-used, we need to record that they have data for this extent,
+          // The logs are about to be re-used by this tablet, we need to record that they have data for this extent,
           // but that they may get more data. logEntries is not cleared which will cause the elements
           // in logEntries to be added to the currentLogs for this Tablet below.
+          //
+          // This update serves the same purpose as an update during a MinC. We know that the WAL was defined
+          // (written when the WAL was opened) but this lets us know there are mutations written to this WAL
+          // that could potentially be replicated. Because the Tablet is using this WAL, we can be sure that
+          // the WAL isn't closed (WRT replication Status) and thus we're safe to update its progress.
           Status status = StatusUtil.openWithUnknownLength();
           for (LogEntry logEntry : logEntries) {
             log.debug("Writing updated status to metadata table for " + logEntry.logSet + " " + ProtobufUtil.toString(status));
