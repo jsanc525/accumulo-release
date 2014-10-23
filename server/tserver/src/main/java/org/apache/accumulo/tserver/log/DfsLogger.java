@@ -71,8 +71,8 @@ import org.apache.log4j.Logger;
  */
 public class DfsLogger {
   // Package private so that LogSorter can find this
-  static final String LOG_FILE_HEADER_V2 = "--- Log File Header (v2) ---";
-  static final String LOG_FILE_HEADER_V3 = "--- Log File Header (v3) ---";
+  public static final String LOG_FILE_HEADER_V2 = "--- Log File Header (v2) ---";
+  public static final String LOG_FILE_HEADER_V3 = "--- Log File Header (v3) ---";
 
   private static Logger log = Logger.getLogger(DfsLogger.class);
 
