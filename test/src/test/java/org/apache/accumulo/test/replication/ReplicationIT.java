@@ -1196,7 +1196,7 @@ public class ReplicationIT extends ConfigurableMacIT {
           break;
         }
 
-        UtilWaitThread.sleep(1000);
+        UtilWaitThread.sleep(2000);
       }
 
       if (!allClosed) {
