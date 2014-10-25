@@ -29,8 +29,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.accumulo.monitor.servlets.ScanServlet;
-import com.google.common.net.HostAndPort;
 import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Instance;
@@ -65,6 +63,7 @@ import org.apache.accumulo.monitor.servlets.MasterServlet;
 import org.apache.accumulo.monitor.servlets.OperationServlet;
 import org.apache.accumulo.monitor.servlets.ProblemServlet;
 import org.apache.accumulo.monitor.servlets.ReplicationServlet;
+import org.apache.accumulo.monitor.servlets.ScanServlet;
 import org.apache.accumulo.monitor.servlets.ShellServlet;
 import org.apache.accumulo.monitor.servlets.TServersServlet;
 import org.apache.accumulo.monitor.servlets.TablesServlet;
@@ -90,6 +89,8 @@ import org.apache.accumulo.server.zookeeper.ZooReaderWriter;
 import org.apache.accumulo.trace.instrument.Tracer;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
+
+import com.google.common.net.HostAndPort;
 
 /**
  * Serve master statistics with an embedded web server.
@@ -397,17 +398,19 @@ public class Monitor {
 
   public static void main(String[] args) throws Exception {
     SecurityUtil.serverLogin(ServerConfiguration.getSiteConfiguration());
-    
-    VolumeManager fs = VolumeManagerImpl.get();
+
     ServerOpts opts = new ServerOpts();
-    opts.parseArgs("monitor", args);
+    final String app = "monitor";
+    opts.parseArgs(app, args);
     String hostname = opts.getAddress();
 
+    Accumulo.setupLogging(app);
+    VolumeManager fs = VolumeManagerImpl.get();
     instance = HdfsZooInstance.getInstance();
     config = new ServerConfiguration(instance);
-    Accumulo.init(fs, config, "monitor");
+    Accumulo.init(fs, config, app);
     Monitor monitor = new Monitor();
-    Accumulo.enableTracing(hostname, "monitor");
+    Accumulo.enableTracing(hostname, app);
     monitor.run(hostname);
   }
 
@@ -490,7 +493,7 @@ public class Monitor {
 
       }
     }), "Data fetcher").start();
-    
+
     new Daemon(new LoggingRunnable(log, new Runnable() {
       @Override
       public void run() {
@@ -505,7 +508,7 @@ public class Monitor {
       }
     }), "Scan scanner").start();
   }
-  
+
   public static class ScanStats {
     public final List<ActiveScan> scans;
     public final long fetched;
