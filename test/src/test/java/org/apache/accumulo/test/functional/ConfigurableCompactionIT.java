@@ -44,6 +44,11 @@ import org.junit.Test;
 public class ConfigurableCompactionIT extends ConfigurableMacIT {
 
   @Override
+  public int defaultTimeoutSeconds() {
+    return 2 * 60;
+  }
+
+  @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
     cfg.setSiteConfig(Collections.singletonMap(Property.TSERV_MAJC_DELAY.getKey(), "1s"));
   }
