@@ -142,7 +142,7 @@
     <!-- Thrift version -->
     <thrift.version>0.9.1</thrift.version>
     <!-- ZooKeeper 3.4.x works also, but we're not using new features yet; this ensures 3.3.x compatibility. -->
-    <zookeeper.version>[3.4.5.2.2.0.0-720,3.4.5.2.3.0.0)</zookeeper.version>
+    <zookeeper.version>[3.4.6.2.2.0.0-1200,3.4.6.2.3.0.0)</zookeeper.version>
   </properties>
   <dependencyManagement>
     <dependencies>
