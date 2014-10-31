@@ -222,8 +222,9 @@ public class ZooUtil {
           // Node exists
           if (stat != null) {
             try {
-              // Try to delete it
-              getZooKeeper(info).delete(zPath, stat.getVersion());
+              // Try to delete it. We don't care if there was an update to the node
+              // since we got the Stat, just delete all versions (-1).
+              getZooKeeper(info).delete(zPath, -1);
               return;
             } catch (NoNodeException e) {
               // If the node is gone now, it's ok if we have SKIP
