@@ -881,7 +881,10 @@ public class ShellServerTest {
     assertFalse("Could not find any active scans over table " + table, scans.isEmpty());
 
     for (String scan : scans) {
-      assertTrue("Scan does not appear to be a 'RUNNING' scan: '" + scan + "'", scan.contains("RUNNING"));
+      if (!scan.contains("RUNNING")) {
+        log.info("Ignoring scan because it doesn't contain 'RUNNING': " + scan);
+        continue;
+      }
       String parts[] = scan.split("\\|");
       assertEquals("Expected 13 colums, but found " + parts.length + " instead for '" + Arrays.toString(parts) + "'", 13, parts.length);
     }
