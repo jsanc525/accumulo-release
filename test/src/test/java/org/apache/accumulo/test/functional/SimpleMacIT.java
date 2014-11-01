@@ -54,7 +54,7 @@ public class SimpleMacIT extends AbstractMacIT {
       log.info("No shared instance available, falling back to creating MAC");
       createMiniAccumulo();
       Exception lastException = null;
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 10; i++) {
         try {
           cluster.start();
 

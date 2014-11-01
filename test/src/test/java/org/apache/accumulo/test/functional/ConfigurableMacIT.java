@@ -51,7 +51,7 @@ public class ConfigurableMacIT extends AbstractMacIT {
   public void setUp() throws Exception {
     createMiniAccumulo();
     Exception lastException = null;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 10; i++) {
       try {
         cluster.start();
         return;
