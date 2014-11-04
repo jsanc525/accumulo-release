@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -206,6 +207,15 @@ public class Accumulo {
     }
 
     monitorSwappiness();
+
+    // Encourage users to configure TLS
+    final String SSL = "SSL";
+    for (Property sslProtocolProperty : Arrays.asList(Property.RPC_SSL_CLIENT_PROTOCOL, Property.RPC_SSL_ENABLED_PROTOCOLS, Property.MONITOR_SSL_INCLUDE_PROTOCOLS)) {
+      String value = conf.get(sslProtocolProperty);
+      if (value.contains(SSL)) {
+        log.warn("It is recommended that " + sslProtocolProperty + " only allow TLS");
+      }
+    }
   }
 
   /**
