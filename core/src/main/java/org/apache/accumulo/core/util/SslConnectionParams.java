@@ -19,6 +19,7 @@ package org.apache.accumulo.core.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.Property;
@@ -240,7 +241,7 @@ public class SslConnectionParams {
       hash = 31 * hash + trustStorePath.hashCode();
     }
     hash = 31 * hash + clientProtocol.hashCode();
-    hash = 31 * hash + serverProtocols.hashCode();
+    hash = 31 * hash + Arrays.hashCode(serverProtocols);
     return super.hashCode();
   }
 
@@ -266,7 +267,7 @@ public class SslConnectionParams {
       if (!trustStorePath.equals(other.trustStorePath) || !trustStorePass.equals(other.trustStorePass) || !trustStoreType.equals(other.trustStoreType))
         return false;
     }
-    if (!serverProtocols.equals(other.serverProtocols)) {
+    if (!Arrays.equals(serverProtocols, other.serverProtocols)) {
       return false;
     }
     return clientProtocol.equals(other.clientProtocol);
