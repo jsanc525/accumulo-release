@@ -883,7 +883,7 @@ public class MetadataTableUtil {
       Key k = entry.getKey();
       Mutation m = new Mutation(k.getRow());
       m.putDelete(k.getColumnFamily(), k.getColumnQualifier());
-      String dir = volumeManager.choose(ServerConstants.getTablesDirs()) + "/" + tableId
+      String dir = volumeManager.choose(ServerConstants.getTablesDirs()) + "/" + tableId + "/"
           + new String(FastFormat.toZeroPaddedString(dirCount++, 8, 16, Constants.CLONE_PREFIX_BYTES));
       TabletsSection.ServerColumnFamily.DIRECTORY_COLUMN.put(m, new Value(dir.getBytes(Constants.UTF8)));
       bw.addMutation(m);
