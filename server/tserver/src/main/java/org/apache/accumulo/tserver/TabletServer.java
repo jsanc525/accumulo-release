@@ -2559,7 +2559,7 @@ public class TabletServer extends AbstractMetricsImpl implements org.apache.accu
 
       return ret;
     }
-    
+
     @Override
     public List<String> getActiveLogs(TInfo tinfo, TCredentials credentials) throws TException {
       Set<String> logs = new HashSet<String>();
