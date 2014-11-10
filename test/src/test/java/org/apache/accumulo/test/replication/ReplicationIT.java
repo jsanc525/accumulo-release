@@ -697,7 +697,6 @@ public class ReplicationIT extends ConfigurableMacIT {
 
     log.warn("Found wals {}", wals);
 
-    // for (int j = 0; j < 5; j++) {
     bw = conn.createBatchWriter(table, new BatchWriterConfig());
     m = new Mutation("three");
     byte[] bytes = new byte[1024 * 1024];
@@ -715,7 +714,7 @@ public class ReplicationIT extends ConfigurableMacIT {
       UtilWaitThread.sleep(2000);
     }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 10; i++) {
       s = conn.createScanner(MetadataTable.NAME, Authorizations.EMPTY);
       s.fetchColumnFamily(LogColumnFamily.NAME);
       s.setRange(TabletsSection.getRange(tableId));
@@ -1423,7 +1422,7 @@ public class ReplicationIT extends ConfigurableMacIT {
     // We need the GC to close the file (CloseWriteAheadLogReferences) before we can remove the record
     log.info("Checking metadata table for replication entries");
     foundResults = true;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 10; i++) {
       s = conn.createScanner(MetadataTable.NAME, Authorizations.EMPTY);
       s.setRange(ReplicationSection.getRange());
       long size = 0;
