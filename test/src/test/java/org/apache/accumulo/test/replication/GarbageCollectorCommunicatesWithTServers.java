@@ -26,7 +26,6 @@ import java.util.Set;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Scanner;
-import org.apache.accumulo.core.client.impl.ClientConfigurationHelper;
 import org.apache.accumulo.core.client.impl.ClientExecReturn;
 import org.apache.accumulo.core.client.impl.MasterClient;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
@@ -40,17 +39,17 @@ import org.apache.accumulo.core.master.thrift.MasterClientService;
 import org.apache.accumulo.core.metadata.MetadataTable;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema;
 import org.apache.accumulo.core.protobuf.ProtobufUtil;
-import org.apache.accumulo.core.replication.ReplicationTable;
 import org.apache.accumulo.core.replication.proto.Replication.Status;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.Credentials;
 import org.apache.accumulo.core.security.thrift.TCredentials;
 import org.apache.accumulo.core.tabletserver.thrift.TabletClientService.Client;
-import org.apache.accumulo.core.trace.Tracer;
 import org.apache.accumulo.core.util.ThriftUtil;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
+import org.apache.accumulo.server.replication.ReplicationTable;
 import org.apache.accumulo.test.functional.AbstractMacIT;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
+import org.apache.accumulo.trace.instrument.Tracer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -179,7 +178,7 @@ public class GarbageCollectorCommunicatesWithTServers extends ConfigurableMacIT 
     final Connector conn = getConnector();
 
     // Bring the replication table online first and foremost
-    ReplicationTable.setOnline(conn);
+    ReplicationTable.create(conn);
 
     log.info("Creating {}", table);
     conn.tableOperations().create(table);
@@ -279,7 +278,7 @@ public class GarbageCollectorCommunicatesWithTServers extends ConfigurableMacIT 
     final Connector conn = getConnector();
 
     // Bring the replication table online first and foremost
-    ReplicationTable.setOnline(conn);
+    ReplicationTable.create(conn);
 
     log.info("Creating {}", table);
     conn.tableOperations().create(table);
@@ -407,7 +406,7 @@ public class GarbageCollectorCommunicatesWithTServers extends ConfigurableMacIT 
     Assert.assertEquals("Expected only one active tservers", 1, tservers.size());
 
     String tserver = tservers.get(0);
-    AccumuloConfiguration rpcConfig = ClientConfigurationHelper.getClientRpcConfiguration(conn.getInstance());
+    AccumuloConfiguration rpcConfig = conn.getInstance().getConfiguration();
 
     // Get the active WALs from that server
     log.info("Fetching active WALs from {}", tserver);
