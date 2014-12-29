@@ -44,7 +44,6 @@ import org.apache.accumulo.core.master.thrift.MasterMonitorInfo;
 import org.apache.accumulo.core.master.thrift.TableInfo;
 import org.apache.accumulo.core.master.thrift.TabletServerStatus;
 import org.apache.accumulo.core.rpc.ThriftUtil;
-import org.apache.accumulo.core.security.SecurityUtil;
 import org.apache.accumulo.core.tabletserver.thrift.ActiveScan;
 import org.apache.accumulo.core.tabletserver.thrift.TabletClientService.Client;
 import org.apache.accumulo.core.trace.DistributedTrace;
@@ -86,12 +85,14 @@ import org.apache.accumulo.server.fs.VolumeManagerImpl;
 import org.apache.accumulo.server.monitor.LogService;
 import org.apache.accumulo.server.problems.ProblemReports;
 import org.apache.accumulo.server.problems.ProblemType;
+import org.apache.accumulo.server.security.SecurityUtil;
 import org.apache.accumulo.server.util.Halt;
 import org.apache.accumulo.server.util.TableInfoUtil;
 import org.apache.accumulo.server.zookeeper.ZooLock;
 import org.apache.accumulo.server.zookeeper.ZooReaderWriter;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.net.HostAndPort;
 
@@ -99,7 +100,7 @@ import com.google.common.net.HostAndPort;
  * Serve master statistics with an embedded web server.
  */
 public class Monitor {
-  private static final Logger log = Logger.getLogger(Monitor.class);
+  private static final Logger log = LoggerFactory.getLogger(Monitor.class);
 
   private static final int REFRESH_TIME = 5;
   private static long lastRecalc = 0L;
@@ -519,17 +520,24 @@ public class Monitor {
   }
 
   public static class ScanStats {
-    public final List<ActiveScan> scans;
+    public final long scanCount;
+    public final Long oldestScan;
     public final long fetched;
     ScanStats(List<ActiveScan> active) {
-      this.scans = active;
+      this.scanCount = active.size();
+      long oldest = -1;
+      for (ActiveScan scan : active) {
+        oldest = Math.max(oldest, scan.age);
+      }
+      this.oldestScan = oldest < 0 ? null : oldest;
       this.fetched = System.currentTimeMillis();
     }
   }
-  static final Map<String, ScanStats> allScans = new HashMap<String, ScanStats>();
-  public static Map<String, ScanStats> getScans() {
+
+  static final Map<HostAndPort,ScanStats> allScans = new HashMap<HostAndPort,ScanStats>();
+  public static Map<HostAndPort, ScanStats> getScans() {
     synchronized (allScans) {
-      return new TreeMap<String, ScanStats>(allScans);
+      return new TreeMap<HostAndPort, ScanStats>(allScans);
     }
   }
 
@@ -538,23 +546,24 @@ public class Monitor {
       return;
     Connector c = context.getConnector();
     for (String server : c.instanceOperations().getTabletServers()) {
-      Client tserver = ThriftUtil.getTServerClient(server, context);
+      final HostAndPort parsedServer = HostAndPort.fromString(server);
+      Client tserver = ThriftUtil.getTServerClient(parsedServer, context);
       try {
         List<ActiveScan> scans = tserver.getActiveScans(null, context.rpcCreds());
         synchronized (allScans) {
-          allScans.put(server, new ScanStats(scans));
+          allScans.put(parsedServer, new ScanStats(scans));
         }
       } catch (Exception ex) {
-        log.debug(ex, ex);
+        log.debug("Failed to get active scans from {}", server, ex);
       } finally {
         ThriftUtil.returnClient(tserver);
       }
     }
     // Age off old scan information
-    Iterator<Entry<String,ScanStats>> entryIter = allScans.entrySet().iterator();
+    Iterator<Entry<HostAndPort,ScanStats>> entryIter = allScans.entrySet().iterator();
     long now = System.currentTimeMillis();
     while (entryIter.hasNext()) {
-      Entry<String,ScanStats> entry = entryIter.next();
+      Entry<HostAndPort,ScanStats> entry = entryIter.next();
       if (now - entry.getValue().fetched > 5 * 60 * 1000) {
         entryIter.remove();
       }
@@ -637,7 +646,7 @@ public class Monitor {
       Halt.halt(-1, new Runnable() {
         @Override
         public void run() {
-          log.fatal("No longer able to monitor Monitor lock node", e);
+          log.error("No longer able to monitor Monitor lock node", e);
         }
       });
 

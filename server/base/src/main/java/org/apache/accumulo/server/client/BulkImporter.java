@@ -68,13 +68,16 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
-import org.apache.log4j.Logger;
 import org.apache.thrift.TServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.net.HostAndPort;
 
 public class BulkImporter {
-  
-  private static final Logger log = Logger.getLogger(BulkImporter.class);
-  
+
+  private static final Logger log = LoggerFactory.getLogger(BulkImporter.class);
+
   public static List<String> bulkLoad(ClientContext context, long tid, String tableId, List<String> files, String errorDir, boolean setTime)
       throws IOException, AccumuloException, AccumuloSecurityException, ThriftTableOperationException {
     AssignmentStats stats = new BulkImporter(context, tid, tableId, setTime).importFiles(files, new Path(errorDir));
@@ -435,12 +438,12 @@ public class BulkImporter {
   
   private class AssignmentTask implements Runnable {
     final Map<Path,List<KeyExtent>> assignmentFailures;
-    String location;
+    HostAndPort location;
     private Map<KeyExtent,List<PathSize>> assignmentsPerTablet;
     
     public AssignmentTask(Map<Path,List<KeyExtent>> assignmentFailures, String tableName, String location, Map<KeyExtent,List<PathSize>> assignmentsPerTablet) {
       this.assignmentFailures = assignmentFailures;
-      this.location = location;
+      this.location = HostAndPort.fromString(location);
       this.assignmentsPerTablet = assignmentsPerTablet;
     }
     
@@ -575,8 +578,8 @@ public class BulkImporter {
     
     return assignmentFailures;
   }
-  
-  private List<KeyExtent> assignMapFiles(ClientContext context, String location, Map<KeyExtent,List<PathSize>> assignmentsPerTablet)
+
+  private List<KeyExtent> assignMapFiles(ClientContext context, HostAndPort location, Map<KeyExtent,List<PathSize>> assignmentsPerTablet)
       throws AccumuloException, AccumuloSecurityException {
     try {
       long timeInMillis = context.getConfiguration().getTimeInMillis(Property.TSERV_BULK_TIMEOUT);

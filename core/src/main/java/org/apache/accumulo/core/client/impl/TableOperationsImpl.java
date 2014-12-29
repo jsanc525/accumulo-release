@@ -48,7 +48,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.accumulo.core.client.admin.CompactionConfig;
 import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
@@ -56,12 +55,14 @@ import org.apache.accumulo.core.client.IsolatedScanner;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.NamespaceExistsException;
 import org.apache.accumulo.core.client.NamespaceNotFoundException;
+import org.apache.accumulo.core.client.NewTableConfiguration;
 import org.apache.accumulo.core.client.RowIterator;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.TableDeletedException;
 import org.apache.accumulo.core.client.TableExistsException;
 import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.client.TableOfflineException;
+import org.apache.accumulo.core.client.admin.CompactionConfig;
 import org.apache.accumulo.core.client.admin.DiskUsage;
 import org.apache.accumulo.core.client.admin.FindMax;
 import org.apache.accumulo.core.client.admin.TableOperations;
@@ -117,6 +118,7 @@ import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 
 import com.google.common.base.Joiner;
+import com.google.common.net.HostAndPort;
 
 public class TableOperationsImpl extends TableOperationsHelper {
 
@@ -175,7 +177,7 @@ public class TableOperationsImpl extends TableOperationsHelper {
    */
   @Override
   public void create(String tableName) throws AccumuloException, AccumuloSecurityException, TableExistsException {
-    create(tableName, true, TimeType.MILLIS);
+    create(tableName, new NewTableConfiguration());
   }
 
   /**
@@ -185,6 +187,7 @@ public class TableOperationsImpl extends TableOperationsHelper {
    *          Enables/disables the versioning iterator, which will limit the number of Key versions kept.
    */
   @Override
+  @Deprecated
   public void create(String tableName, boolean limitVersion) throws AccumuloException, AccumuloSecurityException, TableExistsException {
     create(tableName, limitVersion, TimeType.MILLIS);
   }
@@ -198,17 +201,36 @@ public class TableOperationsImpl extends TableOperationsHelper {
    *          Enables/disables the versioning iterator, which will limit the number of Key versions kept.
    */
   @Override
+  @Deprecated
   public void create(String tableName, boolean limitVersion, TimeType timeType) throws AccumuloException, AccumuloSecurityException, TableExistsException {
     checkArgument(tableName != null, "tableName is null");
     checkArgument(timeType != null, "timeType is null");
 
-    List<ByteBuffer> args = Arrays.asList(ByteBuffer.wrap(tableName.getBytes(UTF_8)), ByteBuffer.wrap(timeType.name().getBytes(UTF_8)));
+    NewTableConfiguration ntc = new NewTableConfiguration().setTimeType(timeType);
 
-    Map<String,String> opts;
     if (limitVersion)
-      opts = IteratorUtil.generateInitialTableProperties(limitVersion);
+      create(tableName, ntc);
     else
-      opts = Collections.emptyMap();
+      create(tableName, ntc.withoutDefaultIterators());
+  }
+
+  /**
+   * @param tableName
+   *          the name of the table
+   * @param ntc
+   *          specifies the new table's configuration. It determines whether the versioning iterator is enabled or disabled, logical or real-time based time
+   *          recording for entries in the table
+   * 
+   */
+  @Override
+  public void create(String tableName, NewTableConfiguration ntc) throws AccumuloException, AccumuloSecurityException, TableExistsException {
+    checkArgument(tableName != null, "tableName is null");
+    checkArgument(ntc != null, "ntc is null");
+
+    List<ByteBuffer> args = Arrays.asList(ByteBuffer.wrap(tableName.getBytes(UTF_8)),
+        ByteBuffer.wrap(ntc.getTimeType().name().getBytes(UTF_8)));
+
+    Map<String,String> opts = ntc.getProperties();
 
     try {
       doTableFateOperation(tableName, AccumuloException.class, FateOperation.TABLE_CREATE, args, opts);
@@ -473,12 +495,14 @@ public class TableOperationsImpl extends TableOperationsHelper {
           continue;
         }
 
+        HostAndPort address = HostAndPort.fromString(tl.tablet_location);
+
         try {
-          TabletClientService.Client client = ThriftUtil.getTServerClient(tl.tablet_location, context);
+          TabletClientService.Client client = ThriftUtil.getTServerClient(address, context);
           try {
             OpTimer opTimer = null;
             if (log.isTraceEnabled())
-              opTimer = new OpTimer(log, Level.TRACE).start("Splitting tablet " + tl.tablet_extent + " on " + tl.tablet_location + " at " + split);
+              opTimer = new OpTimer(log, Level.TRACE).start("Splitting tablet " + tl.tablet_extent + " on " + address + " at " + split);
 
             client.splitTablet(Tracer.traceInfo(), context.rpcCreds(), tl.tablet_extent.toThrift(), TextUtil.getByteBuffer(split));
 
@@ -492,7 +516,7 @@ public class TableOperationsImpl extends TableOperationsHelper {
           }
 
         } catch (TApplicationException tae) {
-          throw new AccumuloServerException(tl.tablet_location, tae);
+          throw new AccumuloServerException(address.toString(), tae);
         } catch (TTransportException e) {
           tabLocator.invalidateCache(context.getInstance(), tl.tablet_location);
           continue;

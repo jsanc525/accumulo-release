@@ -64,7 +64,6 @@ import org.apache.accumulo.core.replication.ReplicationTable;
 import org.apache.accumulo.core.replication.ReplicationTableOfflineException;
 import org.apache.accumulo.core.replication.proto.Replication.Status;
 import org.apache.accumulo.core.security.Authorizations;
-import org.apache.accumulo.core.security.SecurityUtil;
 import org.apache.accumulo.core.security.thrift.TCredentials;
 import org.apache.accumulo.core.trace.CountSampler;
 import org.apache.accumulo.core.trace.DistributedTrace;
@@ -93,6 +92,7 @@ import org.apache.accumulo.server.fs.VolumeManagerImpl;
 import org.apache.accumulo.server.fs.VolumeUtil;
 import org.apache.accumulo.server.rpc.RpcWrapper;
 import org.apache.accumulo.server.rpc.TServerUtils;
+import org.apache.accumulo.server.security.SecurityUtil;
 import org.apache.accumulo.server.tables.TableManager;
 import org.apache.accumulo.server.util.Halt;
 import org.apache.accumulo.server.util.TabletIterator;
@@ -126,7 +126,7 @@ public class SimpleGarbageCollector extends AccumuloServerContext implements Ifa
   /**
    * A fraction representing how much of the JVM's available memory should be used for gathering candidates.
    */
-  static final float CANDIDATE_MEMORY_PERCENTAGE = 0.75f;
+  static final float CANDIDATE_MEMORY_PERCENTAGE = 0.50f;
 
   private static final Logger log = Logger.getLogger(SimpleGarbageCollector.class);
 
@@ -390,10 +390,10 @@ public class SimpleGarbageCollector extends AccumuloServerContext implements Ifa
                 synchronized (SimpleGarbageCollector.this) {
                   ++status.current.errors;
                 }
-                String parts[] = delete.split("/");
+                String parts[] = fullPath.toString().split(Constants.ZTABLES)[1].split("/");
                 if (parts.length > 2) {
-                  String tableId = parts[parts.length - 3];
-                  String tabletDir = parts[parts.length - 2];
+                  String tableId = parts[1];
+                  String tabletDir = parts[2];
                   TableManager.getInstance().updateTableStateCache(tableId);
                   TableState tableState = TableManager.getInstance().getTableState(tableId);
                   if (tableState != null && tableState != TableState.DELETING) {

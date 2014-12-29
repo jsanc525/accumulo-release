@@ -14,19 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.monitor.servlets;
+package org.apache.accumulo.core.rpc;
 
-import org.apache.accumulo.monitor.util.celltypes.NumberType;
+import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TTransport;
 
-public class PreciseNumberType extends NumberType<Integer> {
-  
-  public PreciseNumberType(int warnMin, int warnMax, int errMin, int errMax) {
-    super(warnMin, warnMax, errMin, errMax);
-  }
-  
-  public PreciseNumberType() {}
-  
-  public static String bigNumber(long big, String[] SUFFIXES, long base) {
-    return String.format("%,d", big);
+/**
+ * {@link org.apache.thrift.protocol.TCompactProtocol.Factory} implementation which injects {@link TraceProtocol} instead of {@link TCompactProtocol}
+ */
+public class TraceProtocolFactory extends TCompactProtocol.Factory {
+  private static final long serialVersionUID = 1L;
+
+  @Override
+  public TProtocol getProtocol(TTransport trans) {
+    return new TraceProtocol(trans);
   }
 }
