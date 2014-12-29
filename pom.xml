@@ -127,7 +127,7 @@
     <!-- surefire/failsafe plugin option -->
     <forkCount>1</forkCount>
     <!-- overwritten in profiles hadoop-1 or hadoop-2 -->
-    <hadoop.version>[2.6.0.2.3.0.0-290,2.6.0.2.4.0.0)</hadoop.version>
+    <hadoop.version>[2.7.0.2.3.0.0-455,2.7.0.2.4.0.0)</hadoop.version>
     <htrace.version>3.0.4</htrace.version>
     <httpclient.version>3.1</httpclient.version>
     <java.ver>1.7</java.ver>
@@ -1223,7 +1223,7 @@
         <!-- Denotes intention and allows the enforcer plugin to pass when
              the user is relying on default behavior; won't work to activate profile -->
         <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>[2.6.0.2.3.0.0-290,2.6.0.2.4.0.0)</hadoop.version>
+        <hadoop.version>[2.7.0.2.3.0.0-455,2.7.0.2.4.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
@@ -1256,7 +1256,7 @@
         </property>
       </activation>
       <properties>
-        <hadoop.version>[2.6.0.2.3.0.0-290,2.6.0.2.4.0.0)</hadoop.version>
+        <hadoop.version>[2.7.0.2.3.0.0-455,2.7.0.2.4.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
