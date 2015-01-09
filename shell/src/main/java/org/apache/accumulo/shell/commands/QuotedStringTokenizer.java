@@ -27,16 +27,16 @@ import org.apache.accumulo.shell.Shell;
 
 /**
  * A basic tokenizer for generating tokens from a string. It understands quoted strings and escaped quote characters.
- * 
+ *
  * You can use the escape sequence '\' to escape single quotes, double quotes, and spaces only, in addition to the escape character itself.
- * 
+ *
  * The behavior is the same for single and double quoted strings. (i.e. '\'' is the same as "\'")
  */
 
 public class QuotedStringTokenizer implements Iterable<String> {
   private ArrayList<String> tokens;
   private String input;
-  
+
   public QuotedStringTokenizer(final String t) throws BadArgumentException {
     tokens = new ArrayList<String>();
     this.input = t;
@@ -46,23 +46,23 @@ public class QuotedStringTokenizer implements Iterable<String> {
       throw new IllegalArgumentException(e.getMessage());
     }
   }
-  
+
   public String[] getTokens() {
     return tokens.toArray(new String[tokens.size()]);
   }
-  
+
   private void createTokens() throws BadArgumentException, UnsupportedEncodingException {
     boolean inQuote = false;
     boolean inEscapeSequence = false;
     String hexChars = null;
     char inQuoteChar = '"';
-    
+
     final byte[] token = new byte[input.length()];
     int tokenLength = 0;
     final byte[] inputBytes = input.getBytes(UTF_8);
     for (int i = 0; i < input.length(); ++i) {
       final char ch = input.charAt(i);
-      
+
       // if I ended up in an escape sequence, check for valid escapable character, and add it as a literal
       if (inEscapeSequence) {
         inEscapeSequence = false;
@@ -73,9 +73,8 @@ public class QuotedStringTokenizer implements Iterable<String> {
         } else {
           throw new BadArgumentException("can only escape single quotes, double quotes, the space character, the backslash, and hex input", input, i);
         }
-      }
-      // in a hex escape sequence
-      else if (hexChars != null) {
+      } else if (hexChars != null) {
+        // in a hex escape sequence
         final int digit = Character.digit(ch, 16);
         if (digit < 0) {
           throw new BadArgumentException("expected hex character", input, i);
@@ -93,9 +92,8 @@ public class QuotedStringTokenizer implements Iterable<String> {
           token[tokenLength++] = b;
           hexChars = null;
         }
-      }
-      // in a quote, either end the quote, start escape, or continue a token
-      else if (inQuote) {
+      } else if (inQuote) {
+        // in a quote, either end the quote, start escape, or continue a token
         if (ch == inQuoteChar) {
           inQuote = false;
           tokens.add(new String(token, 0, tokenLength, Shell.CHARSET));
@@ -105,9 +103,8 @@ public class QuotedStringTokenizer implements Iterable<String> {
         } else {
           token[tokenLength++] = inputBytes[i];
         }
-      }
-      // not in a quote, either enter a quote, end a token, start escape, or continue a token
-      else {
+      } else {
+        // not in a quote, either enter a quote, end a token, start escape, or continue a token
         if (ch == '\'' || ch == '"') {
           if (tokenLength > 0) {
             tokens.add(new String(token, 0, tokenLength, Shell.CHARSET));
@@ -134,7 +131,7 @@ public class QuotedStringTokenizer implements Iterable<String> {
       tokens.add(new String(token, 0, tokenLength, Shell.CHARSET));
     }
   }
-  
+
   @Override
   public Iterator<String> iterator() {
     return tokens.iterator();

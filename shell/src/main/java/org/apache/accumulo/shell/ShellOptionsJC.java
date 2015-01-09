@@ -24,11 +24,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-import com.beust.jcommander.DynamicParameter;
-import com.beust.jcommander.IStringConverter;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.FileConverter;
 import org.apache.accumulo.core.client.ClientConfiguration;
 import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
 import org.apache.accumulo.core.client.security.tokens.AuthenticationToken;
@@ -36,6 +31,12 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.beust.jcommander.DynamicParameter;
+import com.beust.jcommander.IStringConverter;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
 
 public class ShellOptionsJC {
   private static final Logger log = LoggerFactory.getLogger(Shell.class);
@@ -168,9 +169,9 @@ public class ShellOptionsJC {
   @Parameter(names = {"--ssl"}, description = "use ssl to connect to accumulo")
   private boolean useSsl = false;
 
-  @Parameter(
-      names = "--config-file",
-      description = "read the given client config file.  If omitted, the path searched can be specified with $ACCUMULO_CLIENT_CONF_PATH, which defaults to ~/.accumulo/config:$ACCUMULO_CONF_DIR/client.conf:/etc/accumulo/client.conf")
+  @Parameter(names = "--config-file", description = "read the given client config file. "
+      + "If omitted, the path searched can be specified with $ACCUMULO_CLIENT_CONF_PATH, "
+      + "which defaults to ~/.accumulo/config:$ACCUMULO_CONF_DIR/client.conf:/etc/accumulo/client.conf")
   private String clientConfigFile = null;
 
   @Parameter(names = {"-zi", "--zooKeeperInstanceName"}, description = "use a zookeeper instance with the given instance name")
