@@ -660,7 +660,7 @@ public class Master extends AccumuloServerContext implements LiveTServerSet.List
         byte[] data = ZooReaderWriter.getInstance().getData(ZooUtil.getRoot(getInstance()) + Constants.ZMASTER_GOAL_STATE, null);
         return MasterGoalState.valueOf(new String(data));
       } catch (Exception e) {
-        log.error("Problem getting real goal state: " + e);
+        log.error("Problem getting real goal state from zookeeper: " + e);
         UtilWaitThread.sleep(1000);
       }
   }
@@ -898,10 +898,15 @@ public class Master extends AccumuloServerContext implements LiveTServerSet.List
                   break;
               }
           }
+        }catch(Throwable t) {
+          log.error("Error occurred reading / switching master goal state. Will continue with attempt to update status", t);
+        }
+
+        try {
           wait = updateStatus();
           eventListener.waitForEvents(wait);
         } catch (Throwable t) {
-          log.error("Error balancing tablets", t);
+          log.error("Error balancing tablets, will wait for " + WAIT_BETWEEN_ERRORS / ONE_SECOND + " (seconds) and then retry", t);
           UtilWaitThread.sleep(WAIT_BETWEEN_ERRORS);
         }
       }
