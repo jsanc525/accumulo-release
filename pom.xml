@@ -126,7 +126,7 @@
     <!-- surefire/failsafe plugin option -->
     <forkCount>1</forkCount>
     <!-- overwritten in profiles hadoop-1 or hadoop-2 -->
-    <hadoop.version>[2.6.0.2.2.1.0-2100,2.6.0.2.3.0.0)</hadoop.version>
+    <hadoop.version>[2.6.0.2.2.5.0,2.6.0.2.3.0.0)</hadoop.version>
     <httpclient.version>3.1</httpclient.version>
     <jetty.version>8.1.15.v20140411</jetty.version>
     <!-- the maven-release-plugin makes this recommendation, due to plugin bugs -->
@@ -142,7 +142,7 @@
     <!-- Thrift version -->
     <thrift.version>0.9.1</thrift.version>
     <!-- ZooKeeper 3.4.x works also, but we're not using new features yet; this ensures 3.3.x compatibility. -->
-    <zookeeper.version>[3.4.6.2.2.0.0-1750,3.4.6.2.3.0.0)</zookeeper.version>
+    <zookeeper.version>[3.4.6.2.2.5.0,3.4.6.2.3.0.0)</zookeeper.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -1213,7 +1213,7 @@
         <!-- Denotes intention and allows the enforcer plugin to pass when
              the user is relying on default behavior; won't work to activate profile -->
         <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>[2.6.0.2.2.1.0-2100,2.6.0.2.3.0.0)</hadoop.version>
+        <hadoop.version>[2.6.0.2.2.5.0,2.6.0.2.3.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
@@ -1246,7 +1246,7 @@
         </property>
       </activation>
       <properties>
-        <hadoop.version>[2.6.0.2.2.1.0-2100,2.6.0.2.3.0.0)</hadoop.version>
+        <hadoop.version>[2.6.0.2.2.5.0,2.6.0.2.3.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
