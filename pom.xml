@@ -1390,7 +1390,7 @@
         <!-- Denotes intention and allows the enforcer plugin to pass when
              the user is relying on default behavior; won't work to activate profile -->
         <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>[2.7.0.2.3.0.0-600,2.7.0.2.4.0.0)</hadoop.version>
+        <hadoop.version>[2.7.1.2.3.0.0-1600,2.7.1.2.4.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
@@ -1407,7 +1407,7 @@
         </property>
       </activation>
       <properties>
-        <hadoop.version>[2.7.0.2.3.0.0-600,2.7.0.2.4.0.0)</hadoop.version>
+        <hadoop.version>[2.7.1.2.3.0.0-1600,2.7.1.2.4.0.0)</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
