@@ -237,21 +237,21 @@ fi
 if [[ -z "${HADOOP_VERSION}" ]]; then
   echo
   echo "Choose the Apache Hadoop version:"
-  select HADOOP in 'Hadoop 2' 'HDP 2.0/2.1' 'HDP 2.2' ; do
+  select HADOOP in 'Hadoop 2' 'HDP 2.0/2.1' 'HDP' ; do
     if [ "${HADOOP}" == "Hadoop 2" ]; then
       HADOOP_VERSION="2"
     elif [ "${HADOOP}" == "HDP 2.0/2.1" ]; then
       HADOOP_VERSION="HDP2"
-    elif [ "${HADOOP}" == "HDP 2.2" ]; then
-      HADOOP_VERSION="HDP2.2"
+    elif [ "${HADOOP}" == "HDP" ]; then
+      HADOOP_VERSION="HDP"
     fi
     echo "Using Hadoop version '${HADOOP_VERSION}' configuration"
     echo
     break
   done
-elif [[ "${HADOOP_VERSION}" != "2" && "${HADOOP_VERSION}" != "HDP2" && "${HADOOP_VERSION}" != "HDP2.2" ]]; then
+elif [[ "${HADOOP_VERSION}" != "2" && "${HADOOP_VERSION}" != "HDP2" && "${HADOOP_VERSION}" != "HDP" ]]; then
   echo "Invalid Hadoop version"
-  echo "Supported Hadoop versions: '2', 'HDP2', 'HDP2.2'"
+  echo "Supported Hadoop versions: '2', 'HDP2', 'HDP'"
   exit 1
 fi
 
@@ -342,7 +342,7 @@ elif [[ "${HADOOP_VERSION}" == "HDP2" ]]; then
       -e 's/<!-- End HDP 2.2 requirements -->/--><!-- End HDP 2.2 requirements -->/' \
       "${CONF_DIR}/$ACCUMULO_SITE" > temp
   mv temp "${CONF_DIR}/$ACCUMULO_SITE"
-elif [[ "${HADOOP_VERSION}" == "HDP2.2" ]]; then
+elif [[ "${HADOOP_VERSION}" == "HDP" ]]; then
   sed -e 's/<!-- Hadoop 2 requirements -->/<!-- Hadoop 2 requirements --><!--/' \
       -e 's/<!-- End Hadoop 2 requirements -->/--><!-- End Hadoop 2 requirements -->/' \
       "${CONF_DIR}/$ACCUMULO_SITE" > temp
