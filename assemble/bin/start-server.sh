@@ -78,11 +78,11 @@ if [[ -z "$PID" ]]; then
    fi
 
    if [ "$HOST" = "localhost" -o "$HOST" = "`hostname -f`" -o "$HOST" = "$ip" ]; then
-      ${bin}/accumulo ${SERVICE} --address ${ADDRESS} >${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.out 2>${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.err &
+      ${bin}/accumulo ${SERVICE} --address ${ADDRESS} >${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.out 2>${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.err & 
       MAX_FILES_OPEN=$(ulimit -n)
    else
       $SSH $HOST "bash -c 'exec nohup ${bin}/accumulo ${SERVICE} --address ${ADDRESS} >${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.out 2>${ACCUMULO_LOG_DIR}/${SERVICE}_${LOGHOST}.err' &"
-      MAX_FILES_OPEN=$($SSH $HOST "/usr/bin/env bash -c 'ulimit -n'")
+      MAX_FILES_OPEN=$($SSH $HOST "/usr/bin/env bash -c 'ulimit -n'") 
    fi
 
    if [[ -n $MAX_FILES_OPEN && -n $SLAVES ]] ; then
