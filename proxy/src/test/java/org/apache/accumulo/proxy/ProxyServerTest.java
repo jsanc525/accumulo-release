@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.MutationsRejectedException;
-import org.apache.accumulo.proxy.ProxyServer.BatchWriterPlusException;
+import org.apache.accumulo.proxy.ProxyServer.BatchWriterPlusProblem;
 import org.apache.accumulo.proxy.thrift.ColumnUpdate;
 import org.apache.accumulo.proxy.thrift.WriterOptions;
 import org.easymock.EasyMock;
@@ -41,14 +41,14 @@ public class ProxyServerTest {
   @Test
   public void updateAndFlushClosesWriterOnExceptionFromAddCells() throws Exception {
     ProxyServer server = EasyMock.createMockBuilder(ProxyServer.class).addMockedMethod("getWriter", ByteBuffer.class, String.class, WriterOptions.class)
-        .addMockedMethod("addCellsToWriter", Map.class, BatchWriterPlusException.class).createMock();
+        .addMockedMethod("addCellsToWriter", Map.class, BatchWriterPlusProblem.class).createMock();
     BatchWriter writer = EasyMock.createMock(BatchWriter.class);
-    BatchWriterPlusException bwpe = new BatchWriterPlusException();
+    BatchWriterPlusProblem bwpe = new BatchWriterPlusProblem();
     bwpe.writer = writer;
     MutationsRejectedException mre = EasyMock.createMock(MutationsRejectedException.class);
 
     final ByteBuffer login = ByteBuffer.wrap("my_login".getBytes(UTF_8));
-    final String tableName = "table1"; 
+    final String tableName = "table1";
     final Map<ByteBuffer,List<ColumnUpdate>> cells = new HashMap<ByteBuffer,List<ColumnUpdate>>();
 
     EasyMock.expect(server.getWriter(login, tableName, null)).andReturn(bwpe);
@@ -76,14 +76,14 @@ public class ProxyServerTest {
   @Test
   public void updateAndFlushClosesWriterOnExceptionFromFlush() throws Exception {
     ProxyServer server = EasyMock.createMockBuilder(ProxyServer.class).addMockedMethod("getWriter", ByteBuffer.class, String.class, WriterOptions.class)
-        .addMockedMethod("addCellsToWriter", Map.class, BatchWriterPlusException.class).createMock();
+        .addMockedMethod("addCellsToWriter", Map.class, BatchWriterPlusProblem.class).createMock();
     BatchWriter writer = EasyMock.createMock(BatchWriter.class);
-    BatchWriterPlusException bwpe = new BatchWriterPlusException();
+    BatchWriterPlusProblem bwpe = new BatchWriterPlusProblem();
     bwpe.writer = writer;
     MutationsRejectedException mre = EasyMock.createMock(MutationsRejectedException.class);
 
     final ByteBuffer login = ByteBuffer.wrap("my_login".getBytes(UTF_8));
-    final String tableName = "table1"; 
+    final String tableName = "table1";
     final Map<ByteBuffer,List<ColumnUpdate>> cells = new HashMap<ByteBuffer,List<ColumnUpdate>>();
 
     EasyMock.expect(server.getWriter(login, tableName, null)).andReturn(bwpe);
@@ -110,5 +110,5 @@ public class ProxyServerTest {
 
     EasyMock.verify(server, writer, mre);
   }
-  
+
 }
