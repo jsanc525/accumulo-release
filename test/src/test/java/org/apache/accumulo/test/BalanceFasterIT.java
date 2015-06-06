@@ -37,9 +37,11 @@ import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
+import org.junit.Ignore;
 import org.junit.Test;
 
 // ACCUMULO-2952
+@Ignore
 public class BalanceFasterIT extends ConfigurableMacIT {
 
   @Override

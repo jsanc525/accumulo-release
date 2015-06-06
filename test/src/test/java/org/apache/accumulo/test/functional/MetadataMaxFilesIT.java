@@ -43,8 +43,10 @@ import org.apache.accumulo.server.util.Admin;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.apache.hadoop.io.Text;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class MetadataMaxFilesIT extends ConfigurableMacIT {
 
   @Override

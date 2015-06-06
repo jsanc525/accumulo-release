@@ -29,9 +29,11 @@ import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
+import org.junit.Ignore;
 import org.junit.Test;
 
 // ACCUMULO-1177
+@Ignore
 public class AssignmentThreadsIT extends ConfigurableMacIT {
 
   @Override

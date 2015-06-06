@@ -29,11 +29,13 @@ import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.functional.SlowIterator;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Iterators;
 
 // ACCUMULO-3030
+@Ignore
 public class InterruptibleScannersIT extends AccumuloClusterIT {
 
   @Override
