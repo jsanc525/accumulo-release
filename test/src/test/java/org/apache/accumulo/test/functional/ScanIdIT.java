@@ -55,6 +55,7 @@ import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.hadoop.io.Text;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * back into org.apache.accumulo.trace.thrift.TInfo until that test signature is regenerated.
  */
+@Ignore
 public class ScanIdIT extends AccumuloClusterIT {
 
   private static final Logger log = LoggerFactory.getLogger(ScanIdIT.class);
