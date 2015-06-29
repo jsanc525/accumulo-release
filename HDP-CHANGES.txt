@@ -1,0 +1,41 @@
+ACCUMULO-3809 Table problem report has bogus table name for user table
+ACCUMULO-3810 RandomWalk test, MultiTable fails throwing java.lang.NullPointerException w/ Kerberos on
+ACCUMULO-3812 T*ProxyIT classes need cleanup
+ACCUMULO-3814 StandaloneAccumuloClusterControl doesn't set provided ACCUMULO_CONF_DIR on SetGoalState
+ACCUMULO-3815 StandaloneClusterControl shouldn't use canonical paths
+ACCUMULO-3816 rpc.sasl.qop not mentioned in Kerberos server-configuration user manual section 
+ACCUMULO-3821 CleanTmpIT fails on dfs.permission enabled HDFS instance
+ACCUMULO-3822 ImportExportIT fails to write to export directory in HDFS due to permissions 
+ACCUMULO-3823 Support separate client and server ACCUMULO_CONF_DIRs for StandaloneCluster ITs
+ACCUMULO-3826 User manual accidentally references commerical product 
+ACCUMULO-3827 Default store types for monitor SSL are broken
+ACCUMULO-3828 SimpleProxyBase ITs failing due to constraint propagation
+ACCUMULO-3834 ConstraintIT occasionally failing
+ACCUMULO-3838 ReplicationIT.replicationEntriesPrecludeWalDeletion failed because it missed an expected WAL
+ACCUMULO-3839 Nonsense error when configuring instance.volumes.replacements
+ACCUMULO-3845 DurabilityIT failed
+ACCUMULO-3846 Allow override of C++ compiler through Maven build
+ACCUMULO-3847 StandaloneClusterControl needs to launch MR jobs locally
+ACCUMULO-3849 Proxy sets incorrect primary for SASL server transport
+ACCUMULO-3850 Improve logging in replication code path
+ACCUMULO-3852 NPE in WorkMaker for non-existent table
+ACCUMULO-3853 Contention around ConcurrentLinkedQueue.size() in AsyncSpanReceiver
+ACCUMULO-3856 ProxyServer.updateAndFlush leaks BatchWriter
+ACCUMULO-3858 WatchTheWatchCountIT failed with too few watchers
+ACCUMULO-3859 TabletServer never acknowledged constraint
+ACCUMULO-3861 DurabilityIT might actually see all results with durability=none
+ACCUMULO-3862 Improve how AsyncSpanReceiver drops short spans
+ACCUMULO-3870 Loads of warnings from ClientConfiguration delimeter parsing w/ Kerberos
+ACCUMULO-3873 Ambari-installed client.conf not loaded by default
+ACCUMULO-3874 Wrong username in exception when user doesn't exist
+ACCUMULO-3877 TableOperationsIT failed in testCompactEmptyTableWithGeneratorIterator_Splits_Cancel
+ACCUMULO-3878 Hunt down ClientConfiguration warnings
+ACCUMULO-3879 MultiInstanceReplicationIT.dataWasReplicatedToThePeer failed
+ACCUMULO-3880 Malformed Configuration Causes tservers To Shutdown
+ACCUMULO-3881 T*ProxyITs fail with useKrbForIT=true
+ACCUMULO-3882 AccumuloOutputFormatIT loads installed client.conf instead of minicluster's
+ACCUMULO-3883 ITs should not load default ClientConfiguration
+ACCUMULO-3886 Boolean values in SiteConfiguration must use lower-case starting characters
+ACCUMULO-3887 Lack of insight into `accumulo admin stop $tserver`
+ACCUMULO-3893 ReadWriteIT#sunnyDay fails against Monitor w/ SSL enabled
+ACCUMULO-3894 KerberosProxyIT too aggressive in waiting for proxy to start
