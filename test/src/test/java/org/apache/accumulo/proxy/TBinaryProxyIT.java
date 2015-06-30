@@ -18,10 +18,12 @@ package org.apache.accumulo.proxy;
 
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 /**
  *
  */
+@Ignore
 public class TBinaryProxyIT extends SimpleProxyBase {
 
   @BeforeClass
