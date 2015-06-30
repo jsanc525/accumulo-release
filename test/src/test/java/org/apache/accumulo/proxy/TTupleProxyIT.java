@@ -18,12 +18,10 @@ package org.apache.accumulo.proxy;
 
 import org.apache.thrift.protocol.TTupleProtocol;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  *
  */
-@Ignore
 public class TTupleProxyIT extends SimpleProxyBase {
 
   @BeforeClass

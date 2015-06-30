@@ -18,12 +18,10 @@ package org.apache.accumulo.proxy;
 
 import org.apache.thrift.protocol.TJSONProtocol;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  *
  */
-@Ignore
 public class TJsonProtocolProxyIT extends SimpleProxyBase {
 
   @BeforeClass

@@ -18,12 +18,10 @@ package org.apache.accumulo.proxy;
 
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 
 /**
  *
  */
-@Ignore
 public class TCompactProxyIT extends SimpleProxyBase {
 
   @BeforeClass
