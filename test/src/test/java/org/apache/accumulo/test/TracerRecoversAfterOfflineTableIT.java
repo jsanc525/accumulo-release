@@ -36,11 +36,13 @@ import org.apache.accumulo.tracer.TraceDump.Printer;
 import org.apache.accumulo.tracer.TraceServer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  */
+@Ignore
 public class TracerRecoversAfterOfflineTableIT extends ConfigurableMacIT {
 
   @Override
