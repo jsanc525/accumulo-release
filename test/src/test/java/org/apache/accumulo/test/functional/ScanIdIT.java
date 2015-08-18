@@ -34,7 +34,6 @@ import org.apache.accumulo.core.iterators.IteratorUtil;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.accumulo.core.util.UtilWaitThread;
-import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.hadoop.io.Text;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ import static org.junit.Assert.fail;
  * <p/>
  * back into org.apache.accumulo.trace.thrift.TInfo until that test signature is regenerated.
  */
-public class ScanIdIT extends AccumuloClusterIT {
+public class ScanIdIT extends SimpleMacIT {
 
   private static final Logger log = LoggerFactory.getLogger(ScanIdIT.class);
 
