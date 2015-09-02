@@ -546,6 +546,7 @@
             <excludes>
               <exclude>.pc/**</exclude>
               <exclude>debian/**</exclude>
+              <exclude>HDP-CHANGES.txt</exclude>
             </excludes>
           </configuration>
         </plugin>

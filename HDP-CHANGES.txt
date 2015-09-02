@@ -1,0 +1,6 @@
+ACCUMULO-2641 scan id not set in org.apache.accumulo.core.client.admin.ActiveScan
+ACCUMULO-3385 DateLexicoder fails to correctly order dates prior to 1970
+ACCUMULO-3445 Server failure to login using Kerberos doesn't exit the process
+ACCUMULO-3745 deadlock in SourceSwitchingIterator
+ACCUMULO-3890 Use of CredentialProvider results in a lot of NameNode operations
+ACCUMULO-3957 Accumulo monitor's getContentSummary calls may cause NN pauses
