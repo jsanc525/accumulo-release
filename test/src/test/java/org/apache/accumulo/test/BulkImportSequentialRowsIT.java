@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.apache.accumulo.core.client.admin.TableOperations;
 import org.apache.accumulo.core.security.Authorizations;
-import org.apache.accumulo.harness.AccumuloClusterIT;
+import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Iterables;
 
 // ACCUMULO-3967
-public class BulkImportSequentialRowsIT extends AccumuloClusterIT {
+public class BulkImportSequentialRowsIT extends ConfigurableMacIT {
   private static final Logger log = LoggerFactory.getLogger(BulkImportSequentialRowsIT.class);
 
   private static final long NR = 24;
@@ -49,7 +49,7 @@ public class BulkImportSequentialRowsIT extends AccumuloClusterIT {
   }
 
   @Override
-  public void configureMiniCluster(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
+  public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
     // Need more than one tserver
     cfg.setNumTservers(2);
 
@@ -62,8 +62,11 @@ public class BulkImportSequentialRowsIT extends AccumuloClusterIT {
     String tableName = getUniqueNames(1)[0];
     TableOperations to = getConnector().tableOperations();
     to.create(tableName);
-    FileSystem fs = getFileSystem();
-    Path rootPath = getUsableDir();
+    FileSystem fs = FileSystem.getLocal(new Configuration());
+    Path rootPath = new Path(new Path(System.getProperty("user.dir", "target")), getClass().getSimpleName());
+    if (fs.exists(rootPath)) {
+      assertTrue(fs.delete(rootPath, true));
+    }
     Path bulk = new Path(rootPath, "bulk");
     log.info("bulk: {}", bulk);
     if (fs.exists(bulk)) {
