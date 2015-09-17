@@ -16,7 +16,7 @@
  */
 package org.apache.accumulo.test;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 import org.apache.accumulo.core.cli.Help;
 import org.apache.accumulo.core.conf.DefaultConfiguration;
@@ -64,7 +64,7 @@ public class GenerateSequentialRFile implements Runnable {
         final Text row = new Text(String.format("%03d", x));
         for (int y = 0; y < opts.valuesPerRow; y++) {
           final String suffix = String.format("%05d", y);
-          writer.append(new Key(new Text(row + ":" + suffix), CF, CQ), new Value(suffix.getBytes(StandardCharsets.UTF_8)));
+          writer.append(new Key(new Text(row + ":" + suffix), CF, CQ), new Value(suffix.getBytes(Charset.forName("UTF_8"))));
         }
       }
 
