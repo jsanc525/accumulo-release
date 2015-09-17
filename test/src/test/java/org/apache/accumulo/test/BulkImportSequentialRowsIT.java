@@ -63,28 +63,28 @@ public class BulkImportSequentialRowsIT extends ConfigurableMacIT {
     TableOperations to = getConnector().tableOperations();
     to.create(tableName);
     FileSystem fs = FileSystem.getLocal(new Configuration());
-    Path rootPath = new Path(new Path(System.getProperty("user.dir", "target")), getClass().getSimpleName());
+    Path rootPath = new Path(fs.makeQualified(new Path(System.getProperty("user.dir"), "target")), getClass().getSimpleName());
     if (fs.exists(rootPath)) {
       assertTrue(fs.delete(rootPath, true));
     }
+    assertTrue(fs.mkdirs(rootPath));
+
     Path bulk = new Path(rootPath, "bulk");
     log.info("bulk: {}", bulk);
-    if (fs.exists(bulk)) {
-      fs.delete(bulk, true);
-    }
     assertTrue(fs.mkdirs(bulk));
     Path err = new Path(rootPath, "err");
     log.info("err: {}", err);
-    if (fs.exists(err)) {
-      fs.delete(err, true);
-    }
+
+    assertTrue(fs.mkdirs(bulk));
     assertTrue(fs.mkdirs(err));
 
     Path rfile = new Path(bulk, "file.rf");
 
-    GenerateSequentialRFile.main(new String[] {"-f", rfile.toString(), "-nr", Long.toString(NR), "-nv", Long.toString(NV)});
+    log.info("Generating RFile {}", rfile.toUri().toString());
 
-    assertTrue(fs.exists(rfile));
+    GenerateSequentialRFile.main(new String[] {"-f", rfile.toUri().toString(), "-nr", Long.toString(NR), "-nv", Long.toString(NV)});
+
+    assertTrue("Expected that " + rfile + " exists, but it does not", fs.exists(rfile));
 
     // Add some splits
     to.addSplits(tableName, getSplits());
