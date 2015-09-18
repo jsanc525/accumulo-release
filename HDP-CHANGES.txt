@@ -1,3 +1,9 @@
+ACCUMULO-3890 Use of CredentialProvider results in a lot of NN ops
+ACCUMULO-3957 Consider moving off getContentSummary in the monitor
+ACCUMULO-3967 bulk import loses records when loading pre-split table
+ACCUMULO-3973 ShellServerIT.addauths fails to correctly deal with cached authorizations
+ACCUMULO-4001 BulkImportSequentialRowsIT fails when using HDFS
+
 ACCUMULO-3809 Table problem report has bogus table name for user table
 ACCUMULO-3810 RandomWalk test, MultiTable fails throwing java.lang.NullPointerException w/ Kerberos on
 ACCUMULO-3812 T*ProxyIT classes need cleanup
