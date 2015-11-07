@@ -4,3 +4,4 @@ ACCUMULO-3445 Server failure to login using Kerberos doesn't exit the process
 ACCUMULO-3745 deadlock in SourceSwitchingIterator
 ACCUMULO-3890 Use of CredentialProvider results in a lot of NameNode operations
 ACCUMULO-3957 Accumulo monitor's getContentSummary calls may cause NN pauses
+ACCUMULO-3967 bulk import loses records when loading pre-split table
