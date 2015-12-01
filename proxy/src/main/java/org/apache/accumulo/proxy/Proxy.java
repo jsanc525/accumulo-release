@@ -198,7 +198,7 @@ public class Proxy implements KeywordExecutable {
     ProxyServer impl = new ProxyServer(properties);
 
     // Wrap the implementation -- translate some exceptions
-    AccumuloProxy.Iface wrappedImpl = RpcWrapper.service(impl);
+    AccumuloProxy.Iface wrappedImpl = RpcWrapper.service(impl, new AccumuloProxy.Processor<AccumuloProxy.Iface>(impl).getProcessMapView());
 
     // Create the processor from the implementation
     TProcessor processor = new AccumuloProxy.Processor<AccumuloProxy.Iface>(wrappedImpl);
@@ -264,6 +264,10 @@ public class Proxy implements KeywordExecutable {
     // Create the thrift server with our processor and properties
     ServerAddress serverAddr = TServerUtils.startTServer(address, serverType, timedProcessor, protocolFactory, serverName, threadName, numThreads,
         simpleTimerThreadpoolSize, threadpoolResizeInterval, maxFrameSize, sslParams, saslParams, serverSocketTimeout);
+=======
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    final TProcessor processor = proxyProcConstructor.newInstance(RpcWrapper.service(impl, );
+>>>>>>> 44b17c6... ACCUMULO-4065 Work around TExceptions being written back to clients in oneway methods.
 
     return serverAddr;
   }
