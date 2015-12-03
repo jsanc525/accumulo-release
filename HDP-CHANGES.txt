@@ -48,3 +48,4 @@ ACCUMULO-3894 KerberosProxyIT too aggressive in waiting for proxy to start
 
 ACCUMULO-4060 Transient ZooKeeper connection issues kills FATE Runner threads
 ACCUMULO-4065 Oneway Thrift calls leave message on client's InputStream
+ACCUMULO-4069 Services failing to renew Kerberos ticket
