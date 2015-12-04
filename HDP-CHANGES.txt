@@ -46,6 +46,8 @@ ACCUMULO-3887 Lack of insight into `accumulo admin stop $tserver`
 ACCUMULO-3893 ReadWriteIT#sunnyDay fails against Monitor w/ SSL enabled
 ACCUMULO-3894 KerberosProxyIT too aggressive in waiting for proxy to start
 
+ACCUMULO-3963 Incremental backoff on inability to write to HDFS
+ACCUMULO-4053 ReplicationOperations.drain() is returning too quickly
 ACCUMULO-4060 Transient ZooKeeper connection issues kills FATE Runner threads
 ACCUMULO-4065 Oneway Thrift calls leave message on client's InputStream
 ACCUMULO-4069 Services failing to renew Kerberos ticket
