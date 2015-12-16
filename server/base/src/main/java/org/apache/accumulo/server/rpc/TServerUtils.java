@@ -51,6 +51,7 @@ import org.apache.thrift.TProcessorFactory;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSaslServerTransport;
 import org.apache.thrift.transport.TServerSocket;
@@ -392,6 +393,7 @@ public class TServerUtils {
       hostname = InetAddress.getByName(address.getHost()).getCanonicalHostName();
       fqdn = InetAddress.getLocalHost().getCanonicalHostName();
     } catch (UnknownHostException e) {
+      transport.close();
       throw new TTransportException(e);
     }
 
@@ -407,6 +409,7 @@ public class TServerUtils {
       log.error(
           "Expected hostname of '{}' but got '{}'. Ensure the entries in the Accumulo hosts files (e.g. masters, slaves) are the FQDN for each host when using SASL.",
           fqdn, hostname);
+      transport.close();
       throw new RuntimeException("SASL requires that the address the thrift server listens on is the same as the FQDN for this host");
     }
 
@@ -414,6 +417,7 @@ public class TServerUtils {
     try {
       serverUser = UserGroupInformation.getLoginUser();
     } catch (IOException e) {
+      transport.close();
       throw new TTransportException(e);
     }
 
