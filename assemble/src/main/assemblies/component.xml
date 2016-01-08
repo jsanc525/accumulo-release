@@ -51,7 +51,6 @@
       </includes>
       <excludes>
         <exclude>${groupId}:${artifactId}-docs</exclude>
-        <exclude>org.apache.accumulo:accumulo-test</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
