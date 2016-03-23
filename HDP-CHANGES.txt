@@ -54,3 +54,5 @@ ACCUMULO-4069 Services failing to renew Kerberos ticket
 ACCUMULO-4071 BulkImportSequentialRowsIT fails on standalone cluster with HDFS permission errors
 
 ACCUMULO-4080 TabletServers should be less aggressively "monitoring RO filesystems"
+
+ACCUMULO-4135 Add impersonation configuration keys which don't put the principal in the key.
