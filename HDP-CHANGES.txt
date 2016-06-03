@@ -58,5 +58,3 @@ ACCUMULO-4080 TabletServers should be less aggressively "monitoring RO filesyste
 ACCUMULO-4135 Add impersonation configuration keys which don't put the principal in the key.
 
 ACCUMULO-4185 Use SYNC durability and expect the update to be durable in ProxyDurabilityIT
-
-ACCUMULO-4135 Change Kerberos impersonation configuration keys
