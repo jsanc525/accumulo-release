@@ -152,7 +152,7 @@
     <!-- Thrift version -->
     <thrift.version>0.9.1</thrift.version>
     <!-- ZooKeeper version -->
-    <zookeeper.version>[3.4.6.2.5.0.0-530,3.4.6.2.6.0.0)</zookeeper.version>
+    <zookeeper.version>3.4.6</zookeeper.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -1441,7 +1441,7 @@
         <!-- Denotes intention and allows the enforcer plugin to pass when
              the user is relying on default behavior; won't work to activate profile -->
         <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>[2.7.1.2.5.0.0-530,2.7.1.2.6.0.0)</hadoop.version>
+        <hadoop.version>2.7.1</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
@@ -1458,7 +1458,7 @@
         </property>
       </activation>
       <properties>
-        <hadoop.version>[2.7.1.2.5.0.0-530,2.7.1.2.6.0.0)</hadoop.version>
+        <hadoop.version>2.7.1</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
       </properties>
