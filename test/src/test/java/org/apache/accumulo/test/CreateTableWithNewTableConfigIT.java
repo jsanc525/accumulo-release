@@ -33,7 +33,9 @@ import org.apache.accumulo.core.metadata.MetadataTable;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection.ServerColumnFamily;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.harness.SharedMiniClusterIT;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,16 @@ public class CreateTableWithNewTableConfigIT extends SharedMiniClusterIT {
   protected int defaultTimeoutSeconds() {
     return 30;
   };
+
+  @BeforeClass
+  public static void setup() throws Exception {
+    SharedMiniClusterIT.startMiniCluster();
+  }
+
+  @AfterClass
+  public static void teardown() throws Exception {
+    SharedMiniClusterIT.stopMiniCluster();
+  }
 
   public int numProperties(Connector connector, String tableName) throws AccumuloException, TableNotFoundException {
     return Iterators.size(connector.tableOperations().getProperties(tableName).iterator());
