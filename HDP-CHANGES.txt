@@ -1,3 +1,5 @@
+** Changes in HDP-2.3 and HDP-2.4 over the Apache release
+
 ACCUMULO-3890 Use of CredentialProvider results in a lot of NN ops
 ACCUMULO-3957 Consider moving off getContentSummary in the monitor
 ACCUMULO-3967 bulk import loses records when loading pre-split table
@@ -52,11 +54,10 @@ ACCUMULO-4060 Transient ZooKeeper connection issues kills FATE Runner threads
 ACCUMULO-4065 Oneway Thrift calls leave message on client's InputStream
 ACCUMULO-4069 Services failing to renew Kerberos ticket
 ACCUMULO-4071 BulkImportSequentialRowsIT fails on standalone cluster with HDFS permission errors
-
 ACCUMULO-4080 TabletServers should be less aggressively "monitoring RO filesystems"
-
 ACCUMULO-4135 Add impersonation configuration keys which don't put the principal in the key.
-
 ACCUMULO-4185 Use SYNC durability and expect the update to be durable in ProxyDurabilityIT
+
+** Changes in HDP-2.5 over the Apache release
 
 ACCUMULO-4361 Configure ShellServerIT to run with one tserver
