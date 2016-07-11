@@ -54,11 +54,13 @@ import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+@Ignore
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Shell.class, ZooUtil.class, ConfigSanityCheck.class})
 public class ShellSetInstanceTest {
