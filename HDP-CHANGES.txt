@@ -61,3 +61,4 @@ ACCUMULO-4185 Use SYNC durability and expect the update to be durable in ProxyDu
 ** Changes in HDP-2.5 over the Apache release
 
 ACCUMULO-4361 Configure ShellServerIT to run with one tserver
+ACCUMULO-4368 Offline and online the table when constraints are altered
