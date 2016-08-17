@@ -64,3 +64,4 @@ ACCUMULO-4361 Configure ShellServerIT to run with one tserver
 ACCUMULO-4368 Offline and online the table when constraints are altered
 ACCUMULO-4369 Restructure try-catch to ensure a logical exception is raised
 ACCUMULO-4370 Replace bounded checks for replication table state with unbounded checks
+ACCUMULO-4412 Check proxy process when client fails to connect in test
