@@ -120,6 +120,10 @@
     </site>
   </distributionManagement>
   <properties>
+    <accumulo.anyClusterTests>org.apache.accumulo.test.categories.AnyClusterTest</accumulo.anyClusterTests>
+    <accumulo.it.excludedGroups />
+    <accumulo.it.groups>${accumulo.anyClusterTests},${accumulo.miniclusterTests}</accumulo.it.groups>
+    <accumulo.miniclusterTests>org.apache.accumulo.test.categories.MiniClusterOnlyTest</accumulo.miniclusterTests>
     <!-- used for filtering the java source with the current version -->
     <accumulo.release.version>${project.version}</accumulo.release.version>
     <!-- bouncycastle version for test dependencies -->
@@ -241,7 +245,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
@@ -1209,6 +1213,10 @@
               <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <excludeGroups>${accumulo.it.excludedGroups}</excludeGroups>
+              <groups>${accumulo.it.groups}</groups>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -1498,6 +1506,68 @@
       </activation>
       <properties>
         <hadoop.version>3.0.0.3.0.0.0-SNAPSHOT</hadoop.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>jdk8</id>
+      <activation>
+        <jdk>[1.8,1.9)</jdk>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <quiet>true</quiet>
+                <javadocVersion>1.8</javadocVersion>
+                <additionalJOption>-J-Xmx512m</additionalJOption>
+                <additionalparam>-Xdoclint:all,-Xdoclint:-missing</additionalparam>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>aggregate-javadocs</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <sourceFileIncludes>
+                  <sourceFileInclude>**/org/apache/accumulo/core/client/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/core/data/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/core/security/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/minicluster/**/*.java</sourceFileInclude>
+                </sourceFileIncludes>
+                <sourceFileExcludes>
+                  <sourceFileExclude>**/crypto/**/*.java</sourceFileExclude>
+                  <sourceFileExclude>**/impl/**/*.java</sourceFileExclude>
+                  <sourceFileExclude>**/thrift/**/*.java</sourceFileExclude>
+                </sourceFileExcludes>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>only-minicluster-tests</id>
+      <properties>
+        <accumulo.it.excludedGroups>${accumulo.anyClusterTests}</accumulo.it.excludedGroups>
+        <accumulo.it.groups>${accumulo.miniclusterTests}</accumulo.it.groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>standalone-capable-tests</id>
+      <properties>
+        <accumulo.it.excludedGroups>${accumulo.miniclusterTests}</accumulo.it.excludedGroups>
+        <accumulo.it.groups>${accumulo.anyClusterTests}</accumulo.it.groups>
       </properties>
     </profile>
   </profiles>
