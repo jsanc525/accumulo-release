@@ -35,6 +35,7 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.TablePermission;
 import org.apache.accumulo.minicluster.MiniAccumuloCluster;
 import org.apache.accumulo.minicluster.MiniAccumuloConfig;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordWriter;
@@ -42,6 +43,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
@@ -50,6 +52,7 @@ import com.google.common.collect.Maps;
 /**
  * Prevent regression of ACCUMULO-3709. Exists as a mini test because mock instance doesn't produce this error when dynamically changing the table permissions.
  */
+@Category(MiniClusterOnlyTests.class)
 public class AccumuloOutputFormatIT {
 
   private static final String TABLE = "abc";
