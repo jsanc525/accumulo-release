@@ -47,16 +47,20 @@ import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.server.fs.PerTableVolumeChooser;
 import org.apache.accumulo.server.fs.PreferredVolumeChooser;
 import org.apache.accumulo.server.fs.RandomVolumeChooser;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.apache.hadoop.io.Text;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  */
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class VolumeChooserIT extends ConfigurableMacIT {
 
   private static final Text EMPTY = new Text();

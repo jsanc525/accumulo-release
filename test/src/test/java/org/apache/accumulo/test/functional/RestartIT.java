@@ -49,17 +49,21 @@ import org.apache.accumulo.minicluster.ServerType;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.TestIngest;
 import org.apache.accumulo.test.VerifyIngest;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class RestartIT extends AccumuloClusterIT {
   private static final Logger log = LoggerFactory.getLogger(RestartIT.class);
 

@@ -68,6 +68,7 @@ import org.apache.accumulo.harness.TestingKdc;
 import org.apache.accumulo.minicluster.ServerType;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloClusterImpl;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
 import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
@@ -88,7 +89,7 @@ import com.google.common.collect.Sets;
 /**
  * MAC test which uses {@link MiniKdc} to simulate ta secure environment. Can be used as a sanity check for Kerberos/SASL testing.
  */
-@Category(MiniClusterOnlyTests.class)
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class KerberosIT extends AccumuloIT {
   private static final Logger log = LoggerFactory.getLogger(KerberosIT.class);
 

@@ -27,10 +27,14 @@ import org.apache.accumulo.minicluster.ServerType;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.TestIngest;
 import org.apache.accumulo.test.VerifyIngest;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksIgnoredTests.class})
 public class WriteAheadLogIT extends AccumuloClusterIT {
 
   @Override

@@ -43,13 +43,17 @@ import org.apache.accumulo.minicluster.ServerType;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloClusterImpl;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.minicluster.impl.ProcessReference;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class ExistingMacIT extends ConfigurableMacIT {
   @Override
   public int defaultTimeoutSeconds() {
@@ -58,7 +62,7 @@ public class ExistingMacIT extends ConfigurableMacIT {
 
   @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
-    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "5s");
+    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "15s");
 
     // use raw local file system so walogs sync and flush will work
     hadoopCoreSite.set("fs.file.impl", RawLocalFileSystem.class.getName());

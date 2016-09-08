@@ -17,12 +17,16 @@
 package org.apache.accumulo.proxy;
 
 import org.apache.accumulo.harness.SharedMiniClusterIT;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.junit.BeforeClass;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  */
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class TBinaryProxyIT extends SimpleProxyBase {
 
   @BeforeClass

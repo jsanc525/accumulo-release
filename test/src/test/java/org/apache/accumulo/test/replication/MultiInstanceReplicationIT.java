@@ -55,6 +55,8 @@ import org.apache.accumulo.server.replication.ReplicaSystemFactory;
 import org.apache.accumulo.server.replication.StatusUtil;
 import org.apache.accumulo.server.replication.proto.Replication.Status;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.accumulo.tserver.TabletServer;
 import org.apache.accumulo.tserver.replication.AccumuloReplicaSystem;
 import org.apache.hadoop.conf.Configuration;
@@ -63,6 +65,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +74,7 @@ import com.google.common.collect.Iterators;
 /**
  * Replication tests which start at least two MAC instances and replicate data between them
  */
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class MultiInstanceReplicationIT extends ConfigurableMacIT {
   private static final Logger log = LoggerFactory.getLogger(MultiInstanceReplicationIT.class);
 
@@ -96,7 +100,7 @@ public class MultiInstanceReplicationIT extends ConfigurableMacIT {
   @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
     cfg.setNumTservers(1);
-    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "3s");
+    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "15s");
     cfg.setProperty(Property.TSERV_WALOG_MAX_SIZE, "2M");
     cfg.setProperty(Property.GC_CYCLE_START, "1s");
     cfg.setProperty(Property.GC_CYCLE_DELAY, "5s");

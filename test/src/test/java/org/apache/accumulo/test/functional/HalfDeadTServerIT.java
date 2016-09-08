@@ -39,10 +39,14 @@ import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.start.Main;
 import org.apache.accumulo.test.TestIngest;
 import org.apache.accumulo.test.VerifyIngest;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.accumulo.tserver.TabletServer;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class HalfDeadTServerIT extends ConfigurableMacIT {
 
   @Override
