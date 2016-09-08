@@ -19,8 +19,12 @@ package org.apache.accumulo.test.functional;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.harness.AccumuloClusterIT;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksIgnoredTests.class})
 public class CreateManyScannersIT extends AccumuloClusterIT {
 
   @Override

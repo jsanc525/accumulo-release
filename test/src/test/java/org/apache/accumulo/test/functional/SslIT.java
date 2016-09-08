@@ -19,16 +19,20 @@ package org.apache.accumulo.test.functional;
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * Do a selection of ITs with SSL turned on that cover a range of different connection scenarios. Note that you can run *all* the ITs against SSL-enabled mini
  * clusters with `mvn verify -DuseSslForIT`
  *
  */
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class SslIT extends ConfigurableMacIT {
   @Override
   public int defaultTimeoutSeconds() {
