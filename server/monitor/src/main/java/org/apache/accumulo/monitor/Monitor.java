@@ -76,6 +76,7 @@ import org.apache.accumulo.monitor.servlets.trace.ShowTrace;
 import org.apache.accumulo.monitor.servlets.trace.Summary;
 import org.apache.accumulo.server.Accumulo;
 import org.apache.accumulo.server.AccumuloServerContext;
+import org.apache.accumulo.server.HighlyAvailableService;
 import org.apache.accumulo.server.ServerOpts;
 import org.apache.accumulo.server.client.HdfsZooInstance;
 import org.apache.accumulo.server.conf.ServerConfigurationFactory;
@@ -98,7 +99,7 @@ import com.google.common.net.HostAndPort;
 /**
  * Serve master statistics with an embedded web server.
  */
-public class Monitor {
+public class Monitor implements HighlyAvailableService {
   private static final Logger log = LoggerFactory.getLogger(Monitor.class);
 
   private static final int REFRESH_TIME = 5;
@@ -111,6 +112,7 @@ public class Monitor {
   private static long totalHoldTime = 0;
   private static long totalLookups = 0;
   private static int totalTables = 0;
+  public static HighlyAvailableService HA_SERVICE_INSTANCE = null;
 
   private static class MaxList<T> extends LinkedList<Pair<Long,T>> {
     private static final long serialVersionUID = 1L;
@@ -406,6 +408,9 @@ public class Monitor {
     context = new AccumuloServerContext(config);
     Accumulo.init(fs, config, app);
     Monitor monitor = new Monitor();
+    // Servlets need access to limit requests when the monitor is not active, but Servlets are instantiated
+    // via reflection. Expose the service this way instead.
+    Monitor.HA_SERVICE_INSTANCE = monitor;
     DistributedTrace.enable(hostname, app, config.getConfiguration());
     try {
       monitor.run(hostname);
@@ -417,13 +422,6 @@ public class Monitor {
   private static long START_TIME;
 
   public void run(String hostname) {
-    try {
-      getMonitorLock();
-    } catch (Exception e) {
-      log.error("Failed to get Monitor ZooKeeper lock");
-      throw new RuntimeException(e);
-    }
-
     Monitor.START_TIME = System.currentTimeMillis();
     int port = config.getConfiguration().getPort(Property.MONITOR_PORT);
     try {
@@ -455,8 +453,14 @@ public class Monitor {
     server.start();
 
     try {
-      hostname = InetAddress.getLocalHost().getHostName();
+      getMonitorLock();
+    } catch (Exception e) {
+      log.error("Failed to get Monitor ZooKeeper lock");
+      throw new RuntimeException(e);
+    }
 
+    try {
+      hostname = InetAddress.getLocalHost().getHostName();
       log.debug("Using " + hostname + " to advertise monitor location in ZooKeeper");
 
       String monitorAddress = HostAndPort.fromParts(hostname, server.getPort()).toString();
@@ -803,5 +807,13 @@ public class Monitor {
 
   public static AccumuloServerContext getContext() {
     return context;
+  }
+
+  @Override
+  public boolean isActiveService() {
+    if (null != monitorLock && monitorLock.isLocked()) {
+      return true;
+    }
+    return false;
   }
 }

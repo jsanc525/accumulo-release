@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import jline.console.ConsoleReader;
 
 import org.apache.accumulo.shell.Shell;
+import org.apache.commons.httpclient.util.HttpURLConnection;
 
 public class ShellServlet extends BasicServlet {
   private static final long serialVersionUID = 1L;
@@ -183,6 +184,11 @@ public class ShellServlet extends BasicServlet {
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    // Verify that this is the active Monitor instance
+    if (!isActiveMonitor()) {
+      resp.sendError(HttpURLConnection.HTTP_UNAVAILABLE, STANDBY_MONITOR_MESSAGE);
+      return;
+    }
     final HttpSession session = req.getSession(true);
     String user = (String) session.getAttribute("user");
     if (user == null || !userShells().containsKey(session.getId())) {
