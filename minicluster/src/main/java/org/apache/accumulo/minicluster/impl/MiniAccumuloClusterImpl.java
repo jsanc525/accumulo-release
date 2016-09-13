@@ -336,10 +336,17 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     return process;
   }
 
-  Process _exec(Class<?> clazz, ServerType serverType, String... args) throws IOException {
-
-    List<String> jvmOpts = new ArrayList<String>();
+  public Process _exec(Class<?> clazz, ServerType serverType, Map<String,String> configOverrides, String... args) throws IOException {
+    List<String> jvmOpts = new ArrayList<>();
     jvmOpts.add("-Xmx" + config.getMemory(serverType));
+    if (configOverrides != null && !configOverrides.isEmpty()) {
+      File siteFile = File.createTempFile("accumulo-site", ".xml", config.getConfDir());
+      Map<String,String> confMap = new HashMap<>();
+      confMap.putAll(config.getSiteConfig());
+      confMap.putAll(configOverrides);
+      writeConfig(siteFile, confMap.entrySet());
+      jvmOpts.add("-Dorg.apache.accumulo.config.file=" + siteFile.getName());
+    }
 
     if (config.isJDWPEnabled()) {
       Integer port = PortUtils.getRandomFreePort();

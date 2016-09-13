@@ -43,6 +43,7 @@ import org.apache.accumulo.monitor.ZooKeeperStatus.ZooKeeperState;
 import org.apache.accumulo.monitor.util.celltypes.NumberType;
 import org.apache.accumulo.server.fs.VolumeManager;
 import org.apache.accumulo.server.fs.VolumeManagerImpl;
+import org.apache.commons.httpclient.util.HttpURLConnection;
 
 public class DefaultServlet extends BasicServlet {
 
@@ -87,6 +88,11 @@ public class DefaultServlet extends BasicServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    // Verify that this is the active Monitor instance
+    if (!isActiveMonitor()) {
+      resp.sendError(HttpURLConnection.HTTP_UNAVAILABLE, STANDBY_MONITOR_MESSAGE);
+      return;
+    }
     if (req.getRequestURI().startsWith("/web"))
       getResource(req, resp);
     else if (req.getRequestURI().startsWith("/monitor"))
