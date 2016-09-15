@@ -27,6 +27,7 @@ import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.impl.ClientContext;
 import org.apache.accumulo.core.client.impl.Credentials;
 import org.apache.accumulo.core.client.impl.MasterClient;
+import org.apache.accumulo.core.client.impl.thrift.ThriftNotActiveServiceException;
 import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.master.thrift.MasterClientService;
@@ -104,12 +105,18 @@ public class DynamicThreadPoolsIT extends AccumuloClusterIT {
       int count = 0;
       MasterClientService.Iface client = null;
       MasterMonitorInfo stats = null;
-      try {
-        client = MasterClient.getConnectionWithRetry(new ClientContext(c.getInstance(), creds, clientConf));
-        stats = client.getMasterStats(Tracer.traceInfo(), creds.toThrift(c.getInstance()));
-      } finally {
-        if (client != null)
-          MasterClient.close(client);
+      while (true) {
+        try {
+          client = MasterClient.getConnectionWithRetry(new ClientContext(c.getInstance(), creds, clientConf));
+          stats = client.getMasterStats(Tracer.traceInfo(), creds.toThrift(c.getInstance()));
+          break;
+        } catch (ThriftNotActiveServiceException e) {
+          // Let it loop, fetching a new location
+          UtilWaitThread.sleep(100);
+        } finally {
+          if (client != null)
+            MasterClient.close(client);
+        }
       }
       for (TabletServerStatus server : stats.tServerInfo) {
         for (TableInfo table : server.tableMap.values()) {

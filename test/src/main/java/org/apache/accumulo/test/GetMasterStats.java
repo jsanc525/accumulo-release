@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Map.Entry;
 
 import org.apache.accumulo.core.client.impl.MasterClient;
+import org.apache.accumulo.core.client.impl.thrift.ThriftNotActiveServiceException;
 import org.apache.accumulo.core.master.thrift.DeadServer;
 import org.apache.accumulo.core.master.thrift.MasterClientService;
 import org.apache.accumulo.core.master.thrift.MasterMonitorInfo;
@@ -28,6 +29,7 @@ import org.apache.accumulo.core.master.thrift.RecoveryStatus;
 import org.apache.accumulo.core.master.thrift.TableInfo;
 import org.apache.accumulo.core.master.thrift.TabletServerStatus;
 import org.apache.accumulo.core.trace.Tracer;
+import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.server.AccumuloServerContext;
 import org.apache.accumulo.server.client.HdfsZooInstance;
 import org.apache.accumulo.server.conf.ServerConfigurationFactory;
@@ -37,13 +39,19 @@ public class GetMasterStats {
   public static void main(String[] args) throws Exception {
     MasterClientService.Iface client = null;
     MasterMonitorInfo stats = null;
-    try {
-      AccumuloServerContext context = new AccumuloServerContext(new ServerConfigurationFactory(HdfsZooInstance.getInstance()));
-      client = MasterClient.getConnectionWithRetry(context);
-      stats = client.getMasterStats(Tracer.traceInfo(), context.rpcCreds());
-    } finally {
-      if (client != null)
-        MasterClient.close(client);
+    AccumuloServerContext context = new AccumuloServerContext(new ServerConfigurationFactory(HdfsZooInstance.getInstance()));
+    while (true) {
+      try {
+        client = MasterClient.getConnectionWithRetry(context);
+        stats = client.getMasterStats(Tracer.traceInfo(), context.rpcCreds());
+        break;
+      } catch (ThriftNotActiveServiceException e) {
+        // Let it loop, fetching a new location
+        UtilWaitThread.sleep(100);
+      } finally {
+        if (client != null)
+          MasterClient.close(client);
+      }
     }
     out(0, "State: " + stats.state.name());
     out(0, "Goal State: " + stats.goalState.name());
