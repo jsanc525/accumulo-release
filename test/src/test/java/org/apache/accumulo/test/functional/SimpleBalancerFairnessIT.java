@@ -28,6 +28,7 @@ import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.impl.ClientContext;
 import org.apache.accumulo.core.client.impl.Credentials;
 import org.apache.accumulo.core.client.impl.MasterClient;
+import org.apache.accumulo.core.client.impl.thrift.ThriftNotActiveServiceException;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.master.thrift.MasterClientService;
@@ -81,12 +82,18 @@ public class SimpleBalancerFairnessIT extends ConfigurableMacIT {
     int unassignedTablets = 1;
     for (int i = 0; unassignedTablets > 0 && i < 10; i++) {
       MasterClientService.Iface client = null;
-      try {
-        client = MasterClient.getConnectionWithRetry(context);
-        stats = client.getMasterStats(Tracer.traceInfo(), creds.toThrift(c.getInstance()));
-      } finally {
-        if (client != null)
-          MasterClient.close(client);
+      while (true) {
+        try {
+          client = MasterClient.getConnectionWithRetry(context);
+          stats = client.getMasterStats(Tracer.traceInfo(), creds.toThrift(c.getInstance()));
+          break;
+        } catch (ThriftNotActiveServiceException e) {
+          // Let it loop, fetching a new location
+          UtilWaitThread.sleep(100);
+        } finally {
+          if (client != null)
+            MasterClient.close(client);
+        }
       }
       unassignedTablets = stats.getUnassignedTablets();
       if (unassignedTablets > 0) {

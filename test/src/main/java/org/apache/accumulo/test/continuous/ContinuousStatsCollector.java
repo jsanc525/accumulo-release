@@ -30,6 +30,7 @@ import org.apache.accumulo.core.client.impl.ClientContext;
 import org.apache.accumulo.core.client.impl.Credentials;
 import org.apache.accumulo.core.client.impl.MasterClient;
 import org.apache.accumulo.core.client.impl.Tables;
+import org.apache.accumulo.core.client.impl.thrift.ThriftNotActiveServiceException;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.data.impl.KeyExtent;
@@ -43,12 +44,12 @@ import org.apache.accumulo.core.metadata.schema.MetadataSchema.TabletsSection.Da
 import org.apache.accumulo.core.trace.Tracer;
 import org.apache.accumulo.core.util.CachedConfiguration;
 import org.apache.accumulo.core.util.Stat;
+import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.server.ServerConstants;
 import org.apache.accumulo.server.cli.ClientOnRequiredTable;
 import org.apache.accumulo.server.conf.ServerConfigurationFactory;
 import org.apache.accumulo.server.fs.VolumeManager;
 import org.apache.accumulo.server.fs.VolumeManagerImpl;
-import org.apache.accumulo.server.util.TableInfoUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.ContentSummary;
 import org.apache.hadoop.fs.Path;
@@ -137,39 +138,41 @@ public class ContinuousStatsCollector {
     private String getACUStats() throws Exception {
 
       MasterClientService.Iface client = null;
-      try {
-        ClientContext context = new ClientContext(opts.getInstance(), new Credentials(opts.getPrincipal(), opts.getToken()), new ServerConfigurationFactory(
-            opts.getInstance()).getConfiguration());
-        client = MasterClient.getConnectionWithRetry(context);
-        MasterMonitorInfo stats = client.getMasterStats(Tracer.traceInfo(), context.rpcCreds());
+      while (true) {
+        try {
+          ClientContext context = new ClientContext(opts.getInstance(), new Credentials(opts.getPrincipal(), opts.getToken()), new ServerConfigurationFactory(
+              opts.getInstance()).getConfiguration());
+          client = MasterClient.getConnectionWithRetry(context);
+          MasterMonitorInfo stats = client.getMasterStats(Tracer.traceInfo(), context.rpcCreds());
 
-        TableInfo all = new TableInfo();
-        Map<String,TableInfo> tableSummaries = new HashMap<String,TableInfo>();
+          TableInfo all = new TableInfo();
+          Map<String,TableInfo> tableSummaries = new HashMap<String,TableInfo>();
 
-        for (TabletServerStatus server : stats.tServerInfo) {
-          for (Entry<String,TableInfo> info : server.tableMap.entrySet()) {
-            TableInfo tableSummary = tableSummaries.get(info.getKey());
-            if (tableSummary == null) {
-              tableSummary = new TableInfo();
-              tableSummaries.put(info.getKey(), tableSummary);
+          for (TabletServerStatus server : stats.tServerInfo) {
+            for (Entry<String,TableInfo> info : server.tableMap.entrySet()) {
+              TableInfo tableSummary = tableSummaries.get(info.getKey());
+              if (tableSummary == null) {
+                tableSummary = new TableInfo();
+                tableSummaries.put(info.getKey(), tableSummary);
+              }
             }
-            TableInfoUtil.add(tableSummary, info.getValue());
-            TableInfoUtil.add(all, info.getValue());
           }
+
+          TableInfo ti = tableSummaries.get(tableId);
+
+          return "" + stats.tServerInfo.size() + " " + all.recs + " " + (long) all.ingestRate + " " + (long) all.queryRate + " " + ti.recs + " "
+              + ti.recsInMemory + " " + (long) ti.ingestRate + " " + (long) ti.queryRate + " " + ti.tablets + " " + ti.onlineTablets;
+
+        } catch (ThriftNotActiveServiceException e) {
+          // Let it loop, fetching a new location
+          log.debug("Contacted a Master which is no longer active, retrying");
+          UtilWaitThread.sleep(100);
+        } finally {
+          if (client != null)
+            MasterClient.close(client);
         }
-
-        TableInfo ti = tableSummaries.get(tableId);
-
-        return "" + stats.tServerInfo.size() + " " + all.recs + " " + (long) all.ingestRate + " " + (long) all.queryRate + " " + ti.recs + " "
-            + ti.recsInMemory + " " + (long) ti.ingestRate + " " + (long) ti.queryRate + " " + ti.tablets + " " + ti.onlineTablets;
-
-      } finally {
-        if (client != null)
-          MasterClient.close(client);
       }
-
     }
-
   }
 
   private static String getMRStats() throws Exception {
