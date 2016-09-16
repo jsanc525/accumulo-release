@@ -52,3 +52,6 @@ ACCUMULO-4060 Transient ZooKeeper connection issues kills FATE Runner threads
 ACCUMULO-4065 Oneway Thrift calls leave message on client's InputStream
 ACCUMULO-4069 Services failing to renew Kerberos ticket
 ACCUMULO-4071 BulkImportSequentialRowsIT fails on standalone cluster with HDFS permission errors
+
+ACCUMULO-4424 Start thrift servers on master/monitor immediately
+ACCUMULO-4456 Add a Thrift exception to handle when a service is not the active instance
