@@ -65,3 +65,5 @@ ACCUMULO-4368 Offline and online the table when constraints are altered
 ACCUMULO-4369 Restructure try-catch to ensure a logical exception is raised
 ACCUMULO-4370 Replace bounded checks for replication table state with unbounded checks
 ACCUMULO-4412 Check proxy process when client fails to connect in test
+ACCUMULO-4424 Start thrift servers on master/monitor immediately
+ACCUMULO-4456 Add a Thrift exception to handle when a service is not the active instance
