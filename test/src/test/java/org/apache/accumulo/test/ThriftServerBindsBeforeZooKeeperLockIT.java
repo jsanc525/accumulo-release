@@ -37,8 +37,10 @@ import org.apache.accumulo.minicluster.impl.ProcessReference;
 import org.apache.accumulo.monitor.Monitor;
 import org.apache.accumulo.monitor.servlets.BasicServlet;
 import org.apache.accumulo.server.util.PortUtils;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.accumulo.test.functional.FunctionalTestUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,7 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Test class that verifies "HA-capable" servers put up their thrift servers before acquiring their ZK lock.
  */
+@Category({MiniClusterOnlyTests.class})
 public class ThriftServerBindsBeforeZooKeeperLockIT extends AccumuloClusterIT {
   private static final Logger LOG = LoggerFactory.getLogger(ThriftServerBindsBeforeZooKeeperLockIT.class);
 
