@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpSession;
 import jline.console.ConsoleReader;
 
 import org.apache.accumulo.shell.Shell;
-import org.apache.commons.httpclient.util.HttpURLConnection;
 
 public class ShellServlet extends BasicServlet {
   private static final long serialVersionUID = 1L;

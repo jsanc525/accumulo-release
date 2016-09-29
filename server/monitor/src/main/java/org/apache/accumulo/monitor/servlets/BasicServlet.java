@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -40,7 +41,6 @@ import org.apache.accumulo.monitor.Monitor;
 import org.apache.accumulo.server.monitor.DedupedLogEvent;
 import org.apache.accumulo.server.monitor.LogService;
 import org.apache.accumulo.server.util.time.SimpleTimer;
-import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
