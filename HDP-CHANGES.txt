@@ -68,3 +68,4 @@ ACCUMULO-4412 Check proxy process when client fails to connect in test
 ACCUMULO-4424 Start thrift servers on master/monitor immediately
 ACCUMULO-4456 Add a Thrift exception to handle when a service is not the active instance
 ACCUMULO-4478 Use correct HttpURLConnection import
+ACCUMULO-4534 Remove XML external entitites issue in RestoreZooKeeper
