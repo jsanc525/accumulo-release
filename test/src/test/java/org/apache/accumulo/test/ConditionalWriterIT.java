@@ -92,6 +92,7 @@ import org.apache.hadoop.io.Text;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1276,6 +1277,7 @@ public class ConditionalWriterIT extends AccumuloClusterIT {
   }
 
   @Test
+  @Ignore("ACCUMULO-4365 Intermittent failure due to missing spans")
   public void testTrace() throws Exception {
     // Need to add a getClientConfig() to AccumuloCluster
     Assume.assumeTrue(getClusterType() == ClusterType.MINI);
