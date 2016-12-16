@@ -37,6 +37,8 @@ import org.apache.accumulo.core.metadata.MetadataTable;
 import org.apache.accumulo.core.metadata.schema.MetadataSchema;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.harness.AccumuloClusterIT;
+import org.apache.accumulo.test.categories.HortonworksSanityTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -44,6 +46,7 @@ import org.apache.hadoop.fs.FsShell;
 import org.apache.hadoop.fs.Path;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * ACCUMULO-3215
  *
  */
+@Category({StandaloneCapableClusterTests.class, HortonworksSanityTests.class})
 public class ImportExportIT extends AccumuloClusterIT {
 
   private static final Logger log = LoggerFactory.getLogger(ImportExportIT.class);

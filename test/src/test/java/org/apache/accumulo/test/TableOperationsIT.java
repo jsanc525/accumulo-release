@@ -57,16 +57,20 @@ import org.apache.accumulo.core.security.TablePermission;
 import org.apache.accumulo.core.tabletserver.thrift.TabletClientService;
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.harness.AccumuloClusterIT;
+import org.apache.accumulo.test.categories.HortonworksSanityTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.accumulo.test.functional.BadIterator;
 import org.apache.hadoop.io.Text;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksSanityTests.class})
 public class TableOperationsIT extends AccumuloClusterIT {
 
   static TabletClientService.Client client;

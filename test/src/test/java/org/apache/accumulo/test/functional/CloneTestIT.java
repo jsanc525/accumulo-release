@@ -49,6 +49,8 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloClusterImpl;
 import org.apache.accumulo.server.ServerConstants;
+import org.apache.accumulo.test.categories.HortonworksSanityTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -57,10 +59,12 @@ import org.apache.hadoop.io.Text;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  *
  */
+@Category({StandaloneCapableClusterTests.class, HortonworksSanityTests.class})
 public class CloneTestIT extends AccumuloClusterIT {
 
   @Override

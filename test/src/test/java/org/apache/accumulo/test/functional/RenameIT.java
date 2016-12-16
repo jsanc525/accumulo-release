@@ -24,8 +24,12 @@ import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.accumulo.test.TestIngest;
 import org.apache.accumulo.test.VerifyIngest;
+import org.apache.accumulo.test.categories.HortonworksSanityTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksSanityTests.class})
 public class RenameIT extends AccumuloClusterIT {
 
   @Override
