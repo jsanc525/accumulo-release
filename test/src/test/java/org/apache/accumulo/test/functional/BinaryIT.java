@@ -24,9 +24,13 @@ import org.apache.accumulo.core.cli.ScannerOpts;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.accumulo.test.TestBinaryRows;
+import org.apache.accumulo.test.categories.HortonworksSanityTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.hadoop.io.Text;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksSanityTests.class})
 public class BinaryIT extends AccumuloClusterIT {
 
   @Override
