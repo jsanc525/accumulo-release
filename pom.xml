@@ -716,6 +716,7 @@
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
             <argLine>-Xmx1G</argLine>
+            <failIfNoTests>false</failIfNoTests>
           </configuration>
         </plugin>
         <plugin>
@@ -725,6 +726,7 @@
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
+            <failIfNoTests>false</failIfNoTests>
           </configuration>
         </plugin>
         <plugin>
