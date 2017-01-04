@@ -66,8 +66,19 @@ ACCUMULO-4368 Offline and online the table when constraints are altered
 ACCUMULO-4369 Restructure try-catch to ensure a logical exception is raised
 ACCUMULO-4370 Replace bounded checks for replication table state with unbounded checks
 ACCUMULO-4412 Check proxy process when client fails to connect in test
+
+** Changes in HDP-2.6 over the Apache release
+
+ACCUMULO-4139 Fix ExistingMacIT test bug
+ACCUMULO-4423 Annotate integration tests with categories
 ACCUMULO-4424 Start thrift servers on master/monitor immediately
+ACCUMULO-4436 Make sure that all processes get tagged for cleanup that are executed via MAC
+ACCUMULO-4437 Annotate remaining ITs
+ACCUMULO-4438 Skip failsafe groups in maven-plugin
+ACCUMULO-4439 Create SunnyDayTest category
+ACCUMULO-4440 Fix JUnit 4.12 deprecation warning
 ACCUMULO-4456 Add a Thrift exception to handle when a service is not the active instance
 ACCUMULO-4474 Make ExistingMacIT more deterministic in verification
 ACCUMULO-4478 Use correct HttpURLConnection import
-ACCUMULO-4534 Remove XML external entitites issue in RestoreZooKeeper
+ACCUMULO-4534 Disable external entities in SAX parser
+ACCUMULO-4554 Fail gracefully on unrecognized version
