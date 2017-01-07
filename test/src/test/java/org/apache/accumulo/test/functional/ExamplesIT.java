@@ -99,11 +99,15 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterators;
+
+import org.apache.accumulo.harness.TestTimer;
+import java.lang.System;
 
 @Category({StandaloneCapableClusterTests.class, SunnyDayTests.class, HortonworksSanityTests.class})
 public class ExamplesIT extends AccumuloClusterIT {
@@ -126,6 +130,10 @@ public class ExamplesIT extends AccumuloClusterIT {
   Authorizations origAuths;
   boolean saslEnabled;
 
+
+  @Rule
+  public TestTimer timer = new TestTimer();
+
   @Override
   public void configureMiniCluster(MiniAccumuloConfigImpl cfg, Configuration hadoopConf) {
     // 128MB * 3
@@ -134,6 +142,8 @@ public class ExamplesIT extends AccumuloClusterIT {
 
   @Before
   public void getClusterInfo() throws Exception {
+    Long start = System.currentTimeMillis();
+
     c = getConnector();
     user = getAdminPrincipal();
     AuthenticationToken token = getAdminToken();
@@ -157,6 +167,7 @@ public class ExamplesIT extends AccumuloClusterIT {
 
   @After
   public void resetAuths() throws Exception {
+    Long end = System.currentTimeMillis();
     if (null != origAuths) {
       getConnector().securityOperations().changeUserAuthorizations(getAdminPrincipal(), origAuths);
     }
