@@ -81,7 +81,6 @@ public class TestTimer extends TestWatcher {
     Method method = null;
     ArrayList<String> testAnnotations = new ArrayList<>();
     try {
-      // String methodName = name.getMethodName();
       method = testClass.getMethod(description.getMethodName());
       Category category = method.getAnnotation(Category.class);
       if (category != null) {
@@ -102,6 +101,7 @@ public class TestTimer extends TestWatcher {
       testCase.setTestCaseAnnotations(testAnnotations);
       testCase.setTestSuiteName(description.getClassName());
       testCase.setTestCaseName(description.getMethodName());
+      testCase.setTestCaseStatus(testResult);
       saveInTimeDurationsJSON(testCase);
     } catch (Exception e) {
       log.warn("Failed to extract test case information", e);

@@ -18,6 +18,9 @@ package org.apache.accumulo.harness;
 
 import java.util.List;
 
+/**
+ * POJO to organize individual testcases for report processing
+ */
 public class TestSuiteReport {
 
   private List<TestCase> testCases;
