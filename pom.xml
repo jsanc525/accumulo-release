@@ -176,11 +176,6 @@
         <version>1.0-rc2</version>
       </dependency>
       <dependency>
-        <groupId>com.google.code.gwtx</groupId>
-        <artifactId>gwtx</artifactId>
-        <version>1.5.3</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.2.2</version>

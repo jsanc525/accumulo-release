@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,29 +16,24 @@
  */
 package org.apache.accumulo.harness;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.HashMap;
 import java.util.List;
 
 public class TestSuiteReport {
 
-    @SerializedName("testCases")
-    @Expose
-    private List<TestCase> testCases;
+  private List<TestCase> testCases;
 
-    /**
-     * @return The testCases
-     */
-    public List<TestCase> getTestCases() {
-        return testCases;
-    }
+  /**
+   * @return The testCases
+   */
+  public List<TestCase> getTestCases() {
+    return testCases;
+  }
 
-    /**
-     * @param testCases The testCases
-     */
-    public void setTestCases(List<TestCase> testCases) {
-        this.testCases = testCases;
-    }
+  /**
+   * @param testCases
+   *          The testCases
+   */
+  public void setTestCases(List<TestCase> testCases) {
+    this.testCases = testCases;
+  }
 }

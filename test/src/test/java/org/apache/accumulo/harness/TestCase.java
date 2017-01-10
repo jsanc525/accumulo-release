@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,128 +18,107 @@ package org.apache.accumulo.harness;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Generated;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
-@Generated("org.jsonschema2pojo")
 public class TestCase {
 
-    @SerializedName("testCaseStatus")
-    @Expose
-    private String testCaseStatus;
-    @SerializedName("testSuiteName")
-    @Expose
-    private String testSuiteName;
-    @SerializedName("testCaseStartTime")
-    @Expose
-    private String testCaseStartTime;
-    @SerializedName("testCaseEndTime")
-    @Expose
-    private String testCaseEndTime;
-    @SerializedName("testCaseName")
-    @Expose
-    private String testCaseName;
-    @SerializedName("testCaseAnnotations")
-    @Expose
-    private List<String> testCaseAnnotations = new ArrayList<String>();
+  private String testCaseStatus;
+  private String testSuiteName;
+  private String testCaseStartTime;
+  private String testCaseEndTime;
+  private String testCaseName;
+  private List<String> testCaseAnnotations = new ArrayList<String>();
 
-    public String getTestCaseName() {
-        return testCaseName;
-    }
+  public String getTestCaseName() {
+    return testCaseName;
+  }
 
-    public void setTestCaseName(String testCaseName) {
-        this.testCaseName = testCaseName;
-    }
+  public void setTestCaseName(String testCaseName) {
+    this.testCaseName = testCaseName;
+  }
 
-    /**
-     *
-     * @return
-     * The testCaseStatus
-     */
-    public String getTestCaseStatus() {
-        return testCaseStatus;
-    }
+  /**
+   *
+   * @return The testCaseStatus
+   */
+  public String getTestCaseStatus() {
+    return testCaseStatus;
+  }
 
-    /**
-     *
-     * @param testCaseStatus
-     * The testCaseStatus
-     */
-    public void setTestCaseStatus(String testCaseStatus) {
-        this.testCaseStatus = testCaseStatus;
-    }
+  /**
+   *
+   * @param testCaseStatus
+   *          The testCaseStatus
+   */
+  public void setTestCaseStatus(String testCaseStatus) {
+    this.testCaseStatus = testCaseStatus;
+  }
 
-    /**
-     *
-     * @return
-     * The testSuiteName
-     */
-    public String getTestSuiteName() {
-        return testSuiteName;
-    }
+  /**
+   *
+   * @return The testSuiteName
+   */
+  public String getTestSuiteName() {
+    return testSuiteName;
+  }
 
-    /**
-     *
-     * @param testSuiteName
-     * The testSuiteName
-     */
-    public void setTestSuiteName(String testSuiteName) {
-        this.testSuiteName = testSuiteName;
-    }
+  /**
+   *
+   * @param testSuiteName
+   *          The testSuiteName
+   */
+  public void setTestSuiteName(String testSuiteName) {
+    this.testSuiteName = testSuiteName;
+  }
 
-    /**
-     *
-     * @return
-     * The testCaseStartTime
-     */
-    public String getTestCaseStartTime() {
-        return testCaseStartTime;
-    }
+  /**
+   *
+   * @return The testCaseStartTime
+   */
+  public String getTestCaseStartTime() {
+    return testCaseStartTime;
+  }
 
-    /**
-     *
-     * @param testCaseStartTime
-     * The testCaseStartTime
-     */
-    public void setTestCaseStartTime(String testCaseStartTime) {
-        this.testCaseStartTime = testCaseStartTime;
-    }
+  /**
+   *
+   * @param testCaseStartTime
+   *          The testCaseStartTime
+   */
+  public void setTestCaseStartTime(String testCaseStartTime) {
+    this.testCaseStartTime = testCaseStartTime;
+  }
 
-    /**
-     *
-     * @return
-     * The testCaseEndTime
-     */
-    public String getTestCaseEndTime() {
-        return testCaseEndTime;
-    }
+  /**
+   *
+   * @return The testCaseEndTime
+   */
+  public String getTestCaseEndTime() {
+    return testCaseEndTime;
+  }
 
-    /**
-     *
-     * @param testCaseEndTime
-     * The testCaseEndTime
-     */
-    public void setTestCaseEndTime(String testCaseEndTime) {
-        this.testCaseEndTime = testCaseEndTime;
-    }
+  /**
+   *
+   * @param testCaseEndTime
+   *          The testCaseEndTime
+   */
+  public void setTestCaseEndTime(String testCaseEndTime) {
+    this.testCaseEndTime = testCaseEndTime;
+  }
 
-    /**
-     *
-     * @return
-     * The testCaseAnnotations
-     */
-    public List<String> getTestCaseAnnotations() {
-        return testCaseAnnotations;
-    }
+  /**
+   *
+   * @return The testCaseAnnotations
+   */
+  public List<String> getTestCaseAnnotations() {
+    return testCaseAnnotations;
+  }
 
-    /**
-     *
-     * @param testCaseAnnotations
-     * The testCaseAnnotations
-     */
-    public void setTestCaseAnnotations(List<String> testCaseAnnotations) {
-        this.testCaseAnnotations = testCaseAnnotations;
-    }
+  /**
+   *
+   * @param testCaseAnnotations
+   *          The testCaseAnnotations
+   */
+  public void setTestCaseAnnotations(List<String> testCaseAnnotations) {
+    this.testCaseAnnotations = testCaseAnnotations;
+  }
 
 }
