@@ -130,7 +130,6 @@ public class ExamplesIT extends AccumuloClusterIT {
   Authorizations origAuths;
   boolean saslEnabled;
 
-
   @Rule
   public TestTimer timer = new TestTimer();
 
@@ -142,8 +141,6 @@ public class ExamplesIT extends AccumuloClusterIT {
 
   @Before
   public void getClusterInfo() throws Exception {
-    Long start = System.currentTimeMillis();
-
     c = getConnector();
     user = getAdminPrincipal();
     AuthenticationToken token = getAdminToken();
@@ -167,7 +164,6 @@ public class ExamplesIT extends AccumuloClusterIT {
 
   @After
   public void resetAuths() throws Exception {
-    Long end = System.currentTimeMillis();
     if (null != origAuths) {
       getConnector().securityOperations().changeUserAuthorizations(getAdminPrincipal(), origAuths);
     }

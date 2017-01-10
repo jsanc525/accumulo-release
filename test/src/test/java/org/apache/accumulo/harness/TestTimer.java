@@ -16,137 +16,115 @@
  */
 package org.apache.accumulo.harness;
 
-import com.google.gson.Gson;
-
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.System;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.List;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.accumulo.harness.TestCase;
-import org.apache.accumulo.harness.TestTimer;
-import org.apache.accumulo.harness.TestSuiteReport;
 import org.apache.commons.io.FileUtils;
 import org.junit.AssumptionViolatedException;
-import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.junit.Rule;
-import org.junit.rules.TestName;
 import org.junit.rules.TestWatcher;
-import org.junit.rules.Timeout;
 import org.junit.runner.Description;
-import org.junit.runners.model.TestClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * Methods, setup and/or infrastructure which are common to any enable Accumulo more granular test timing
  */
 public class TestTimer extends TestWatcher {
+  private static final Logger log = LoggerFactory.getLogger(TestTimer.class);
+  private static final Gson gson = new Gson();
 
-   Class testClass;
-   Long start;
-   Long end;
+  private Class<?> testClass;
+  private long start;
+  private long end;
 
-   @Override
-   protected void starting(Description description) {
-        start = System.currentTimeMillis();
-   }
+  @Override
+  protected void starting(Description description) {
+    testClass = description.getTestClass();
+    start = System.currentTimeMillis();
+  }
 
-   @Override
-   protected void finished (Description description) {
-        end = System.currentTimeMillis();
-   }
+  @Override
+  protected void finished(Description description) {
+    // Finished is invoked after failed/succeeded/skipped are invoked
+  }
 
-   @Override
-   protected void failed(Throwable e, Description description) {
-       testClass = description.getTestClass();
-       writeToTestJSON("failed",description.getDisplayName());
-   }
+  @Override
+  protected void failed(Throwable e, Description description) {
+    end = System.currentTimeMillis();
+    writeToTestJSON("failed", description);
+  }
 
-   @Override
-   protected void succeeded(Description description) {
-       testClass = description.getTestClass();
-       writeToTestJSON("pass", description.getDisplayName());
-   }
+  @Override
+  protected void succeeded(Description description) {
+    end = System.currentTimeMillis();
+    writeToTestJSON("pass", description);
+  }
 
+  @Override
+  protected void skipped(AssumptionViolatedException e, Description description) {
+    end = System.currentTimeMillis();
+    writeToTestJSON("skipped", description);
+  }
 
-   @Override
-   protected void skipped(AssumptionViolatedException e, Description description) {
-       testClass = description.getTestClass();
-       writeToTestJSON("skipped", description.getDisplayName());
-   }
+  private void writeToTestJSON(String testResult, Description description) {
+    TestCase testCase = new TestCase();
 
+    // Get annotations for method and class
+    Method method = null;
+    ArrayList<String> testAnnotations = new ArrayList<>();
+    try {
+      // String methodName = name.getMethodName();
+      method = testClass.getMethod(description.getMethodName());
+      Category category = method.getAnnotation(Category.class);
+      if (category != null) {
+        Class<?>[] annotations = category.value();
+        for (Class<?> annotation : annotations) {
+          testAnnotations.add(annotation.getSimpleName());
+        }
+      }
 
-   @Rule public TestName name = new TestName();
-
-   private void writeToTestJSON(String testResult, String methodName) {
-       TestCase testCase = new TestCase();
-
-       // Get annotations for method and class
-       Method method = null;
-       ArrayList testAnnotations = new ArrayList();
-       try {
-           //String methodName = name.getMethodName();
-           method = testClass.getMethod(methodName);
-           Category category = method.getAnnotation(Category.class);
-           if (category != null) {
-               Class<?>[] annotations = category.value();
-               for (Class annotation : annotations) {
-                   testAnnotations.add(annotation.getSimpleName());
-               }
-           }
-
-           Annotation annotation = testClass.getDeclaredAnnotation(Category.class);
-           if (annotation != null) {
-               String annotations = annotation.toString().substring(annotation.toString().indexOf("value=") + 7);
-               annotations = annotations.substring(0, annotations.indexOf("]"));
-               String[] allAnnotations = annotations.split(",");
-               for (String classAnnotation : allAnnotations) {
-                   testAnnotations.add(classAnnotation.substring(classAnnotation.lastIndexOf(".") + 1));
-               }
-           }
-           testCase.setTestCaseAnnotations(testAnnotations);
-           testCase.setTestSuiteName(testResult);
-           testCase.setTestCaseName(methodName);
-           saveInTimeDurationsJSON(testCase);
-       } catch (NoSuchMethodException e) {
-           e.printStackTrace();
-       }
-   }
-
-    public void saveInTimeDurationsJSON(TestCase testCase) {
-       File timeDurations = new File(new File(System.getProperty("user.dir"), "target"), "testTimeDurations.json");
-
-       try {
-           Gson gson = new Gson();       
-           testCase.setTestCaseStartTime(new SimpleDateFormat("yyyy-mm-dd HH:mm:ss,SSS").format(start));
-           testCase.setTestCaseEndTime(new SimpleDateFormat("yyyy-mm-dd HH:mm:ss,SSS").format(end));
-
-           TestSuiteReport report = new TestSuiteReport();
-           List<TestCase> testCases = new ArrayList<>();
-           if (timeDurations.exists()) {
-               String existingJSON = FileUtils.readFileToString(timeDurations);
-               report = gson.fromJson(existingJSON, TestSuiteReport.class);
-               testCases = report.getTestCases();
-           }
-
-           testCases.add(testCase);
-           report.setTestCases(testCases);
-           String testResult = gson.toJson(report);
-           FileUtils.writeStringToFile(timeDurations, testResult);
-       } catch (IOException e) {
-           e.printStackTrace();
-       }
+      Annotation annotation = testClass.getAnnotation(Category.class);
+      if (annotation != null) {
+        Category categoryAnnotation = (Category) annotation;
+        Class<?>[] testInterfaces = categoryAnnotation.value();
+        for (Class<?> testInterface : testInterfaces) {
+          testAnnotations.add(testInterface.getSimpleName());
+        }
+      }
+      testCase.setTestCaseAnnotations(testAnnotations);
+      testCase.setTestSuiteName(description.getClassName());
+      testCase.setTestCaseName(description.getMethodName());
+      saveInTimeDurationsJSON(testCase);
+    } catch (Exception e) {
+      log.warn("Failed to extract test case information", e);
     }
+  }
 
+  public void saveInTimeDurationsJSON(TestCase testCase) {
+    File timeDurations = new File(new File(System.getProperty("user.dir"), "target"), "testTimeDurations.txt");
+
+    try {
+      testCase.setTestCaseStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(start));
+      testCase.setTestCaseEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(end));
+
+      TestSuiteReport report = new TestSuiteReport();
+      List<TestCase> testCases = new ArrayList<>();
+
+      testCases.add(testCase);
+      report.setTestCases(testCases);
+      String testResult = gson.toJson(report);
+
+      FileUtils.writeStringToFile(timeDurations, testResult + "\n", true);
+    } catch (IOException e) {
+      log.warn("Failed to serialize test case to a file", e);
+    }
+  }
 }
