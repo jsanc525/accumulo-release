@@ -25,6 +25,7 @@ import java.util.List;
 public class TestCase {
 
   private String testCaseStatus;
+  private String testFailureReason;
   private String testSuiteName;
   private String testCaseStartTime;
   private String testCaseEndTime;
@@ -37,6 +38,23 @@ public class TestCase {
 
   public void setTestCaseName(String testCaseName) {
     this.testCaseName = testCaseName;
+  }
+
+  /**
+   *
+   * @return The testFailureReason
+   */
+  public String getTestFailureReason() {
+    return testFailureReason;
+  }
+
+  /**
+   *
+   * @param testFailureReason
+   *          The testFailureReason
+   */
+  public void setTestFailureReason(String testFailureReason) {
+    this.testFailureReason = testFailureReason;
   }
 
   /**

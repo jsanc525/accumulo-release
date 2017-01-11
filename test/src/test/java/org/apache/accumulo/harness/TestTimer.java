@@ -18,6 +18,8 @@ package org.apache.accumulo.harness;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -59,22 +61,27 @@ public class TestTimer extends TestWatcher {
   @Override
   protected void failed(Throwable e, Description description) {
     end = System.currentTimeMillis();
-    writeToTestJSON("failed", description);
+    StringWriter strWrtr = new StringWriter();
+    PrintWriter prntWrtr = new PrintWriter(strWrtr);
+
+    e.printStackTrace(prntWrtr);
+    prntWrtr.close();
+    writeToTestJSON("failed", description, strWrtr.toString());
   }
 
   @Override
   protected void succeeded(Description description) {
     end = System.currentTimeMillis();
-    writeToTestJSON("pass", description);
+    writeToTestJSON("pass", description, null);
   }
 
   @Override
   protected void skipped(AssumptionViolatedException e, Description description) {
     end = System.currentTimeMillis();
-    writeToTestJSON("skipped", description);
+    writeToTestJSON("skipped", description, null);
   }
 
-  private void writeToTestJSON(String testResult, Description description) {
+  private void writeToTestJSON(String testResult, Description description, String failureReason) {
     TestCase testCase = new TestCase();
 
     // Get annotations for method and class
@@ -102,6 +109,9 @@ public class TestTimer extends TestWatcher {
       testCase.setTestSuiteName(description.getClassName());
       testCase.setTestCaseName(description.getMethodName());
       testCase.setTestCaseStatus(testResult);
+      if (failureReason != null) {
+        testCase.setTestFailureReason(failureReason);
+      }
       saveInTimeDurationsJSON(testCase);
     } catch (Exception e) {
       log.warn("Failed to extract test case information", e);
