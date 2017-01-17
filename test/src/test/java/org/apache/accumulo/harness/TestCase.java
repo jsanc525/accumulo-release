@@ -18,10 +18,11 @@ package org.apache.accumulo.harness;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
-*
-* POJO to capture testcase attributes
-*/
+ *
+ * POJO to capture testcase attributes
+ */
 public class TestCase {
 
   private String testCaseStatus;
