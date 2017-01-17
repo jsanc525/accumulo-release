@@ -99,15 +99,11 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Rule;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterators;
-
-import org.apache.accumulo.harness.TestTimer;
-import java.lang.System;
 
 @Category({StandaloneCapableClusterTests.class, SunnyDayTests.class, HortonworksSanityTests.class})
 public class ExamplesIT extends AccumuloClusterIT {
@@ -129,9 +125,6 @@ public class ExamplesIT extends AccumuloClusterIT {
   FileSystem fs;
   Authorizations origAuths;
   boolean saslEnabled;
-
-  @Rule
-  public TestTimer timer = new TestTimer();
 
   @Override
   public void configureMiniCluster(MiniAccumuloConfigImpl cfg, Configuration hadoopConf) {
