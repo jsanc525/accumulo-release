@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.Connector;
@@ -113,6 +114,7 @@ public class Monitor implements HighlyAvailableService {
   private static long totalLookups = 0;
   private static int totalTables = 0;
   public static HighlyAvailableService HA_SERVICE_INSTANCE = null;
+  private static final AtomicBoolean monitorInitialized = new AtomicBoolean(false);
 
   private static class MaxList<T> extends LinkedList<Pair<Long,T>> {
     private static final long serialVersionUID = 1L;
@@ -511,6 +513,8 @@ public class Monitor implements HighlyAvailableService {
         }
       }
     }), "Scan scanner").start();
+
+    monitorInitialized.set(true);
   }
 
   public static class ScanStats {
@@ -811,9 +815,6 @@ public class Monitor implements HighlyAvailableService {
 
   @Override
   public boolean isActiveService() {
-    if (null != monitorLock && monitorLock.isLocked()) {
-      return true;
-    }
-    return false;
+    return monitorInitialized.get();
   }
 }

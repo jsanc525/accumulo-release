@@ -82,4 +82,5 @@ ACCUMULO-4474 Make ExistingMacIT more deterministic in verification
 ACCUMULO-4478 Use correct HttpURLConnection import
 ACCUMULO-4534 Disable external entities in SAX parser
 ACCUMULO-4554 Fail gracefully on unrecognized version
+ACCUMULO-4570 Use a boolean for active service instead of the ZooLock
 ACCUMULO-4571 Move the migration log message from debug to trace
