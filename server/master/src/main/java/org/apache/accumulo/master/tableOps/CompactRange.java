@@ -17,6 +17,7 @@
 package org.apache.accumulo.master.tableOps;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
@@ -24,7 +25,6 @@ import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.admin.CompactionStrategyConfig;
 import org.apache.accumulo.core.client.impl.CompactionStrategyConfigUtil;
-import org.apache.accumulo.core.client.impl.Tables;
 import org.apache.accumulo.core.client.impl.thrift.TableOperation;
 import org.apache.accumulo.core.client.impl.thrift.TableOperationExceptionType;
 import org.apache.accumulo.core.client.impl.thrift.ThriftTableOperationException;
@@ -41,25 +41,30 @@ import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 public class CompactRange extends MasterRepo {
   private static final Logger log = LoggerFactory.getLogger(CompactRange.class);
 
   private static final long serialVersionUID = 1L;
   private final String tableId;
+  private final String namespaceId;
   private byte[] startRow;
   private byte[] endRow;
   private byte[] config;
 
-  public CompactRange(String tableId, byte[] startRow, byte[] endRow, List<IteratorSetting> iterators, CompactionStrategyConfig compactionStrategy)
-      throws ThriftTableOperationException {
+  private String getNamespaceId(Master env) throws Exception {
+    return Utils.getNamespaceId(env.getInstance(), tableId, TableOperation.COMPACT, this.namespaceId);
+  }
 
-    Preconditions.checkNotNull(tableId, "Invalid argument: null tableId");
-    Preconditions.checkNotNull(iterators, "Invalid argument: null iterator list");
-    Preconditions.checkNotNull(compactionStrategy, "Invalid argument: null compactionStrategy");
+  public CompactRange(String namespaceId, String tableId, byte[] startRow, byte[] endRow, List<IteratorSetting> iterators,
+      CompactionStrategyConfig compactionStrategy) throws ThriftTableOperationException {
+
+    requireNonNull(namespaceId, "Invalid argument: null namespaceId");
+    requireNonNull(tableId, "Invalid argument: null tableId");
+    requireNonNull(iterators, "Invalid argument: null iterator list");
+    requireNonNull(compactionStrategy, "Invalid argument: null compactionStrategy");
 
     this.tableId = tableId;
+    this.namespaceId = namespaceId;
     this.startRow = startRow.length == 0 ? null : startRow;
     this.endRow = endRow.length == 0 ? null : endRow;
 
@@ -75,15 +80,14 @@ public class CompactRange extends MasterRepo {
   }
 
   @Override
-  public long isReady(long tid, Master environment) throws Exception {
-    String namespaceId = Tables.getNamespaceId(environment.getInstance(), tableId);
-    return Utils.reserveNamespace(namespaceId, tid, false, true, TableOperation.COMPACT)
+  public long isReady(long tid, Master env) throws Exception {
+    return Utils.reserveNamespace(getNamespaceId(env), tid, false, true, TableOperation.COMPACT)
         + Utils.reserveTable(tableId, tid, false, true, TableOperation.COMPACT);
   }
 
   @Override
-  public Repo<Master> call(final long tid, Master environment) throws Exception {
-    String zTablePath = Constants.ZROOT + "/" + environment.getInstance().getInstanceID() + Constants.ZTABLES + "/" + tableId + Constants.ZTABLE_COMPACT_ID;
+  public Repo<Master> call(final long tid, Master env) throws Exception {
+    String zTablePath = Constants.ZROOT + "/" + env.getInstance().getInstanceID() + Constants.ZTABLES + "/" + tableId + Constants.ZTABLE_COMPACT_ID;
 
     IZooReaderWriter zoo = ZooReaderWriter.getInstance();
     byte[] cid;
@@ -123,7 +127,7 @@ public class CompactRange extends MasterRepo {
         }
       });
 
-      return new CompactionDriver(Long.parseLong(new String(cid, UTF_8).split(",")[0]), tableId, startRow, endRow);
+      return new CompactionDriver(Long.parseLong(new String(cid, UTF_8).split(",")[0]), getNamespaceId(env), tableId, startRow, endRow);
     } catch (NoNodeException nne) {
       throw new ThriftTableOperationException(tableId, null, TableOperation.COMPACT, TableOperationExceptionType.NOTFOUND, null);
     }
@@ -159,12 +163,11 @@ public class CompactRange extends MasterRepo {
   }
 
   @Override
-  public void undo(long tid, Master environment) throws Exception {
-    String namespaceId = Tables.getNamespaceId(environment.getInstance(), tableId);
+  public void undo(long tid, Master env) throws Exception {
     try {
-      removeIterators(environment, tid, tableId);
+      removeIterators(env, tid, tableId);
     } finally {
-      Utils.unreserveNamespace(namespaceId, tid, false);
+      Utils.unreserveNamespace(getNamespaceId(env), tid, false);
       Utils.unreserveTable(tableId, tid, false);
     }
   }
