@@ -16,6 +16,9 @@
  */
 package org.apache.accumulo.core.client.security.tokens;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.File;
@@ -26,8 +29,7 @@ import java.util.Set;
 import javax.security.auth.DestroyFailedException;
 
 import org.apache.hadoop.security.UserGroupInformation;
-
-import com.google.common.base.Preconditions;
+import org.apache.hadoop.security.UserGroupInformation.AuthenticationMethod;
 
 /**
  * Authentication token for Kerberos authenticated clients
@@ -50,11 +52,11 @@ public class KerberosToken implements AuthenticationToken {
    *          The user that is logged in
    */
   public KerberosToken(String principal) throws IOException {
-    Preconditions.checkNotNull(principal);
+    this.principal = requireNonNull(principal);
     final UserGroupInformation ugi = UserGroupInformation.getCurrentUser();
-    Preconditions.checkArgument(ugi.hasKerberosCredentials(), "Subject is not logged in via Kerberos");
-    Preconditions.checkArgument(principal.equals(ugi.getUserName()), "Provided principal does not match currently logged-in user");
-    this.principal = ugi.getUserName();
+    if (AuthenticationMethod.KERBEROS == ugi.getAuthenticationMethod()) {
+      checkArgument(ugi.hasKerberosCredentials(), "Subject is not logged in via Kerberos");
+    }
   }
 
   /**
@@ -69,18 +71,12 @@ public class KerberosToken implements AuthenticationToken {
    *          Should the current Hadoop user be replaced with this user
    */
   public KerberosToken(String principal, File keytab, boolean replaceCurrentUser) throws IOException {
-    Preconditions.checkNotNull(principal, "Principal was null");
-    Preconditions.checkNotNull(keytab, "Keytab was null");
-    Preconditions.checkArgument(keytab.exists() && keytab.isFile(), "Keytab was not a normal file");
-    UserGroupInformation ugi;
+    this.principal = requireNonNull(principal, "Principal was null");
+    this.keytab = requireNonNull(keytab, "Keytab was null");
+    checkArgument(keytab.exists() && keytab.isFile(), "Keytab was not a normal file");
     if (replaceCurrentUser) {
       UserGroupInformation.loginUserFromKeytab(principal, keytab.getAbsolutePath());
-      ugi = UserGroupInformation.getCurrentUser();
-    } else {
-      ugi = UserGroupInformation.loginUserFromKeytabAndReturnUGI(principal, keytab.getAbsolutePath());
     }
-    this.principal = ugi.getUserName();
-    this.keytab = keytab;
   }
 
   /**
