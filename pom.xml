@@ -406,9 +406,8 @@
            to increase out normal hadoop dependency; minikdc not available prior
            to 2.3.0 -->
         <?SORTPOM IGNORE?>
-        <version>${hadoop.version}</version>
+        <version>${hadoop.version}</version><!--$NO-MVN-MAN-VER$-->
         <?SORTPOM RESUME?>
-        <!--$NO-MVN-MAN-VER$-->
       </dependency>
       <dependency>
         <groupId>org.apache.hadoop</groupId>
