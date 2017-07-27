@@ -19,9 +19,6 @@ package org.apache.accumulo.core.file.rfile.bcfile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 
@@ -93,21 +90,9 @@ class BoundedRangeFileInputStream extends InputStream {
     if (n == 0)
       return -1;
     Integer ret = 0;
-    final FSDataInputStream inLocal = in;
-    synchronized (inLocal) {
-      inLocal.seek(pos);
-      try {
-        ret = AccessController.doPrivileged(new PrivilegedExceptionAction<Integer>() {
-          @Override
-          public Integer run() throws IOException {
-            int ret = 0;
-            ret = inLocal.read(b, off, n);
-            return ret;
-          }
-        });
-      } catch (PrivilegedActionException e) {
-        throw (IOException) e.getException();
-      }
+    synchronized (in) {
+      in.seek(pos);
+      ret = in.read(b, off, n);
     }
     if (ret < 0) {
       end = pos;
