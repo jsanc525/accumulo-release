@@ -87,3 +87,4 @@ ACCUMULO-4571 Move the migration log message from debug to trace
 ACCUMULO-4575 Fixed concurrent delete table bug
 ACCUMULO-4660 sanitize incoming values from HTTP parameters
 ACCUMULO-4665 Must use the "real" User for RPCs when Kerberos is enabled.
+ACCUMULO-4687 Clean up some static-analysis warnings
