@@ -132,6 +132,7 @@
     <forkCount>1</forkCount>
     <!-- overwritten in hadoop profiles -->
     <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
+    <htrace.hadoop.version>4.1.0-incubating</htrace.hadoop.version>
     <htrace.version>3.1.0-incubating</htrace.version>
     <httpclient.version>3.1</httpclient.version>
     <jetty.version>9.1.5.v20140505</jetty.version>
@@ -367,6 +368,21 @@
       </dependency>
       <dependency>
         <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client-api</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client-minicluster</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client-runtime</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
         <artifactId>hadoop-distcp</artifactId>
         <version>${hadoop.version}</version>
       </dependency>
@@ -393,6 +409,11 @@
         <groupId>org.apache.htrace</groupId>
         <artifactId>htrace-core</artifactId>
         <version>${htrace.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.htrace</groupId>
+        <artifactId>htrace-core4</artifactId>
+        <version>${htrace.hadoop.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -1038,10 +1059,20 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <id>enforce-mvn</id>
+            <id>enforce-hadoop-profile</id>
             <goals>
               <goal>enforce</goal>
             </goals>
+            <configuration>
+              <rules>
+                <requireProperty>
+                  <property>hadoop.profile</property>
+                  <regex>(2|3)</regex>
+                  <regexMessage>You should specify the Hadoop profile by major Hadoop generation, i.e. 2 or 3, not by a version number.
+    Use hadoop.version to use a particular Hadoop version within that generation.</regexMessage>
+                </requireProperty>
+              </rules>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -1462,6 +1493,45 @@
         <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
         <httpclient.version>3.1</httpclient.version>
         <slf4j.version>1.7.5</slf4j.version>
+      </properties>
+    </profile>
+    <!-- Active by default, build against Hadoop 2 -->
+    <profile>
+      <id>hadoop-default</id>
+      <activation>
+        <property>
+          <name>!hadoop.profile</name>
+        </property>
+      </activation>
+      <properties>
+        <hadoop.profile>3</hadoop.profile>
+        <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
+      </properties>
+    </profile>
+    <!-- Build against hadoop 2 explicitly -->
+    <profile>
+      <id>hadoop2</id>
+      <activation>
+        <property>
+          <name>hadoop.profile</name>
+          <value>2</value>
+        </property>
+      </activation>
+      <properties>
+        <hadoop.version>2.6.4</hadoop.version>
+      </properties>
+    </profile>
+    <!-- Build against hadoop 3 explicitly -->
+    <profile>
+      <id>hadoop3</id>
+      <activation>
+        <property>
+          <name>hadoop.profile</name>
+          <value>3</value>
+        </property>
+      </activation>
+      <properties>
+        <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
       </properties>
     </profile>
   </profiles>
