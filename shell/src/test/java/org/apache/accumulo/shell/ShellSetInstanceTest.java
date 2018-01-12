@@ -216,7 +216,7 @@ public class ShellSetInstanceTest {
 
     ZooKeeperInstance theInstance = createMock(ZooKeeperInstance.class);
 
-    expectNew(ZooKeeperInstance.class, clientConf).andReturn(theInstance);
+    expectNew(ZooKeeperInstance.class, new Class<?>[] {ClientConfiguration.class}, clientConf).andReturn(theInstance);
     replay(theInstance, ZooKeeperInstance.class);
 
     shell.setInstance(opts);
@@ -264,7 +264,7 @@ public class ShellSetInstanceTest {
     replay(opts);
 
     ZooKeeperInstance theInstance = createMock(ZooKeeperInstance.class);
-    expectNew(ZooKeeperInstance.class, clientConf).andReturn(theInstance);
+    expectNew(ZooKeeperInstance.class, new Class<?>[] {ClientConfiguration.class}, clientConf).andReturn(theInstance);
     replay(theInstance, ZooKeeperInstance.class);
 
     shell.setInstance(opts);

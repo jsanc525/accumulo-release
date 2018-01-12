@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.accumulo.core.cli.BatchWriterOpts;
 import org.apache.accumulo.core.cli.ScannerOpts;
 import org.apache.accumulo.core.client.ClientConfiguration;
-import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.harness.AccumuloClusterIT;
 import org.apache.accumulo.test.TestIngest;
@@ -55,7 +54,7 @@ public class WriteLotsIT extends AccumuloClusterIT {
             opts.startRow = index * 10000;
             opts.rows = 10000;
             opts.setTableName(tableName);
-            if (clientConfig.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+            if (clientConfig.hasSasl()) {
               opts.updateKerberosCredentials(clientConfig);
             } else {
               opts.setPrincipal(getAdminPrincipal());
@@ -78,7 +77,7 @@ public class WriteLotsIT extends AccumuloClusterIT {
     VerifyIngest.Opts vopts = new VerifyIngest.Opts();
     vopts.rows = 10000 * 10;
     vopts.setTableName(tableName);
-    if (clientConfig.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+    if (clientConfig.hasSasl()) {
       vopts.updateKerberosCredentials(clientConfig);
     } else {
       vopts.setPrincipal(getAdminPrincipal());

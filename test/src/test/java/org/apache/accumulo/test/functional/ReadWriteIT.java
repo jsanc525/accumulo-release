@@ -61,7 +61,6 @@ import org.apache.accumulo.core.client.BatchScanner;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.BatchWriterConfig;
 import org.apache.accumulo.core.client.ClientConfiguration;
-import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.ZooKeeperInstance;
@@ -197,7 +196,7 @@ public class ReadWriteIT extends AccumuloClusterIT {
     opts.columnFamily = colf;
     opts.createTable = true;
     opts.setTableName(tableName);
-    if (clientConfig.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+    if (clientConfig.hasSasl()) {
       opts.updateKerberosCredentials(clientConfig);
     } else {
       opts.setPrincipal(principal);
@@ -221,7 +220,7 @@ public class ReadWriteIT extends AccumuloClusterIT {
     opts.startRow = offset;
     opts.columnFamily = colf;
     opts.setTableName(tableName);
-    if (clientConfig.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+    if (clientConfig.hasSasl()) {
       opts.updateKerberosCredentials(clientConfig);
     } else {
       opts.setPrincipal(principal);
@@ -249,7 +248,7 @@ public class ReadWriteIT extends AccumuloClusterIT {
           ClientConfiguration clientConf = cluster.getClientConfig();
           // Invocation is different for SASL. We're only logged in via this processes memory (not via some credentials cache on disk)
           // Need to pass along the keytab because of that.
-          if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+          if (clientConf.hasSasl()) {
             String principal = getAdminPrincipal();
             AuthenticationToken token = getAdminToken();
             assertTrue("Expected KerberosToken, but was " + token.getClass(), token instanceof KerberosToken);
@@ -278,7 +277,7 @@ public class ReadWriteIT extends AccumuloClusterIT {
           ClientConfiguration clientConf = cluster.getClientConfig();
           // Invocation is different for SASL. We're only logged in via this processes memory (not via some credentials cache on disk)
           // Need to pass along the keytab because of that.
-          if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+          if (clientConf.hasSasl()) {
             String principal = getAdminPrincipal();
             AuthenticationToken token = getAdminToken();
             assertTrue("Expected KerberosToken, but was " + token.getClass(), token instanceof KerberosToken);
@@ -399,40 +398,46 @@ public class ReadWriteIT extends AccumuloClusterIT {
     ingest(connector, getCluster().getClientConfig(), getAdminPrincipal(), 2000, 1, 50, 0, tableName);
     verify(connector, getCluster().getClientConfig(), getAdminPrincipal(), 2000, 1, 50, 0, tableName);
     connector.tableOperations().flush(tableName, null, null, true);
-    BatchScanner bscanner = connector.createBatchScanner(MetadataTable.NAME, Authorizations.EMPTY, 1);
-    String tableId = connector.tableOperations().tableIdMap().get(tableName);
-    bscanner.setRanges(Collections.singletonList(new Range(new Text(tableId + ";"), new Text(tableId + "<"))));
-    bscanner.fetchColumnFamily(DataFileColumnFamily.NAME);
-    boolean foundFile = false;
-    for (Entry<Key,Value> entry : bscanner) {
-      foundFile = true;
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      PrintStream newOut = new PrintStream(baos);
-      PrintStream oldOut = System.out;
-      try {
-        System.setOut(newOut);
-        List<String> args = new ArrayList<>();
-        args.add(entry.getKey().getColumnQualifier().toString());
-        if (ClusterType.STANDALONE == getClusterType() && cluster.getClientConfig().getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
-          args.add("--config");
-          StandaloneAccumuloCluster sac = (StandaloneAccumuloCluster) cluster;
-          String hadoopConfDir = sac.getHadoopConfDir();
-          args.add(new Path(hadoopConfDir, "core-site.xml").toString());
-          args.add(new Path(hadoopConfDir, "hdfs-site.xml").toString());
+    BatchScanner bscanner = null;
+    try {
+      bscanner = connector.createBatchScanner(MetadataTable.NAME, Authorizations.EMPTY, 1);
+      String tableId = connector.tableOperations().tableIdMap().get(tableName);
+      bscanner.setRanges(Collections.singletonList(new Range(new Text(tableId + ";"), new Text(tableId + "<"))));
+      bscanner.fetchColumnFamily(DataFileColumnFamily.NAME);
+      boolean foundFile = false;
+      for (Entry<Key,Value> entry : bscanner) {
+        foundFile = true;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream newOut = new PrintStream(baos);
+        PrintStream oldOut = System.out;
+        try {
+          System.setOut(newOut);
+          List<String> args = new ArrayList<>();
+          args.add(entry.getKey().getColumnQualifier().toString());
+          if (ClusterType.STANDALONE == getClusterType() && cluster.getClientConfig().hasSasl()) {
+            args.add("--config");
+            StandaloneAccumuloCluster sac = (StandaloneAccumuloCluster) cluster;
+            String hadoopConfDir = sac.getHadoopConfDir();
+            args.add(new Path(hadoopConfDir, "core-site.xml").toString());
+            args.add(new Path(hadoopConfDir, "hdfs-site.xml").toString());
+          }
+          log.info("Invoking PrintInfo with " + args);
+          PrintInfo.main(args.toArray(new String[args.size()]));
+          newOut.flush();
+          String stdout = baos.toString();
+          assertTrue(stdout.contains("Locality group           : g1"));
+          assertTrue(stdout.contains("families        : [colf]"));
+        } finally {
+          newOut.close();
+          System.setOut(oldOut);
         }
-        log.info("Invoking PrintInfo with " + args);
-        PrintInfo.main(args.toArray(new String[args.size()]));
-        newOut.flush();
-        String stdout = baos.toString();
-        assertTrue(stdout.contains("Locality group         : g1"));
-        assertTrue(stdout.contains("families      : [colf]"));
-      } finally {
-        newOut.close();
-        System.setOut(oldOut);
+      }
+      assertTrue(foundFile);
+    } finally {
+      if (bscanner != null) {
+        bscanner.close();
       }
     }
-    bscanner.close();
-    assertTrue(foundFile);
   }
 
   @Test

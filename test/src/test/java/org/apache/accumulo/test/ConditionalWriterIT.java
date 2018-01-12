@@ -216,7 +216,7 @@ public class ConditionalWriterIT extends AccumuloClusterIT {
 
     String user = null;
     ClientConfiguration clientConf = cluster.getClientConfig();
-    final boolean saslEnabled = clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false);
+    final boolean saslEnabled = clientConf.hasSasl();
 
     ClusterUser user1 = getUser(0);
     user = user1.getPrincipal();
@@ -1066,7 +1066,7 @@ public class ConditionalWriterIT extends AccumuloClusterIT {
     Connector conn = getConnector();
     String user = null;
     ClientConfiguration clientConf = cluster.getClientConfig();
-    final boolean saslEnabled = clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false);
+    final boolean saslEnabled = clientConf.hasSasl();
 
     // Create a new user
     ClusterUser user1 = getUser(0);

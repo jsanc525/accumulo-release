@@ -174,7 +174,7 @@ public class ConfigurableMacIT extends AccumuloIT {
   }
 
   protected ClientConfiguration getClientConfig() throws Exception {
-    return new ClientConfiguration(getCluster().getConfig().getClientConfFile());
+    return ClientConfiguration.fromFile(getCluster().getConfig().getClientConfFile());
   }
 
 }

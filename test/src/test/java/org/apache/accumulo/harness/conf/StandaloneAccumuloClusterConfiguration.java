@@ -86,11 +86,7 @@ public class StandaloneAccumuloClusterConfiguration extends AccumuloClusterPrope
 
     this.conf = getConfiguration(type);
     this.clientConfFile = clientConfFile;
-    try {
-      this.clientConf = new ClientConfiguration(clientConfFile);
-    } catch (ConfigurationException e) {
-      throw new RuntimeException("Failed to load client configuration from " + clientConfFile);
-    }
+    this.clientConf = ClientConfiguration.fromFile(clientConfFile);
     // Update instance name if not already set
     if (!clientConf.containsKey(ClientProperty.INSTANCE_NAME.getKey())) {
       clientConf.withInstance(getInstanceName());
@@ -159,7 +155,7 @@ public class StandaloneAccumuloClusterConfiguration extends AccumuloClusterPrope
 
   @Override
   public AuthenticationToken getAdminToken() {
-    if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+    if (clientConf.hasSasl()) {
       File keytab = getAdminKeytab();
       try {
         return new KerberosToken(getAdminPrincipal(), keytab, true);

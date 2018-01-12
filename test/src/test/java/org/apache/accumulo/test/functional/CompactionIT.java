@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.accumulo.core.cli.ClientOpts.Password;
 import org.apache.accumulo.core.cli.ScannerOpts;
 import org.apache.accumulo.core.client.ClientConfiguration;
-import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.admin.InstanceOperations;
@@ -138,7 +137,7 @@ public class CompactionIT extends AccumuloClusterIT {
               opts.dataSize = 50;
               opts.cols = 1;
               opts.setTableName(tableName);
-              if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+              if (clientConf.hasSasl()) {
                 opts.updateKerberosCredentials(clientConf);
               } else {
                 opts.setPrincipal(getAdminPrincipal());

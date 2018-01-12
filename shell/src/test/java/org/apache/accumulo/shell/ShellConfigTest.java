@@ -121,16 +121,17 @@ public class ShellConfigTest {
 
   @Test
   public void testZooKeeperHostFallBackToSite() throws Exception {
-    ClientConfiguration clientConfig = new ClientConfiguration();
+    ClientConfiguration clientConfig = ClientConfiguration.create();
     Map<String,String> data = new HashMap<>();
     data.put(Property.INSTANCE_ZK_HOST.getKey(), "site_hostname");
     AccumuloConfiguration conf = new ConfigurationCopy(data);
+    assertFalse("Client config contains zk hosts", clientConfig.containsKey(ClientConfiguration.ClientProperty.INSTANCE_ZK_HOST.getKey()));
     assertEquals("site_hostname", Shell.getZooKeepers(null, clientConfig, conf));
   }
 
   @Test
   public void testZooKeeperHostFromClientConfig() throws Exception {
-    ClientConfiguration clientConfig = new ClientConfiguration();
+    ClientConfiguration clientConfig = ClientConfiguration.create();
     clientConfig.withZkHosts("cc_hostname");
     Map<String,String> data = new HashMap<>();
     data.put(Property.INSTANCE_ZK_HOST.getKey(), "site_hostname");
@@ -140,7 +141,7 @@ public class ShellConfigTest {
 
   @Test
   public void testZooKeeperHostFromOption() throws Exception {
-    ClientConfiguration clientConfig = new ClientConfiguration();
+    ClientConfiguration clientConfig = ClientConfiguration.create();
     clientConfig.withZkHosts("cc_hostname");
     Map<String,String> data = new HashMap<>();
     data.put(Property.INSTANCE_ZK_HOST.getKey(), "site_hostname");

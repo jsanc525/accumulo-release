@@ -249,7 +249,7 @@ public class NullTserver {
     opts.parseArgs(NullTserver.class.getName(), args);
 
     // modify metadata
-    ZooKeeperInstance zki = new ZooKeeperInstance(new ClientConfiguration().withInstance(opts.iname).withZkHosts(opts.keepers));
+    ZooKeeperInstance zki = new ZooKeeperInstance(ClientConfiguration.create().withInstance(opts.iname).withZkHosts(opts.keepers));
     AccumuloServerContext context = new AccumuloServerContext(new ServerConfigurationFactory(zki));
 
     TransactionWatcher watcher = new TransactionWatcher();

@@ -27,7 +27,6 @@ import org.apache.accumulo.cluster.ClusterUser;
 import org.apache.accumulo.cluster.ClusterUsers;
 import org.apache.accumulo.cluster.standalone.StandaloneAccumuloCluster;
 import org.apache.accumulo.core.client.ClientConfiguration;
-import org.apache.accumulo.core.client.ClientConfiguration.ClientProperty;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.admin.SecurityOperations;
 import org.apache.accumulo.core.client.admin.TableOperations;
@@ -139,7 +138,7 @@ public abstract class AccumuloClusterIT extends AccumuloIT implements MiniCluste
 
         // For SASL, we need to get the Hadoop configuration files as well otherwise UGI will log in as SIMPLE instead of KERBEROS
         Configuration hadoopConfiguration = standaloneCluster.getHadoopConfiguration();
-        if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
+        if (clientConf.hasSasl()) {
           UserGroupInformation.setConfiguration(hadoopConfiguration);
           // Login as the admin user to start the tests
           UserGroupInformation.loginUserFromKeytab(conf.getAdminPrincipal(), conf.getAdminKeytab().getAbsolutePath());
