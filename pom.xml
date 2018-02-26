@@ -1459,43 +1459,7 @@
         </plugins>
       </reporting>
     </profile>
-    <!-- profile for our default Hadoop build
-         unfortunately, has to duplicate one of our
-         specified profiles. see MNG-3328 -->
-    <profile>
-      <id>hadoop-default</id>
-      <activation>
-        <property>
-          <name>!hadoop.profile</name>
-        </property>
-      </activation>
-      <properties>
-        <!-- Denotes intention and allows the enforcer plugin to pass when
-             the user is relying on default behavior; won't work to activate profile -->
-        <hadoop.profile>2</hadoop.profile>
-        <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
-        <httpclient.version>3.1</httpclient.version>
-        <slf4j.version>1.7.5</slf4j.version>
-      </properties>
-    </profile>
-    <!-- profile for building against Hadoop 2.x
-     XXX Since this is the default, make sure to sync hadoop-default when changing.
-    Activate using: mvn -Dhadoop.profile=2 -->
-    <profile>
-      <id>hadoop-2</id>
-      <activation>
-        <property>
-          <name>hadoop.profile</name>
-          <value>2</value>
-        </property>
-      </activation>
-      <properties>
-        <hadoop.version>3.0.0.3.0.0.2-SNAPSHOT</hadoop.version>
-        <httpclient.version>3.1</httpclient.version>
-        <slf4j.version>1.7.5</slf4j.version>
-      </properties>
-    </profile>
-    <!-- Active by default, build against Hadoop 2 -->
+    <!-- Active by default, build against Hadoop 3 -->
     <profile>
       <id>hadoop-default</id>
       <activation>

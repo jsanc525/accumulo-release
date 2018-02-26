@@ -149,11 +149,17 @@
       <dependencies>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client</artifactId>
+          <artifactId>hadoop-client-api</artifactId>
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-minicluster</artifactId>
+          <artifactId>hadoop-client-minicluster</artifactId>
+          <optional>true</optional>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client-runtime</artifactId>
+          <scope>runtime</scope>
         </dependency>
       </dependencies>
     </profile>

@@ -361,10 +361,6 @@ elif [[ "${HADOOP_VERSION}" == "HDP" ]]; then
       -e 's/<!-- End Hadoop 2 requirements -->/--><!-- End Hadoop 2 requirements -->/' \
       "${CONF_DIR}/$ACCUMULO_SITE" > temp
   mv temp "${CONF_DIR}/$ACCUMULO_SITE"
-  sed -e 's/<!-- Hadoop 3 requirements -->/<!-- Hadoop 3 requirements --><!--/' \
-      -e 's/<!-- End Hadoop 3 requirements -->/--><!-- End Hadoop 3 requirements -->/' \
-      "${CONF_DIR}/$ACCUMULO_SITE" > temp
-  mv temp "${CONF_DIR}/$ACCUMULO_SITE"
 elif [[ "${HADOOP_VERSION}" == "3" ]]; then
   sed -e 's/<!-- Hadoop 2 requirements -->/<!-- Hadoop 2 requirements --><!--/' \
       -e 's/<!-- End Hadoop 2 requirements -->/--><!-- End Hadoop 2 requirements -->/' \

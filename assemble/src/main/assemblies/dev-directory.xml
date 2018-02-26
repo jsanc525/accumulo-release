@@ -22,6 +22,6 @@
     <format>dir</format>
   </formats>
   <componentDescriptors>
-    <componentDescriptor>src/main/assemblies/component.xml</componentDescriptor>
+    <componentDescriptor>src/main/assemblies/component-hadoop3.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
