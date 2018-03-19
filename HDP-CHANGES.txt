@@ -1,5 +1,7 @@
 ** Changes in HDP-2.3 and HDP-2.4 over the Apache release
 
+ACCUMULO-4578 release namespace lock when compaction canceled
+
 ACCUMULO-3890 Use of CredentialProvider results in a lot of NN ops
 ACCUMULO-3957 Consider moving off getContentSummary in the monitor
 ACCUMULO-3967 bulk import loses records when loading pre-split table
