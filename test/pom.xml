@@ -163,11 +163,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-minicluster</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-minikdc</artifactId>
       <scope>test</scope>
       <exclusions>
@@ -314,12 +309,13 @@
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client-minicluster</artifactId>
+          <artifactId>hadoop-client-runtime</artifactId>
+          <scope>runtime</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client-runtime</artifactId>
-          <scope>runtime</scope>
+          <artifactId>hadoop-client-minicluster</artifactId>
+          <scope>test</scope>
         </dependency>
       </dependencies>
     </profile>
@@ -338,11 +334,12 @@
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-minicluster</artifactId>
+          <artifactId>hadoop-distcp</artifactId>
+          <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-distcp</artifactId>
+          <artifactId>hadoop-minicluster</artifactId>
           <scope>test</scope>
         </dependency>
       </dependencies>
@@ -362,12 +359,13 @@
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client-minicluster</artifactId>
+          <artifactId>hadoop-client-runtime</artifactId>
+          <scope>runtime</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-client-runtime</artifactId>
-          <scope>runtime</scope>
+          <artifactId>hadoop-client-minicluster</artifactId>
+          <scope>test</scope>
         </dependency>
       </dependencies>
     </profile>
