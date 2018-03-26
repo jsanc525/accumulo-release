@@ -397,7 +397,7 @@
         <!-- Specifically depend on this version of minikdc to avoid having
            to increase out normal hadoop dependency; minikdc not available prior
            to 2.3.0 -->
-        <version>2.3.0</version>
+        <version>${hadoop.version}</version>
         <!--$NO-MVN-MAN-VER$-->
       </dependency>
       <dependency>
