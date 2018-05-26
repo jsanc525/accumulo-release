@@ -67,6 +67,7 @@ import org.apache.accumulo.core.client.impl.thrift.ThriftNotActiveServiceExcepti
 import org.apache.accumulo.core.client.impl.thrift.ThriftSecurityException;
 import org.apache.accumulo.core.client.security.tokens.AuthenticationToken;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.ConfigurationCopy;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.master.thrift.MasterClientService;
@@ -109,6 +110,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 /**
@@ -199,9 +201,7 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     jvmArgs2.add("-Xmx" + config.getDefaultMemory());
     if (jvmArgs != null)
       jvmArgs2.addAll(jvmArgs);
-    Process proc = _exec(clazz, jvmArgs2, args);
-    cleanup.add(proc);
-    return proc;
+    return _exec(clazz, jvmArgs2, args);
   }
 
   private boolean containsSiteFile(File f) {
@@ -331,6 +331,8 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
     lw = new LogWriter(process.getInputStream(), new File(config.getLogDir(), clazz.getSimpleName() + "_" + process.hashCode() + ".out"));
     logWriters.add(lw);
     lw.start();
+
+    cleanup.add(process);
 
     return process;
   }
@@ -814,5 +816,11 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
       mkdirs(tmp);
       return new Path(tmp.toString());
     }
+  }
+
+  @Override
+  public AccumuloConfiguration getSiteConfiguration() {
+    // TODO Auto-generated method stub
+    return new ConfigurationCopy(Iterables.concat(AccumuloConfiguration.getDefaultConfiguration(), config.getSiteConfig().entrySet()));
   }
 }

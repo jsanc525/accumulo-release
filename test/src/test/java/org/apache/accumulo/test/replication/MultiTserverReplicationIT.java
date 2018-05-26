@@ -31,9 +31,12 @@ import org.apache.accumulo.core.zookeeper.ZooUtil;
 import org.apache.accumulo.fate.zookeeper.ZooReader;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +46,7 @@ import com.google.common.net.HostAndPort;
 /**
  *
  */
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class MultiTserverReplicationIT extends ConfigurableMacIT {
   private static final Logger log = LoggerFactory.getLogger(MultiTserverReplicationIT.class);
 

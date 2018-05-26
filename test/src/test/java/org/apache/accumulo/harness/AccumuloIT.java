@@ -19,6 +19,7 @@ package org.apache.accumulo.harness;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -30,11 +31,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Methods, setup and/or infrastructure which are common to any Accumulo integration test.
  */
+
 public class AccumuloIT {
   private static final Logger log = LoggerFactory.getLogger(AccumuloIT.class);
 
   @Rule
   public TestName testName = new TestName();
+
+  @Rule
+  public TestTimer timer = new TestTimer();
 
   public String[] getUniqueNames(int num) {
     String[] names = new String[num];
@@ -92,7 +97,7 @@ public class AccumuloIT {
     } catch (NumberFormatException exception) {
       log.warn("Could not parse timeout.factor, defaulting to no timeout.");
     }
-    return new Timeout(waitLonger * defaultTimeoutSeconds() * 1000);
+    return new Timeout(waitLonger * defaultTimeoutSeconds(), TimeUnit.SECONDS);
   }
 
   /**

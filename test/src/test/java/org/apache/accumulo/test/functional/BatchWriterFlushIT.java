@@ -38,11 +38,15 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.util.UtilWaitThread;
 import org.apache.accumulo.harness.AccumuloClusterIT;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.StandaloneCapableClusterTests;
 import org.apache.hadoop.io.Text;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.google.common.collect.Iterators;
 
+@Category({StandaloneCapableClusterTests.class, HortonworksIgnoredTests.class})
 public class BatchWriterFlushIT extends AccumuloClusterIT {
 
   private static final int NUM_TO_FLUSH = 100000;

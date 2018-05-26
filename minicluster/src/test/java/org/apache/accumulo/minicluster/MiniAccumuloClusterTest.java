@@ -85,7 +85,7 @@ public class MiniAccumuloClusterTest {
     assertEquals("dfs.replication", DFSConfigKeys.DFS_REPLICATION_KEY);
   }
 
-  @Test(timeout = 30000)
+  @Test(timeout = 240000)
   public void test() throws Exception {
     Connector conn = accumulo.getConnector("root", "superSecret");
 
@@ -158,7 +158,7 @@ public class MiniAccumuloClusterTest {
   @Rule
   public TemporaryFolder folder = new TemporaryFolder(new File(System.getProperty("user.dir") + "/target"));
 
-  @Test(timeout = 60000)
+  @Test(timeout = 240000)
   public void testPerTableClasspath() throws Exception {
 
     Connector conn = accumulo.getConnector("root", "superSecret");
@@ -202,7 +202,7 @@ public class MiniAccumuloClusterTest {
     conn.tableOperations().delete("table2");
   }
 
-  @Test(timeout = 10000)
+  @Test(timeout = 120000)
   public void testDebugPorts() {
 
     Set<Pair<ServerType,Integer>> debugPorts = accumulo.getDebugPorts();

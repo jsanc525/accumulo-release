@@ -30,8 +30,12 @@ import org.apache.accumulo.server.util.Admin;
 import org.apache.accumulo.test.TestIngest;
 import org.apache.accumulo.test.TestRandomDeletes;
 import org.apache.accumulo.test.VerifyIngest;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class ShutdownIT extends ConfigurableMacIT {
 
   @Override

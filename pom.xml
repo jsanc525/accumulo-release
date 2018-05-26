@@ -126,6 +126,10 @@
     <bouncycastle.version>1.50</bouncycastle.version>
     <!-- relative path for Eclipse format; should override in child modules if necessary -->
     <eclipseFormatterStyle>${project.parent.basedir}/contrib/Eclipse-Accumulo-Codestyle.xml</eclipseFormatterStyle>
+    <!-- extra release args for testing -->
+    <extraReleaseArgs />
+    <failsafe.excludedGroups />
+    <failsafe.groups />
     <!-- findbugs-maven-plugin won't work on jdk8 or later; set to 3.0.0 or newer -->
     <findbugs.version>3.0.0</findbugs.version>
     <!-- surefire/failsafe plugin option -->
@@ -135,6 +139,7 @@
     <htrace.hadoop.version>4.1.0-incubating</htrace.hadoop.version>
     <htrace.version>3.1.0-incubating</htrace.version>
     <httpclient.version>3.1</httpclient.version>
+    <it.failIfNoSpecifiedTests>false</it.failIfNoSpecifiedTests>
     <jetty.version>9.1.5.v20140505</jetty.version>
     <maven-source-plugin.version>2.4</maven-source-plugin.version>
     <maven.compiler.source>1.7</maven.compiler.source>
@@ -143,13 +148,16 @@
     <maven.min-version>3.0.4</maven.min-version>
     <!-- surefire/failsafe plugin option -->
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <powermock.version>1.5</powermock.version>
+    <powermock.version>1.6.4</powermock.version>
     <!-- surefire/failsafe plugin option -->
     <reuseForks>false</reuseForks>
     <sealJars>false</sealJars>
     <!-- overwritten in hadoop profiles -->
     <slf4j.version>1.7.5</slf4j.version>
     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
+    <surefire.excludedGroups />
+    <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
+    <surefire.groups />
     <!-- Thrift version -->
     <thrift.version>0.9.1</thrift.version>
     <!-- ZooKeeper version -->
@@ -241,7 +249,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
@@ -398,9 +406,8 @@
            to increase out normal hadoop dependency; minikdc not available prior
            to 2.3.0 -->
         <?SORTPOM IGNORE?>
-        <version>${hadoop.version}</version>
+        <version>${hadoop.version}</version><!--$NO-MVN-MAN-VER$-->
         <?SORTPOM RESUME?>
-        <!--$NO-MVN-MAN-VER$-->
       </dependency>
       <dependency>
         <groupId>org.apache.hadoop</groupId>
@@ -734,6 +741,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+            <groups>${surefire.groups}</groups>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
@@ -745,6 +754,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <configuration>
+            <excludedGroups>${failsafe.excludedGroups}</excludedGroups>
+            <groups>${failsafe.groups}</groups>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
@@ -1431,8 +1442,7 @@
       <!-- Minimal testing profile. (a.k.a. SunnyDay) -->
       <id>sunny</id>
       <properties>
-        <failIfNoTests>false</failIfNoTests>
-        <it.test>ReadWriteIT,SimpleProxyIT,ExamplesIT,ShellServerIT</it.test>
+        <failsafe.groups>org.apache.accumulo.test.categories.SunnyDayTests</failsafe.groups>
       </properties>
     </profile>
     <profile>
@@ -1499,6 +1509,54 @@
       <properties>
         <hadoop.version>3.0.0.3.0.0.0-SNAPSHOT</hadoop.version>
       </properties>
+    </profile>
+    <profile>
+      <id>jdk8</id>
+      <activation>
+        <jdk>[1.8,1.9)</jdk>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <quiet>true</quiet>
+                <javadocVersion>1.8</javadocVersion>
+                <additionalJOption>-J-Xmx512m</additionalJOption>
+                <additionalparam>-Xdoclint:all,-Xdoclint:-missing</additionalparam>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>aggregate-javadocs</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <sourceFileIncludes>
+                  <sourceFileInclude>**/org/apache/accumulo/core/client/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/core/data/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/core/security/**/*.java</sourceFileInclude>
+                  <sourceFileInclude>**/org/apache/accumulo/minicluster/**/*.java</sourceFileInclude>
+                </sourceFileIncludes>
+                <sourceFileExcludes>
+                  <sourceFileExclude>**/crypto/**/*.java</sourceFileExclude>
+                  <sourceFileExclude>**/impl/**/*.java</sourceFileExclude>
+                  <sourceFileExclude>**/thrift/**/*.java</sourceFileExclude>
+                </sourceFileExcludes>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
     </profile>
   </profiles>
 </project>

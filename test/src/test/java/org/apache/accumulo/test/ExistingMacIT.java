@@ -26,11 +26,13 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.BatchWriterConfig;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Scanner;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
+import org.apache.accumulo.core.conf.DefaultConfiguration;
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Mutation;
@@ -38,18 +40,24 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.metadata.MetadataTable;
 import org.apache.accumulo.core.metadata.RootTable;
 import org.apache.accumulo.core.security.Authorizations;
-import org.apache.accumulo.core.util.UtilWaitThread;
+import org.apache.accumulo.fate.zookeeper.IZooReaderWriter;
 import org.apache.accumulo.minicluster.ServerType;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloClusterImpl;
 import org.apache.accumulo.minicluster.impl.MiniAccumuloConfigImpl;
 import org.apache.accumulo.minicluster.impl.ProcessReference;
+import org.apache.accumulo.test.categories.HortonworksIgnoredTests;
+import org.apache.accumulo.test.categories.MiniClusterOnlyTests;
+import org.apache.accumulo.server.util.AccumuloStatus;
+import org.apache.accumulo.server.zookeeper.ZooReaderWriterFactory;
 import org.apache.accumulo.test.functional.ConfigurableMacIT;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.RawLocalFileSystem;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category({MiniClusterOnlyTests.class, HortonworksIgnoredTests.class})
 public class ExistingMacIT extends ConfigurableMacIT {
   @Override
   public int defaultTimeoutSeconds() {
@@ -58,7 +66,7 @@ public class ExistingMacIT extends ConfigurableMacIT {
 
   @Override
   public void configure(MiniAccumuloConfigImpl cfg, Configuration hadoopCoreSite) {
-    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "5s");
+    cfg.setProperty(Property.INSTANCE_ZK_TIMEOUT, "15s");
 
     // use raw local file system so walogs sync and flush will work
     hadoopCoreSite.set("fs.file.impl", RawLocalFileSystem.class.getName());
@@ -100,8 +108,14 @@ public class ExistingMacIT extends ConfigurableMacIT {
         getCluster().killProcess(entry.getKey(), pr);
     }
 
-    // TODO clean out zookeeper? following sleep waits for ephemeral nodes to go away
-    UtilWaitThread.sleep(10000);
+    final DefaultConfiguration defaultConfig = DefaultConfiguration.getInstance();
+    IZooReaderWriter zrw = new ZooReaderWriterFactory().getZooReaderWriter(getCluster().getZooKeepers(),
+        (int) defaultConfig.getTimeInMillis(Property.INSTANCE_ZK_TIMEOUT), defaultConfig.get(Property.INSTANCE_SECRET));
+    final String zInstanceRoot = Constants.ZROOT + "/" + conn.getInstance().getInstanceID();
+    while (!AccumuloStatus.isAccumuloOffline(zrw, zInstanceRoot)) {
+      log.debug("Accumulo services still have their ZK locks held");
+      Thread.sleep(1000);
+    }
 
     File hadoopConfDir = createTestDir(ExistingMacIT.class.getSimpleName() + "_hadoop_conf");
     FileUtils.deleteQuietly(hadoopConfDir);

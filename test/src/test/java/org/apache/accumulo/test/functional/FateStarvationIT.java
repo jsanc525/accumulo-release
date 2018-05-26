@@ -74,6 +74,8 @@ public class FateStarvationIT extends AccumuloClusterIT {
     }
 
     c.tableOperations().offline(tableName);
+
+    FunctionalTestUtils.assertNoDanglingFateLocks(getConnector().getInstance(), getCluster());
   }
 
 }
