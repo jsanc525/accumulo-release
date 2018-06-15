@@ -34,6 +34,14 @@
       <groupId>org.apache.htrace</groupId>
       <artifactId>htrace-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.htrace</groupId>
+      <artifactId>htrace-core4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.threadly</groupId>
+      <artifactId>threadly</artifactId>
+    </dependency>
     <!-- Otherwise will see complaints from failsafe WRT groups -->
     <dependency>
       <groupId>junit</groupId>
