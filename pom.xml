@@ -123,7 +123,7 @@
     <!-- used for filtering the java source with the current version -->
     <accumulo.release.version>${project.version}</accumulo.release.version>
     <!-- bouncycastle version for test dependencies -->
-    <bouncycastle.version>1.50</bouncycastle.version>
+    <bouncycastle.version>1.54</bouncycastle.version>
     <!-- relative path for Eclipse format; should override in child modules if necessary -->
     <eclipseFormatterStyle>${project.parent.basedir}/contrib/Eclipse-Accumulo-Codestyle.xml</eclipseFormatterStyle>
     <!-- extra release args for testing -->
@@ -140,7 +140,8 @@
     <htrace.version>3.1.0-incubating</htrace.version>
     <httpclient.version>3.1</httpclient.version>
     <it.failIfNoSpecifiedTests>false</it.failIfNoSpecifiedTests>
-    <jetty.version>9.1.5.v20140505</jetty.version>
+    <!-- jetty 9.2 is the last version to support jdk less than 1.8 -->
+    <jetty.version>9.2.17.v20160517</jetty.version>
     <maven-source-plugin.version>2.4</maven-source-plugin.version>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
@@ -148,12 +149,12 @@
     <maven.min-version>3.0.4</maven.min-version>
     <!-- surefire/failsafe plugin option -->
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <powermock.version>1.6.4</powermock.version>
+    <powermock.version>1.6.5</powermock.version>
     <!-- surefire/failsafe plugin option -->
     <reuseForks>false</reuseForks>
     <sealJars>false</sealJars>
     <!-- overwritten in hadoop profiles -->
-    <slf4j.version>1.7.5</slf4j.version>
+    <slf4j.version>1.7.21</slf4j.version>
     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
     <surefire.excludedGroups />
     <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
@@ -178,7 +179,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.2.2</version>
+        <version>2.7</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -254,7 +255,7 @@
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
+        <version>1.2.17</version>
       </dependency>
       <dependency>
         <groupId>org.apache.accumulo</groupId>
@@ -487,7 +488,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>3.1</version>
+        <version>3.6</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
