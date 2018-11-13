@@ -101,3 +101,12 @@ ACCUMULO-4665 Use UGI with real Kerberos credentials
 ACCUMULO-4687 Clean up some static-analysis warnings
 ACCUMULO-4826 Support Hadoop 3
 ACCUMULO-4836 make online table always wait (#394)
+
+** Changes in HDP-3.0.3 over HDP-3.0.1
+
+BUG-113568 ACCUMULO-3460: Disable HTTP TRACE in embedded Jetty
+Make the ACCUMULO_MONITOR_BIND_ALL property case-insensitive checking
+BUG-112189 Bump jetty again
+Update commons-configuration to latest 1.x (#659)
+Partial inclusion of ACCUMULO-4354
+Introduce a property for a key password for the Monitor keystore file
