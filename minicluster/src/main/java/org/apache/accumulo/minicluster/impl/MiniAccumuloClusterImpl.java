@@ -436,6 +436,12 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
       public boolean apply(Entry<String,String> v) {
         return ClientConfiguration.ClientProperty.getPropertyByKey(v.getKey()) != null;
       }
+
+      // Guava's Predicates should prevent this from being necessary, but still gives compilation error
+      @Override
+      public boolean test(Entry<String,String> v) {
+        return apply(v);
+      }
     }));
 
     File siteFile = new File(config.getConfDir(), "accumulo-site.xml");

@@ -45,7 +45,7 @@ public class TTimeoutTransport {
   }
 
   public static TTransport create(HostAndPort addr, long timeoutMillis) throws IOException {
-    return create(new InetSocketAddress(addr.getHostText(), addr.getPort()), timeoutMillis);
+    return create(new InetSocketAddress(addr.getHost(), addr.getPort()), timeoutMillis);
   }
 
   public static TTransport create(SocketAddress addr, long timeoutMillis) throws IOException {

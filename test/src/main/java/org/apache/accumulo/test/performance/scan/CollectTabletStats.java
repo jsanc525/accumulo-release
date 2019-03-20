@@ -359,7 +359,7 @@ public class CollectTabletStats {
     for (Entry<KeyExtent,String> entry : tabletLocations.entrySet()) {
       String loc = entry.getValue();
       if (loc != null) {
-        boolean isLocal = HostAndPort.fromString(entry.getValue()).getHostText().equals(localaddress.getHostName());
+        boolean isLocal = HostAndPort.fromString(entry.getValue()).getHost().equals(localaddress.getHostName());
 
         if (selectLocalTablets && isLocal) {
           candidates.add(entry.getKey());

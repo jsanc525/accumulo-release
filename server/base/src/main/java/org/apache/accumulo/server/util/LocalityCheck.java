@@ -95,7 +95,7 @@ public class LocalityCheck {
         allBlocks++;
         for (String location : blockLocation.getHosts()) {
           HostAndPort hap = HostAndPort.fromParts(location, 0);
-          if (hap.getHostText().equals(host)) {
+          if (hap.getHost().equals(host)) {
             matchingBlocks++;
             break;
           }

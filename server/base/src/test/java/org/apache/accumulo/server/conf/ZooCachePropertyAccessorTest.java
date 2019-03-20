@@ -120,8 +120,8 @@ public class ZooCachePropertyAccessorTest {
     expect(zc.get(PATH + "/" + child1)).andReturn(VALUE_BYTES);
     expect(zc.get(PATH + "/" + child2)).andReturn(null);
     replay(zc);
-    expect(filter.apply(child1)).andReturn(true);
-    expect(filter.apply(child2)).andReturn(true);
+    expect(filter.test(child1)).andReturn(true);
+    expect(filter.test(child2)).andReturn(true);
     replay(filter);
 
     a.getProperties(props, PATH, filter, parent, null);
@@ -158,7 +158,7 @@ public class ZooCachePropertyAccessorTest {
     children.add(child1);
     expect(zc.getChildren(PATH)).andReturn(children);
     replay(zc);
-    expect(filter.apply(child1)).andReturn(false);
+    expect(filter.test(child1)).andReturn(false);
     replay(filter);
 
     a.getProperties(props, PATH, filter, parent, null);

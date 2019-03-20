@@ -20,4 +20,8 @@
     <Class name="org.apache.accumulo.gc.SimpleGarbageCollector" />
     <Bug code="DM" pattern="DM_EXIT" />
   </Match>
+  <Match>
+    <Class name="org.apache.accumulo.gc.SimpleGarbageCollector$GCEnv$4" />
+    <Bug code="NP" pattern="NP_NULL_PARAM_DEREF" />
+  </Match>
 </FindBugsFilter>

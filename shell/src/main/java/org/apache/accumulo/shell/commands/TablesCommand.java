@@ -59,6 +59,12 @@ public class TablesCommand extends Command {
       public boolean apply(String tableName) {
         return namespace == null || Tables.qualify(tableName).getFirst().equals(namespace);
       }
+
+      // This should be done automatically by Guava's Predicate but it's failing to compile. *shrug*
+      @Override
+      public boolean test(String tableName) {
+        return apply(tableName);
+      }
     });
 
     final boolean sortByTableId = cl.hasOption(sortByTableIdOption.getOpt());
