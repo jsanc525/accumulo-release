@@ -83,7 +83,7 @@
     <module>test</module>
     <module>minicluster</module>
     <module>docs</module>
-    <module>maven-plugin</module>
+    <!--module>maven-plugin</module-->
     <module>server/base</module>
     <module>server/gc</module>
     <module>server/master</module>
@@ -184,8 +184,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <!-- Hadoop-2.4.0 MiniDFSCluster uses classes from <Guava-15.0; fixed in 2.6.0 and later -->
-        <version>14.0.1</version>
+        <version>28.0-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
@@ -592,6 +591,7 @@
               <exclude>.pc/**</exclude>
               <exclude>debian/**</exclude>
               <exclude>HDP-CHANGES.txt</exclude>
+              <exclude>maven-plugin/**</exclude>
             </excludes>
           </configuration>
         </plugin>

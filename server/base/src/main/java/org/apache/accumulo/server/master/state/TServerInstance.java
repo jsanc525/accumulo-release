@@ -113,7 +113,7 @@ public class TServerInstance implements Comparable<TServerInstance>, Serializabl
   }
 
   public String host() {
-    return getLocation().getHostText();
+    return getLocation().getHost();
   }
 
   public String hostPort() {

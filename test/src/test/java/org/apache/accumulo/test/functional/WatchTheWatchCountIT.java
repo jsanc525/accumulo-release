@@ -56,7 +56,7 @@ public class WatchTheWatchCountIT extends ConfigurableMacIT {
     long total = 0;
     final HostAndPort hostAndPort = HostAndPort.fromString(zooKeepers);
     for (int i = 0; i < 5; i++) {
-      Socket socket = new Socket(hostAndPort.getHostText(), hostAndPort.getPort());
+      Socket socket = new Socket(hostAndPort.getHost(), hostAndPort.getPort());
       try {
         socket.getOutputStream().write("wchs\n".getBytes(), 0, 5);
         byte[] buffer = new byte[1024];

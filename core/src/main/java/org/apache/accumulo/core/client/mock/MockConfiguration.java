@@ -18,11 +18,10 @@ package org.apache.accumulo.core.client.mock;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.conf.Property;
-
-import com.google.common.base.Predicate;
 
 class MockConfiguration extends AccumuloConfiguration {
   Map<String,String> map;
@@ -51,7 +50,7 @@ class MockConfiguration extends AccumuloConfiguration {
     getProperties(props, new Predicate<String>() {
 
       @Override
-      public boolean apply(String input) {
+      public boolean test(String input) {
         return filter.accept(input);
       }
     });
@@ -60,7 +59,7 @@ class MockConfiguration extends AccumuloConfiguration {
   @Override
   public void getProperties(Map<String,String> props, Predicate<String> filter) {
     for (Entry<String,String> entry : map.entrySet()) {
-      if (filter.apply(entry.getKey())) {
+      if (filter.test(entry.getKey())) {
         props.put(entry.getKey(), entry.getValue());
       }
     }

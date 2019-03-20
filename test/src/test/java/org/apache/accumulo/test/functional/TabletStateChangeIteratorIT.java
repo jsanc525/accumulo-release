@@ -176,6 +176,11 @@ public class TabletStateChangeIteratorIT extends SharedMiniClusterIT {
         public boolean apply(String tableId) {
           return Tables.getTableState(getConnector().getInstance(), tableId) == TableState.ONLINE;
         }
+
+        @Override
+        public boolean test(String tableId) {
+          return apply(tableId);
+        }
       });
     }
 

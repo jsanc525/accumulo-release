@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.accumulo.core.conf.Property;
 import org.apache.accumulo.core.volume.Volume;
@@ -35,8 +36,6 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
 
 /**
  * A {@link RandomVolumeChooser} that limits its choices from a given set of options to the subset of those options preferred for a particular table. Defaults
@@ -53,7 +52,7 @@ public class PreferredVolumeChooser extends RandomVolumeChooser implements Volum
   // TODO ACCUMULO-3417 replace this with the ability to retrieve by String key.
   private static final Predicate<String> PREFERRED_VOLUMES_FILTER = new Predicate<String>() {
     @Override
-    public boolean apply(String key) {
+    public boolean test(String key) {
       return PREFERRED_VOLUMES_CUSTOM_KEY.equals(key);
     }
   };
