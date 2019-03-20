@@ -434,6 +434,12 @@ public class MiniAccumuloClusterImpl implements AccumuloCluster {
       public boolean apply(Entry<String,String> v) {
         return ClientConfiguration.ClientProperty.getPropertyByKey(v.getKey()) != null;
       }
+
+      // default test method of Guava's Predicates will not work on JDK7 (give compilation error)
+      @Override
+      public boolean test(Entry<String,String> v) {
+        return apply(v);
+      }
     }));
 
     File siteFile = new File(config.getConfDir(), "accumulo-site.xml");

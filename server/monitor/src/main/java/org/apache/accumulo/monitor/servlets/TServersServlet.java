@@ -252,7 +252,7 @@ public class TServersServlet extends BasicServlet {
 
   private void doDetailTable(HttpServletRequest req, StringBuilder sb, HostAndPort address, int numTablets, TabletStats total, TabletStats historical) {
     Table detailTable = new Table("tServerDetail", "Details");
-    detailTable.setSubCaption(address.getHostText() + ":" + address.getPort());
+    detailTable.setSubCaption(address.getHost() + ":" + address.getPort());
     detailTable.addSortableColumn("Hosted&nbsp;Tablets", new NumberType<Integer>(), null);
     detailTable.addSortableColumn("Entries", new NumberType<Long>(), null);
     detailTable.addSortableColumn("Minor&nbsp;Compacting", new NumberType<Integer>(), null);

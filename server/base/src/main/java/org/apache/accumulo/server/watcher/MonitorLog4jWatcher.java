@@ -114,7 +114,7 @@ public class MonitorLog4jWatcher extends FileWatchdog implements Watcher {
       String hostPortString = new String(ZooReaderWriter.getInstance().getData(path, null), UTF_8);
       HostAndPort hostAndPort = HostAndPort.fromString(hostPortString);
 
-      System.setProperty(HOST_PROPERTY_NAME, hostAndPort.getHostText());
+      System.setProperty(HOST_PROPERTY_NAME, hostAndPort.getHost());
       System.setProperty(PORT_PROPERTY_NAME, Integer.toString(hostAndPort.getPort()));
 
       log.info("Changing monitor log4j address to " + hostAndPort.toString());

@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -500,7 +501,7 @@ public class SimpleGarbageCollector extends AccumuloServerContext implements Ifa
         });
       } catch (ReplicationTableOfflineException e) {
         // No elements that we need to preclude
-        return Iterators.emptyIterator();
+        return Collections.emptyIterator();
       }
     }
 

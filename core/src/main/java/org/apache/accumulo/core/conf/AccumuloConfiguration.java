@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import org.apache.accumulo.core.Constants;
 import org.apache.accumulo.core.client.AccumuloException;
@@ -33,7 +34,6 @@ import org.apache.accumulo.start.classloader.vfs.AccumuloVFSClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 /**
@@ -76,7 +76,7 @@ public abstract class AccumuloConfiguration implements Iterable<Entry<String,Str
     }
 
     @Override
-    public boolean apply(String key) {
+    public boolean test(String key) {
       return Objects.equals(match, key);
     }
   }
@@ -99,7 +99,7 @@ public abstract class AccumuloConfiguration implements Iterable<Entry<String,Str
     }
 
     @Override
-    public boolean apply(String key) {
+    public boolean test(String key) {
       return key.startsWith(prefix);
     }
   }
