@@ -110,3 +110,13 @@ BUG-112189 Bump jetty again
 Update commons-configuration to latest 1.x (#659)
 Partial inclusion of ACCUMULO-4354
 Introduce a property for a key password for the Monitor keystore file
+
+** Changes since HDP-3.1.0
+
+QE-22842 ReadWriteIT.sunnyLG fails due to wrong assertion in Accumulo
+BUG-121339 ACCUMULO-4077 back out a couple of 0.9.1 hacks, run the new compiler
+BUG-121131 Upgrade to guava 28.0-jre
+Native maps crash (segfault) when calling LinkedBlockAllocator.deleteLast()
+Format C++ code (manually)
+fixes #767 correct allocation issue in native maps (#769)
+BUG-120559 Update Jetty dependency
